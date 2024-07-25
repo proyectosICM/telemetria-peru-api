@@ -1,9 +1,11 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.models.CompanyModel;
 import com.icm.telemetria_peru_api.models.DriverModel;
 import com.icm.telemetria_peru_api.services.DriverService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Driver;
 import java.util.List;
 
 @RestController
@@ -21,8 +22,8 @@ public class DriverController {
     @Autowired
     private DriverService driverService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DriverModel> findById(@PathVariable Long driverId) {
+    @GetMapping("/{driverId}")
+    public ResponseEntity<DriverModel> findById(@PathVariable @NotNull Long driverId) {
         return driverService.findById(driverId)
                 .map(data -> new ResponseEntity<>(data, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -33,7 +34,7 @@ public class DriverController {
     public List<DriverModel> findAll() {
         return driverService.findAll();
     }
-    @GetMapping("/page")
+    @GetMapping("/paged")
     public ResponseEntity<Page<DriverModel>> findById(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -42,13 +43,13 @@ public class DriverController {
     }
 
     /** Retrieves drivers by status, as a list and paginated. */
-    @GetMapping("/findByStatus/{status}")
-    public ResponseEntity<List<DriverModel>> findByStatus(@RequestParam Boolean status){
+    @GetMapping("/findByStatus")
+    public ResponseEntity<List<DriverModel>> findByStatus(@RequestParam @NotNull Boolean status){
         List<DriverModel> dataModel = driverService.findByStatus(status);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
-    @GetMapping("/findByStatus-page/{status}")
-    public ResponseEntity<Page<DriverModel>> findByStatusPage(@RequestParam Boolean status,
+    @GetMapping("/findByStatus-page")
+    public ResponseEntity<Page<DriverModel>> findByStatusPage(@RequestParam @NotNull Boolean status,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
@@ -58,13 +59,13 @@ public class DriverController {
 
     /** Retrieves drivers by company, as a list and paginated. */
     @GetMapping("/findByCompany/{companyId}")
-    public ResponseEntity<List<DriverModel>> findByCompanyModelId(@PathVariable Long companyId){
+    public ResponseEntity<List<DriverModel>> findByCompanyModelId(@PathVariable @NotNull Long companyId){
         List<DriverModel> dataModel = driverService.findByCompanyModelId(companyId);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
     @GetMapping("/findByCompany-page/{companyId}")
-    public ResponseEntity<Page<DriverModel>> findByCompanyModelId(@PathVariable Long companyId,
+    public ResponseEntity<Page<DriverModel>> findByCompanyModelId(@PathVariable @NotNull Long companyId,
                                                                   @RequestParam(defaultValue = "0") int page,
                                                                   @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
@@ -74,14 +75,14 @@ public class DriverController {
 
     /** Retrieves drivers by company and status, as a list and paginated. */
     @GetMapping("/findByCompanyAndStatus/{companyId}")
-    public ResponseEntity<List<DriverModel>> findByCompanyModelIdAndStatus(@PathVariable Long companyId, @RequestParam Boolean status){
+    public ResponseEntity<List<DriverModel>> findByCompanyModelIdAndStatus(@PathVariable @NotNull Long companyId, @RequestParam Boolean status){
         List<DriverModel> dataModel = driverService.findByCompanyModelIdAndStatus(companyId, status);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
-    @GetMapping("/findByCompanyAndStatus-page/{companyId}")
-    public ResponseEntity<Page<DriverModel>> findByCompanyModelIdAndStatus(@PathVariable Long companyId,
-                                                                  @RequestParam Boolean status,
+    @GetMapping("/findByCompanyAndStatus-paged/{companyId}")
+    public ResponseEntity<Page<DriverModel>> findByCompanyModelIdAndStatus(@PathVariable @NotNull Long companyId,
+                                                                  @RequestParam @NotNull Boolean status,
                                                                   @RequestParam(defaultValue = "0") int page,
                                                                   @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
@@ -91,35 +92,45 @@ public class DriverController {
 
     /** More CRUD methods */
     @PostMapping
-    public ResponseEntity<DriverModel> save(@RequestBody @Valid DriverModel driverModel){
-        DriverModel dataModel = driverService.save(driverModel);
-        return new ResponseEntity<>(dataModel, HttpStatus.OK);
+    public ResponseEntity<?> save(@RequestBody @Valid DriverModel driverModel){
+        try {
+            DriverModel dataModel = driverService.save(driverModel);
+            return new ResponseEntity<>(dataModel, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**  Main data update */
     @PutMapping("/{driverId}")
-    public ResponseEntity<DriverModel> updateMainData(@PathVariable Long driverId, @RequestBody DriverModel driverModel){
-        DriverModel dataModel = driverService.updateMainData(driverId, driverModel);
-        return dataModel != null ?
-                new ResponseEntity<>(dataModel, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<DriverModel> updateMainData(@PathVariable @NotNull Long driverId, @RequestBody @Valid DriverModel driverModel){
+        try {
+            DriverModel dataModel = driverService.updateMainData(driverId, driverModel);
+            return new ResponseEntity<>(dataModel, HttpStatus.OK);
+        } catch (EntityNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /**  RFID update */
     @PutMapping("/update-RFID/{driverId}")
-    public ResponseEntity<DriverModel> updateRFID(@PathVariable Long driverId, @RequestBody String newRFId){
-        DriverModel dataModel = driverService.updateRFID(driverId, newRFId);
-        return dataModel != null ?
-                new ResponseEntity<>(dataModel, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<DriverModel> updateRFID(@PathVariable @NotNull Long driverId, @RequestBody @NotBlank String newRFId){
+        try {
+            DriverModel dataModel = driverService.updateRFID(driverId, newRFId);
+            return new ResponseEntity<>(dataModel, HttpStatus.OK);
+        } catch (EntityNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /**  status update */
     @PutMapping("/changeStatus/{driverId}")
-    public ResponseEntity<DriverModel> changeStatus(@PathVariable Long driverId){
-        DriverModel dataModel = driverService.changeStatus(driverId);
-        return dataModel != null ?
-                new ResponseEntity<>(dataModel, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<DriverModel> changeStatus(@PathVariable @NotNull Long driverId){
+        try {
+            DriverModel dataModel = driverService.changeStatus(driverId);
+            return new ResponseEntity<>(dataModel, HttpStatus.OK);
+        } catch (EntityNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

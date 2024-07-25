@@ -23,6 +23,11 @@ public class VehicleService {
     @Autowired
     private DriverRepository driverRepository;
 
+    private VehicleModel getVehicleById(Long vehicleId){
+        return vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+    }
+
     public Optional<VehicleModel> findById(Long id) {
         return vehicleRepository.findById(id);
     }
@@ -88,15 +93,12 @@ public class VehicleService {
 
     /**  Main data update */
     public VehicleModel updateMainData(Long vehicleId,@Valid VehicleModel vehicleModel){
-        return vehicleRepository.findById(vehicleId)
-                .map(existing -> {
-                    existing.setStatus(vehicleModel.getStatus());
-                    existing.setLicensePlate(vehicleModel.getLicensePlate());
-                    existing.setVehicletypeModel(vehicleModel.getVehicletypeModel());
-                    existing.setCompanyModel(vehicleModel.getCompanyModel());
-                    return vehicleRepository.save(existing);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setStatus(vehicleModel.getStatus());
+        existing.setLicensePlate(vehicleModel.getLicensePlate());
+        existing.setVehicletypeModel(vehicleModel.getVehicletypeModel());
+        existing.setCompanyModel(vehicleModel.getCompanyModel());
+        return vehicleRepository.save(existing);
     }
 
     /** Change vehicle driver */
@@ -104,66 +106,44 @@ public class VehicleService {
         DriverModel newDriver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));
 
-        if (newDriver == null) {
-            return null;
-        }
-
-        return vehicleRepository.findById(vehicleId)
-                .map(existing -> {
-                    existing.setDriverModel(newDriver);
-                    return vehicleRepository.save(existing);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setDriverModel(newDriver);
+        return vehicleRepository.save(existing);
     }
 
     /** Update vehicle location */
     public VehicleModel changeLocation(Long vehicleId,@Valid BigDecimal longitud, @Valid BigDecimal latitud){
-        return vehicleRepository.findById(vehicleId)
-                .map(existing -> {
-                    existing.setLongitud(longitud);
-                    existing.setLatitud(latitud);
-                    return vehicleRepository.save(existing);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setLongitud(longitud);
+        existing.setLatitud(latitud);
+        return vehicleRepository.save(existing);
     }
 
     /** Update vehicle alarm status */
     public VehicleModel alarmStatusUpdate(Long vehicleId,@Valid Boolean alarm){
-        return vehicleRepository.findById(vehicleId)
-                .map(existing -> {
-                    existing.setAlarmStatus(alarm);
-                    return vehicleRepository.save(existing);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setAlarmStatus(alarm);
+        return vehicleRepository.save(existing);
     }
 
     /** Update vehicle speed */
     public VehicleModel speedUpdate(Long vehicleId,@Valid Integer speed){
-        return vehicleRepository.findById(vehicleId)
-                .map(existing -> {
-                    existing.setSpeed(speed);
-                    return vehicleRepository.save(existing);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setSpeed(speed);
+        return vehicleRepository.save(existing);
     }
 
     /** Update vehicle time on */
     public VehicleModel timeOnUpdate(Long vehicleId, @Valid Long timeOn){
-        return vehicleRepository.findById(vehicleId)
-                .map(existing -> {
-                    existing.setTimeOn(timeOn);
-                    return vehicleRepository.save(existing);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setTimeOn(timeOn);
+        return vehicleRepository.save(existing);
     }
 
     /** Toggle vehicle status */
     public VehicleModel changeStatus(Long vehicleId){
-        return vehicleRepository.findById(vehicleId)
-                .map(existing -> {
-                    existing.setStatus(!existing.getStatus());
-                    return vehicleRepository.save(existing);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id" + vehicleId + " no found"));
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setStatus(!existing.getStatus());
+        return vehicleRepository.save(existing);
     }
 }

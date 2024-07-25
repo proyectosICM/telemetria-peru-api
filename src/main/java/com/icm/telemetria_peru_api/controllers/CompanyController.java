@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.models.CompanyModel;
 import com.icm.telemetria_peru_api.services.CompanyService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,7 @@ public class CompanyController {
     private CompanyService companyService;
 
     @GetMapping("/{companyId}")
-    public ResponseEntity<CompanyModel> findById(@PathVariable Long companyId) {
+    public ResponseEntity<CompanyModel> findById(@PathVariable @NotNull Long companyId) {
         return companyService.findById(companyId)
                 .map(company -> new ResponseEntity<>(company, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -42,13 +43,13 @@ public class CompanyController {
 
     /** Retrieves companies by status, as a list and paginated. */
     @GetMapping("/findByStatus")
-    public ResponseEntity<List<CompanyModel>> findByStatus(@RequestParam Boolean status){
+    public ResponseEntity<List<CompanyModel>> findByStatus(@RequestParam @NotNull Boolean status){
         List<CompanyModel> dataModel = companyService.findByStatus(status);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
     @GetMapping("/findByStatus-page")
-    public ResponseEntity<Page<CompanyModel>> findByStatusPage(@RequestParam Boolean status,
+    public ResponseEntity<Page<CompanyModel>> findByStatusPage(@RequestParam @NotNull Boolean status,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
@@ -64,7 +65,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{companyId}")
-    public ResponseEntity<?> update(@PathVariable Long companyId,@RequestBody @Valid CompanyModel companyModel){
+    public ResponseEntity<?> update(@PathVariable @NotNull Long companyId,@RequestBody @Valid CompanyModel companyModel){
         try {
             CompanyModel dataModel = companyService.update(companyId, companyModel);
             return new ResponseEntity<>(dataModel, HttpStatus.OK);
@@ -74,12 +75,18 @@ public class CompanyController {
     }
 
     @PutMapping("/changeStatus/{companyId}")
-    public ResponseEntity<?> changeStatus(@PathVariable Long companyId){
+    public ResponseEntity<?> changeStatus(@PathVariable @NotNull Long companyId){
         try {
             CompanyModel dataModel = companyService.changeStatus(companyId);
             return new ResponseEntity<>(dataModel, HttpStatus.OK);
         } catch (EntityNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @DeleteMapping("/{companyId}")
+    public ResponseEntity<?> delete(@PathVariable @NotNull Long companyId){
+        companyService.deleteById(companyId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

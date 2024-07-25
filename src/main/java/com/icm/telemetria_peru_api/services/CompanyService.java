@@ -59,4 +59,8 @@ public class CompanyService {
         existing.setStatus(!existing.getStatus());
         return companyRepository.save(existing);
     }
+
+    public void deleteById(Long companyId){
+        companyRepository.deleteById(companyId);
+    }
 }

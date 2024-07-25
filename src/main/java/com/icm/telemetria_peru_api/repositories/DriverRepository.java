@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public interface DriverRepository extends JpaRepository<DriverModel, Long> {
 
+    boolean existsByRfid(String rfid);
     /** Retrieves drivers by status, as a list and paginated. */
     List<DriverModel> findByStatus(Boolean status);
     Page<DriverModel> findByStatus(Boolean status, Pageable pageable);

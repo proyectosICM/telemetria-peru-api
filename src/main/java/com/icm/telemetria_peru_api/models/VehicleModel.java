@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Data
@@ -29,15 +29,14 @@ public class VehicleModel {
 
     @NotEmpty(message = "License plate is required")
     @Size(max = 20, message = "License plate must be less than 20 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9-_]{1,20}$")
     @Column(name = "licensePlate", nullable = false, length = 20)
     private String licensePlate;
 
     private Integer speed;
 
-    @Column(name = "alarm_status")
     private Boolean alarmStatus;
 
-    //@Column(name = "time_on")
     private Long timeOn;
 
     @Column(precision = 20, scale = 15)
@@ -50,20 +49,19 @@ public class VehicleModel {
     @JoinColumn(name = "driver", referencedColumnName ="id", nullable = true)
     private DriverModel driverModel;
 
-    @ManyToOne
-    @JoinColumn(name = "vehicleType", referencedColumnName = "id", nullable = false)
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id", nullable = false)
     private VehicletypeModel vehicletypeModel;
 
-    @ManyToOne
-    @JoinColumn(name = "comapanyId", referencedColumnName = "id", nullable = false)
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private CompanyModel companyModel;
 
-    @Column(name = "createdAt", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private ZonedDateTime createdAt = ZonedDateTime.now(ZoneId.of("America/Lima"));
+    private ZonedDateTime createdAt;
 
-    @Column(name = "updatedAt")
     @UpdateTimestamp
-    private ZonedDateTime updatedAt = ZonedDateTime.now(ZoneId.of("America/Lima"));
+    private ZonedDateTime updatedAt;
 
 }

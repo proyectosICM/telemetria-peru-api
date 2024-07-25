@@ -1,9 +1,9 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.models.DriverModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.services.VehicleService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,13 +16,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("api/vehicle")
 public class VehicleController {
     @Autowired
     private VehicleService vehicleService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<VehicleModel> findById(@PathVariable Long vehicleId) {
+    public ResponseEntity<VehicleModel> findById(@PathVariable @NotNull Long vehicleId) {
         return vehicleService.findById(vehicleId)
                 .map(data -> new ResponseEntity<>(data, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -33,7 +33,7 @@ public class VehicleController {
     public List<VehicleModel> findAll() {
         return vehicleService.findAll();
     }
-    @GetMapping("/page")
+    @GetMapping("/paged")
     public ResponseEntity<Page<VehicleModel>> findById(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -42,12 +42,12 @@ public class VehicleController {
     }
 
     /** Retrieves vehicles by status, as a list and paginated. */
-    @GetMapping("/findByStatus/{status}")
-    public List<VehicleModel> findByStatus(@RequestParam Boolean status) {
+    @GetMapping("/findByStatus")
+    public List<VehicleModel> findByStatus(@RequestParam @NotNull Boolean status) {
         return vehicleService.findByStatus(status);
     }
-    @GetMapping("/findByStatus-page/{status}")
-    public ResponseEntity<Page<VehicleModel>> findByStatus (@RequestParam Boolean status,
+    @GetMapping("/findByStatus-paged")
+    public ResponseEntity<Page<VehicleModel>> findByStatus (@RequestParam @NotNull Boolean status,
                                                             @RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -57,11 +57,11 @@ public class VehicleController {
 
     /** Retrieves vehicles by vehicleType, as a list and paginated. */
     @GetMapping("/findByVehicletype/{vehicletypeId}")
-    public List<VehicleModel> findByVehicletypeModelId(@PathVariable Long vehicletypeId) {
+    public List<VehicleModel> findByVehicletypeModelId(@PathVariable @NotNull Long vehicletypeId) {
         return vehicleService.findByVehicletypeModelId(vehicletypeId);
     }
-    @GetMapping("/findByVehicletype-page/{vehicletypeId}")
-    public ResponseEntity<Page<VehicleModel>> findByVehicletypeModelId (@PathVariable Long vehicletypeId,
+    @GetMapping("/findByVehicletype-paged/{vehicletypeId}")
+    public ResponseEntity<Page<VehicleModel>> findByVehicletypeModelId (@PathVariable @NotNull Long vehicletypeId,
                                                                         @RequestParam(defaultValue = "0") int page,
                                                                         @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -71,11 +71,11 @@ public class VehicleController {
 
     /** Retrieves vehicles by company, as a list and paginated. */
     @GetMapping("/findByCompanyId/{companyId}")
-    public List<VehicleModel> findByCompanyModelId(@PathVariable Long companyId) {
+    public List<VehicleModel> findByCompanyModelId(@PathVariable @NotNull Long companyId) {
         return vehicleService.findByCompanyModelId(companyId);
     }
     @GetMapping("/findByCompanyId-Page/{companyId}")
-    public ResponseEntity<Page<VehicleModel>> findByCompanyModelId (@PathVariable Long companyId,
+    public ResponseEntity<Page<VehicleModel>> findByCompanyModelId (@PathVariable @NotNull Long companyId,
                                                                         @RequestParam(defaultValue = "0") int page,
                                                                         @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -85,13 +85,13 @@ public class VehicleController {
 
     /** Retrieves vehicles by vehicleType and company, as a list and paginated. */
     @GetMapping("/findByVehicleTypeModelIdAndCompanyModelId")
-    public List<VehicleModel> findByVehicleTypeModelIdAndCompanyModelId(@RequestParam Long vehicleTypeId, @RequestParam Long companyId) {
+    public List<VehicleModel> findByVehicleTypeModelIdAndCompanyModelId(@RequestParam @NotNull Long vehicleTypeId, @RequestParam @NotNull Long companyId) {
         return vehicleService.findByVehicleTypeModelIdAndCompanyModelId(vehicleTypeId, companyId);
     }
     @GetMapping("/findByVehicleTypeModelIdAndCompanyModelId-page")
     public ResponseEntity<Page<VehicleModel>> findByVehicleTypeModelIdAndCompanyModelId (
-                                                                    @RequestParam Long vehicleTypeId,
-                                                                    @RequestParam Long companyId,
+                                                                    @RequestParam @NotNull Long vehicleTypeId,
+                                                                    @RequestParam @NotNull Long companyId,
                                                                     @RequestParam(defaultValue = "0") int page,
                                                                     @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -101,16 +101,16 @@ public class VehicleController {
 
     /** Retrieves vehicles by vehicleType and compan and status, as a list and paginated. */
     @GetMapping("/findByVehicleTypeIdAndCompanyId")
-    public List<VehicleModel> findByVehicleTypeModelIdAndCompanyModelIdAndStatus(@RequestParam Long vehicleTypeId,
-                                                                                 @RequestParam Long companyId,
-                                                                                 @RequestParam Boolean status) {
+    public List<VehicleModel> findByVehicleTypeModelIdAndCompanyModelIdAndStatus(@RequestParam @NotNull Long vehicleTypeId,
+                                                                                 @RequestParam @NotNull Long companyId,
+                                                                                 @RequestParam @NotNull Boolean status) {
         return vehicleService.findByVehicleTypeModelIdAndCompanyModelIdAndStatus(vehicleTypeId, companyId, status);
     }
     @GetMapping("/findByVehicleTypeIdAndCompanyId-page")
     public ResponseEntity<Page<VehicleModel>> findByVehicleTypeModelIdAndCompanyModelIdAndStatus (
-            @RequestParam Long vehicleTypeId,
-            @RequestParam Long companyId,
-            @RequestParam Boolean status,
+            @RequestParam @NotNull Long vehicleTypeId,
+            @RequestParam @NotNull Long companyId,
+            @RequestParam @NotNull Boolean status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -127,7 +127,7 @@ public class VehicleController {
 
     /**  Main data update */
     @PutMapping("/{vehicleId}")
-    public ResponseEntity<VehicleModel> update(@PathVariable Long vehicleId, @RequestBody VehicleModel vehicleModel){
+    public ResponseEntity<VehicleModel> update(@PathVariable @NotNull Long vehicleId, @RequestBody @Valid VehicleModel vehicleModel){
         VehicleModel dataModel = vehicleService.updateMainData(vehicleId, vehicleModel);
         return dataModel != null ?
                 new ResponseEntity<>(dataModel, HttpStatus.OK) :
@@ -135,8 +135,8 @@ public class VehicleController {
     }
 
     /** Change vehicle driver */
-    @PutMapping("/change-driver")
-    public ResponseEntity<VehicleModel> changeDriver(@RequestParam Long vehicleId, @RequestParam Long driverId){
+    @PutMapping("/change-driver/{vehicleId}")
+    public ResponseEntity<VehicleModel> changeDriver(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Long driverId){
         VehicleModel dataModel = vehicleService.changeDriver(vehicleId, driverId);
         return dataModel != null ?
                 new ResponseEntity<>(dataModel, HttpStatus.OK) :
@@ -144,38 +144,38 @@ public class VehicleController {
     }
 
     /** Update vehicle location */
-    @PutMapping("/update-location")
-    public ResponseEntity<VehicleModel> changeLocation(@PathVariable Long vehicleId,
-                                                       @RequestParam @Valid BigDecimal longitud,
-                                                       @RequestParam @Valid BigDecimal latitud){
+    @PutMapping("/update-location/{vehicleId}")
+    public ResponseEntity<VehicleModel> changeLocation(@PathVariable @NotNull Long vehicleId,
+                                                       @RequestParam @NotNull BigDecimal longitud,
+                                                       @RequestParam @NotNull BigDecimal latitud){
         VehicleModel dataModel = vehicleService.changeLocation(vehicleId, longitud, latitud);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
     /** Update vehicle alarm status */
-    @PutMapping("/update-alarm")
-    public ResponseEntity<VehicleModel> alarmStatusUpdate(@PathVariable Long vehicleId, @RequestParam @Valid Boolean alarm){
+    @PutMapping("/update-alarm/{vehicleId}")
+    public ResponseEntity<VehicleModel> alarmStatusUpdate(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Boolean alarm){
         VehicleModel dataModel = vehicleService.alarmStatusUpdate(vehicleId, alarm);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
     /** Update vehicle speed */
-    @PutMapping("/update-speed")
-    public ResponseEntity<VehicleModel> speedUpdate(@PathVariable Long vehicleId, @RequestParam @Valid Integer speed){
+    @PutMapping("/update-speed/{vehicleId}")
+    public ResponseEntity<VehicleModel> speedUpdate(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Integer speed){
         VehicleModel dataModel = vehicleService.speedUpdate(vehicleId, speed);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
     /** Update vehicle time on */
-    @PutMapping("/update-time-on")
-    public ResponseEntity<VehicleModel> timeOnUpdate(@PathVariable Long vehicleId, @RequestParam @Valid Long timeOn){
+    @PutMapping("/update-time-on/{vehicleId}")
+    public ResponseEntity<VehicleModel> timeOnUpdate(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Long timeOn){
         VehicleModel dataModel = vehicleService.timeOnUpdate(vehicleId, timeOn);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
     /** Toggle vehicle status */
-    @PatchMapping("/change-status")
-    public ResponseEntity<VehicleModel> changeStatus(@PathVariable Long vehicleId){
+    @PatchMapping("/change-status/{vehicleId}")
+    public ResponseEntity<VehicleModel> changeStatus(@PathVariable @NotNull Long vehicleId){
         VehicleModel dataModel = vehicleService.changeStatus(vehicleId);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }

@@ -1,31 +1,33 @@
 package com.icm.telemetria_peru_api.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "vehicleType")
-public class VehicletypeModel {
+@Table(name = "gas_changes")
+public class GasChangeModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "Name is required")
-    @Pattern(regexp = "^[a-zA-Z\\sÁÉÍÓÚáéíóúñÑ]{1,100}$", message = "Name must be less than 100 characters" )
-    @Column(nullable = false, length = 100)
-    private String name;
+    @Column(nullable = false)
+    private ZonedDateTime changeDateTime;
+
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
+    private VehicleModel vehicleModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -34,3 +36,4 @@ public class VehicletypeModel {
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
 }
+

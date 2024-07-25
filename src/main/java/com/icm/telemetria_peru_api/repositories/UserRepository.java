@@ -11,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserModel, Long> {
+    boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
 
     /** Retrieves users, as a list and paginated. */
     List<UserModel> findByStatus(Boolean status);

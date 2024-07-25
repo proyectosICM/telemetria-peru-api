@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Data
@@ -23,32 +23,33 @@ public class UserModel {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false)
     private Boolean status = true;
 
     @NotEmpty(message = "Username is required")
-    @Size(max = 50, message = "Username must be less than 50 characters")
-    @Column(name = "username", nullable = false, length = 50)
+    @Pattern(regexp = "^[a-zA-Z0-9-_]{1,50}$", message = "Username must be between 1 and 50 characters and can only contain letters, numbers, hyphens, and underscores")
+    @Column(nullable = false, length = 50, unique = true)
     private String username;
 
     @NotEmpty(message = "Password is required")
-    @Size(max = 100, message = "Password must be less than 100 characters")
-    @Column(name = "password", nullable = false, length = 100)
+    @Pattern(regexp = "^[a-zA-Z0-9-_*]{4,100}$", message = "Password must be between 4 and 100 characters and can only contain letters, numbers, hyphens, underscores, and asterisks")
+    @Column(nullable = false, length = 100)
     private String password;
 
     @NotEmpty(message = "Email is required")
     @Size(max = 100, message = "Email must be less than 100 characters")
-    @Column(nullable = false, length = 100)
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Email must be a valid email address")
+    @Column(nullable = false, length = 100, unique = true)
     private String email;
 
-    @ManyToOne
-    @JoinColumn(name = "company", referencedColumnName = "id", nullable = false)
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private CompanyModel companyModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private ZonedDateTime createdAt = ZonedDateTime.now(ZoneId.of("UTC"));;
+    private ZonedDateTime createdAt;
 
     @UpdateTimestamp
-    private ZonedDateTime updatedAt = ZonedDateTime.now(ZoneId.of("UTC"));;
+    private ZonedDateTime updatedAt;
 }

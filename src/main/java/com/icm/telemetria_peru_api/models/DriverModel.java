@@ -9,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Data
@@ -27,12 +26,12 @@ public class DriverModel {
     private Boolean status = true;
 
     @NotBlank(message = "Name is required")
-    @Pattern(regexp = "^[a-zA-Z\\s]{1,100}$", message = "Name must be less than 100 characters" )
+    @Pattern(regexp = "^[a-zA-Z\\sÁÉÍÓÚáéíóúñÑ]{1,100}$", message = "Name must be less than 100 characters" )
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     @NotBlank(message = "Last name is required")
-    @Pattern(regexp = "^[a-zA-Z\\s]{1,100}$", message = "Last name must be less than 100 characters")
+    @Pattern(regexp = "^[a-zA-Z\\sÁÉÍÓÚáéíóúñÑ]{1,100}$", message = "Last name must be less than 100 characters")
     @Column(name = "lastName", nullable = false, length = 100)
     private String lastName;
 
@@ -54,19 +53,19 @@ public class DriverModel {
     private String driverPhoneNumber;
 
     @NotNull(message = "Company associated is required")
-    @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "companyId", referencedColumnName = "id", nullable = false)
+    @ManyToOne(cascade =  CascadeType.REMOVE)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private CompanyModel companyModel;
 
     @NotBlank(message = "RFID number is required")
     @Pattern(regexp = "^[0-9]{1,50}$", message = "RFID must be a numeric value with up to 50 digits")
-    @Column(name = "rfid", length = 50)
+    @Column(name = "rfid", length = 50, unique = true)
     private String rfid;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private ZonedDateTime createdAt = ZonedDateTime.now(ZoneId.of("UTC"));;
+    private ZonedDateTime createdAt;
 
     @UpdateTimestamp
-    private ZonedDateTime updatedAt = ZonedDateTime.now(ZoneId.of("UTC"));;
+    private ZonedDateTime updatedAt;
 }
