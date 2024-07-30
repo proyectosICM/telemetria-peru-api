@@ -16,12 +16,12 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/vehicle")
+@RequestMapping("api/vehicles")
 public class VehicleController {
     @Autowired
     private VehicleService vehicleService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{vehicleId}")
     public ResponseEntity<VehicleModel> findById(@PathVariable @NotNull Long vehicleId) {
         return vehicleService.findById(vehicleId)
                 .map(data -> new ResponseEntity<>(data, HttpStatus.OK))
