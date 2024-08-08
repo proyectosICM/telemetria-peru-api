@@ -37,6 +37,10 @@ public class VehicleModel {
 
     private Boolean alarmStatus;
 
+    private Boolean engineStatus;
+
+    private Boolean lockStatus;
+
     private Long timeOn;
 
     @Column(precision = 20, scale = 15)

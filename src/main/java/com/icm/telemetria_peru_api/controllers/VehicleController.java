@@ -159,6 +159,20 @@ public class VehicleController {
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
+    /** Update vehicle engine status */
+    @PutMapping("/update-engine/{vehicleId}")
+    public ResponseEntity<VehicleModel> engineStatusUpdate(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Boolean engine) {
+        VehicleModel dataModel = vehicleService.engineStatusUpdate(vehicleId, engine);
+        return new ResponseEntity<>(dataModel, HttpStatus.OK);
+    }
+
+    /** Update vehicle lock status */
+    @PutMapping("/update-lock/{vehicleId}")
+    public ResponseEntity<VehicleModel> speedUpdate(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Boolean lock){
+        VehicleModel dataModel = vehicleService.lockUpdate(vehicleId, lock);
+        return new ResponseEntity<>(dataModel, HttpStatus.OK);
+    }
+
     /** Update vehicle speed */
     @PutMapping("/update-speed/{vehicleId}")
     public ResponseEntity<VehicleModel> speedUpdate(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Integer speed){

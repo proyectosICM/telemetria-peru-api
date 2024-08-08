@@ -126,6 +126,20 @@ public class VehicleService {
         return vehicleRepository.save(existing);
     }
 
+    /** Update vehicle engine status */
+    public VehicleModel engineStatusUpdate(Long vehicleId,@Valid Boolean engine){
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setEngineStatus(engine);
+        return vehicleRepository.save(existing);
+    }
+
+    /** Update vehicle lock status */
+    public VehicleModel lockUpdate(Long vehicleId,@Valid Boolean lock){
+        VehicleModel existing = getVehicleById(vehicleId);
+        existing.setLockStatus(lock);
+        return vehicleRepository.save(existing);
+    }
+
     /** Update vehicle speed */
     public VehicleModel speedUpdate(Long vehicleId,@Valid Integer speed){
         VehicleModel existing = getVehicleById(vehicleId);
