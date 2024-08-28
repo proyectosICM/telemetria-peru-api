@@ -15,37 +15,24 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MqttSubscriber {
-/*
-    @Autowired
-    private TireSensorService tireSensorService;
     @Autowired
     private IMqttClient mqttClient;
 
-
-    public void subscribeToTopic(String topic) {
+    public void subscribeToTopic(String vehicleId) {
+        String topic = "tmp_remoteOptions/" + vehicleId;
         try {
-
             mqttClient.subscribe(topic, new IMqttMessageListener() {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
-
                     String payload = new String(message.getPayload());
                     System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
 
-
-                    ObjectMapper objectMapper = new ObjectMapper();
-
-                    try {
-                        System.out.println("ds");
-                    } catch (JsonProcessingException e) {
-
-                        System.err.println("Error al deserializar el JSON: " + e.getMessage());
-                    }
+                    // Procesa el payload aquí sin intentar deserializar
+                    System.out.println("Payload: " + payload);
                 }
             });
         } catch (MqttException e) {
-
             e.printStackTrace();
         }
-    }*/
+    }
 }

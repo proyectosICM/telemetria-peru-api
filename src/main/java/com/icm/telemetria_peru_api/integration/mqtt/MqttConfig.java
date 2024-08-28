@@ -18,20 +18,12 @@ public class MqttConfig {
     @Value("${mqtt.serverUri}")
     private String serverUri;
 
-    @Value("${mqtt.topic}")
-    private String topic;
-
     @Bean
     public MqttClient mqttClient() throws MqttException {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setServerURIs(new String[]{serverUri});
-
         MqttClient client = new MqttClient(serverUri, MqttClient.generateClientId(), new MemoryPersistence());
-        try {
-            client.connect(options);
-        } catch (MqttException e) {
-            throw e;
-        }
+        client.connect(options);
         return client;
     }
 
@@ -45,10 +37,10 @@ public class MqttConfig {
     }
 
     @Bean
-    public MessageHandler mqttOutbound() {
+    public MqttPahoMessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(MqttClient.generateClientId(), mqttClientFactory());
-        messageHandler.setAsync(true);
-        messageHandler.setDefaultTopic(topic);
+        messageHandler.setAsync(true); // Si quieres asincronía
+        messageHandler.setDefaultTopic("defaultTopic"); // Configura el tema predeterminado
         return messageHandler;
     }
 }

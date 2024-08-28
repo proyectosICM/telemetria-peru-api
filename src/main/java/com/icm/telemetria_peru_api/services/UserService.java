@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,9 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private UserModel getUserById(Long userId){
         return userRepository.findById(userId)
@@ -70,6 +74,7 @@ public class UserService {
     /** More CRUD methods */
     public UserModel save(UserModel userModel) {
         validateUser(userModel);
+        userModel.setPassword(passwordEncoder.encode(userModel.getPassword()));  // Encriptar la contraseña
         return userRepository.save(userModel);
     }
 
@@ -86,14 +91,14 @@ public class UserService {
 
         existing.setEmail(userModel.getEmail());
         existing.setUsername(userModel.getUsername());
-        existing.setPassword(userModel.getPassword());
+        existing.setPassword(passwordEncoder.encode(userModel.getPassword()));
         return userRepository.save(existing);
     }
 
     /** Update password */
-    public UserModel updatePassword(Long userId,UserModel userModel){
+    public UserModel updatePassword(Long userId, UserModel userModel){
         UserModel existing = getUserById(userId);
-        existing.setPassword(userModel.getPassword());
+        existing.setPassword(passwordEncoder.encode(userModel.getPassword()));  // Encriptar la nueva contraseña
         return userRepository.save(existing);
     }
 

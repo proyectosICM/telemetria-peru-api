@@ -9,6 +9,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
+import org.springframework.integration.mqtt.support.MqttHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +22,9 @@ import java.util.Optional;
 public class VehicleService {
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private MqttPahoMessageHandler mqttOutbound;
 
     @Autowired
     private DriverRepository driverRepository;
@@ -120,24 +126,46 @@ public class VehicleService {
     }
 
     /** Update vehicle alarm status */
-    public VehicleModel alarmStatusUpdate(Long vehicleId,@Valid Boolean alarm){
+    public VehicleModel alarmStatusUpdate(Long vehicleId, @Valid Boolean alarm) {
         VehicleModel existing = getVehicleById(vehicleId);
         existing.setAlarmStatus(alarm);
-        return vehicleRepository.save(existing);
+        vehicleRepository.save(existing);
+
+        // Publicar el estado de la alarma en un tema específico
+        String topic = "tmp_remoteOptions";
+        String payload = "alarm:" + alarm;
+
+        mqttOutbound.handleMessage(MessageBuilder.withPayload(payload).setHeader(MqttHeaders.TOPIC, topic).build());
+
+        return existing;
     }
 
     /** Update vehicle engine status */
     public VehicleModel engineStatusUpdate(Long vehicleId,@Valid Boolean engine){
         VehicleModel existing = getVehicleById(vehicleId);
         existing.setEngineStatus(engine);
-        return vehicleRepository.save(existing);
+        vehicleRepository.save(existing);
+
+        // Publicar el estado de la alarma en un tema específico
+        String topic = "tmp_remoteOptions";
+        String payload = "engine:" + engine;
+
+        mqttOutbound.handleMessage(MessageBuilder.withPayload(payload).setHeader(MqttHeaders.TOPIC, topic).build());
+        return existing;
     }
 
     /** Update vehicle lock status */
     public VehicleModel lockUpdate(Long vehicleId,@Valid Boolean lock){
         VehicleModel existing = getVehicleById(vehicleId);
         existing.setLockStatus(lock);
-        return vehicleRepository.save(existing);
+        vehicleRepository.save(existing);
+
+        // Publicar el estado de la alarma en un tema específico
+        String topic = "tmp_remoteOptions";
+        String payload = "lock:" + lock;
+
+        mqttOutbound.handleMessage(MessageBuilder.withPayload(payload).setHeader(MqttHeaders.TOPIC, topic).build());
+        return existing;
     }
 
     /** Update vehicle speed */

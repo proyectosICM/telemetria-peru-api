@@ -32,8 +32,7 @@ public class UserModel {
     private String username;
 
     @NotEmpty(message = "Password is required")
-    @Pattern(regexp = "^[a-zA-Z0-9-_*]{4,100}$", message = "Password must be between 4 and 100 characters and can only contain letters, numbers, hyphens, underscores, and asterisks")
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String password;
 
     @NotEmpty(message = "Email is required")
@@ -41,6 +40,10 @@ public class UserModel {
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Email must be a valid email address")
     @Column(nullable = false, length = 100, unique = true)
     private String email;
+
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
+    private RoleModel roleModel;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
