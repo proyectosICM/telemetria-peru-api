@@ -29,23 +29,22 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Import(WebConfig.class)
 public class WebSecurityConfig {
     @Autowired
-    JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;
 
     @Autowired
-    SecurityUserDetailsServiceImpl securityUserDetailsService;
+    private SecurityUserDetailsServiceImpl securityUserDetailsService;
 
     @Autowired
-    JwtAuthorizationFilter authorizationFilter;
+    private JwtAuthorizationFilter authorizationFilter;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost", "http://192.168.1.232", "http://192.168.1.232:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
@@ -57,25 +56,26 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager) throws Exception {
 
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
         jwtAuthenticationFilter.setFilterProcessesUrl("/login");
 
         HeaderWriter headerWriter = new StaticHeadersWriter("Access-Control-Allow-Origin", "*");
-
+        //  .headers(headers -> headers.addHeaderWriter(headerWriter))  // Agregar el encabezado Access-Control-Allow-Origin
         return httpSecurity
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
+                .cors()
+                .and()
+                .csrf(config -> config.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilter(jwtAuthenticationFilter)
                 .headers(headers -> headers.addHeaderWriter(headerWriter))  // Agregar el encabezado Access-Control-Allow-Origin
-                .httpBasic(AbstractHttpConfigurer::disable)  // Deshabilitar la autenticación básica
-                .formLogin(AbstractHttpConfigurer::disable)  // Deshabilitar el formulario de inicio de sesión
-                .logout(AbstractHttpConfigurer::disable)  // Deshabilitar la funcionalidad de logout
-                .exceptionHandling(AbstractHttpConfigurer::disable)
+                .httpBasic().disable()
+                .formLogin().disable()
+                .logout().disable()
+                .exceptionHandling().disable()
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/hello").permitAll();
                     auth.requestMatchers("/api/role").permitAll();

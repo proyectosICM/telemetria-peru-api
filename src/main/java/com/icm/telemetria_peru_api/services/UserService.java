@@ -39,6 +39,10 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+    public Optional<UserModel> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     /** Retrieves users, as a list and paginated. */
     public List<UserModel> findAll(){
         return userRepository.findAll();

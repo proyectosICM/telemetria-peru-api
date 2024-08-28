@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/users")
@@ -27,6 +28,14 @@ public class UserController {
         return userService.findById(userId)
                 .map(company -> new ResponseEntity<>(company, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/info/{username}")
+    public ResponseEntity<UserModel> findByUsername(@PathVariable("username") String username){
+        Optional<UserModel> user = userService.findByUsername(username);
+
+        return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /** Lists and paginated findByStatus **/
