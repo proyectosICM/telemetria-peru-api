@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.integration.websocket;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -8,9 +9,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MyWebSocketHandler extends TextWebSocketHandler {
+public class WebSocketHandler extends TextWebSocketHandler {
 
     private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
+
+    @Autowired
+    private WebSocketService webSocketService;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -22,6 +26,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         System.out.println("Mensaje recibido (s): " + message.getPayload());
 
+        // Procesar el mensaje
+        webSocketService.processMessage(message.getPayload());
         // Reenvía el mensaje a todos los clientes conectados
         for (WebSocketSession s : sessions) {
             if (s.isOpen()) {
