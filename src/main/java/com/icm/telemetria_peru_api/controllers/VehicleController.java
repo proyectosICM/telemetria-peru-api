@@ -193,4 +193,10 @@ public class VehicleController {
         VehicleModel dataModel = vehicleService.changeStatus(vehicleId);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{vehicleId}")
+    public ResponseEntity<?> delete(@PathVariable @NotNull Long vehicleId){
+        vehicleService.deleteById(vehicleId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

@@ -188,4 +188,8 @@ public class VehicleService {
         existing.setStatus(!existing.getStatus());
         return vehicleRepository.save(existing);
     }
+
+    public void deleteById(Long vehicleId){
+        vehicleRepository.deleteById(vehicleId);
+    }
 }
