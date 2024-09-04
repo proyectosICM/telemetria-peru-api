@@ -13,15 +13,14 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "gas_records")
-public class GasRecordModel {
+@Table(name = "impact_incident_logging")
+public class ImpactIncidentLoggingModel {
     @Id
     @Column(unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Double pressure;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)

@@ -1,6 +1,8 @@
 package com.icm.telemetria_peru_api.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,15 +15,18 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "gas_records")
-public class GasRecordModel {
+@Table(name = "battery")
+public class BatteryModel {
     @Id
-    @Column(unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(nullable = false)
-    private Double pressure;
+    @NotBlank(message = "Name is required")
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    private Double voltaje;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)

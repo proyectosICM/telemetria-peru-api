@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.config.WebConfig;
 import com.icm.telemetria_peru_api.security.filtrers.JwtAuthenticationFilter;
 import com.icm.telemetria_peru_api.security.filtrers.JwtAuthorizationFilter;
 import com.icm.telemetria_peru_api.security.jwt.JwtUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,7 +76,6 @@ public class WebSecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable()
-                .exceptionHandling().disable()
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/hello").permitAll();
                     auth.requestMatchers("/api/role").permitAll();

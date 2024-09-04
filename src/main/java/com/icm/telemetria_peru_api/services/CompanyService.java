@@ -17,24 +17,17 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
-    private CompanyModel getCompanyById(Long companyId) {
-        return companyRepository.findById(companyId)
-                .orElseThrow(() -> new EntityNotFoundException("Company with id " + companyId + " not found"));
-    }
-
-    public Optional<CompanyModel> findById(Long companyId){
-        return companyRepository.findById(companyId);
-    }
-
-    /** Retrieves companies, as a list and paginated. */
     public List<CompanyModel> findAll(){
         return companyRepository.findAll();
     }
     public Page<CompanyModel> findAll(Pageable pageable){
         return companyRepository.findAll(pageable);
     }
+    public CompanyModel findById(Long id){
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
+    }
 
-    /** Retrieves companies by status, as a list and paginated. */
     public List<CompanyModel> findByStatus(Boolean status){
         return companyRepository.findByStatus(status);
     }
@@ -49,13 +42,13 @@ public class CompanyService {
     }
 
     public CompanyModel update(Long companyId, @Valid CompanyModel companyModel) {
-        CompanyModel existing = getCompanyById(companyId);
+        CompanyModel existing = findById(companyId);
         existing.setName(companyModel.getName());
         return companyRepository.save(existing);
     }
 
     public CompanyModel changeStatus(Long companyId) {
-        CompanyModel existing = getCompanyById(companyId);
+        CompanyModel existing = findById(companyId);
         existing.setStatus(!existing.getStatus());
         return companyRepository.save(existing);
     }

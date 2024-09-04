@@ -13,19 +13,19 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "gas_records")
-public class GasRecordModel {
+@Table(name = "battery-records")
+public class BatteryRecordModel {
     @Id
     @Column(unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private Double pressure;
+    private Double voltaje;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
-    private VehicleModel vehicleModel;
+    @JoinColumn(name = "battery_id", referencedColumnName = "id", nullable = false)
+    private BatteryModel batteryModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
