@@ -17,7 +17,7 @@ public interface TireSensorRepository extends JpaRepository<TireSensorModel, Lon
     List<TireSensorModel> findByVehicleModelId(Long vehicle);
     Page<TireSensorModel> findByVehicleModelId(Long vehicle, Pageable pageable);
     List<TireSensorModel> findByStatus(Boolean status);
-    Page<TireSensorModel> finbdByStatus(Boolean status, Pageable pageable);
+    Page<TireSensorModel> findByStatus(Boolean status, Pageable pageable);
 
     List<TireSensorModel> findByVehicleModelIdAndStatus(Long vehicleId, Boolean status);
 

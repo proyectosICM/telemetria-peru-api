@@ -53,7 +53,7 @@ public class TireSensorService {
     }
 
     public Page<TireSensorModel> findByStatus(Boolean status, Pageable pageable) {
-        return tireSensorRepository.finbdByStatus(status, pageable);
+        return tireSensorRepository.findByStatus(status, pageable);
     }
 
     public List<TireSensorModel> findByVehicleModelIdAndStatus(Long vehicleId, Boolean status) {
@@ -79,7 +79,7 @@ public class TireSensorService {
         existing.setStatus(tireSensorModel.getStatus());
         existing.setVehicleModel(tireSensorModel.getVehicleModel());
         existing.setCompanyModel(tireSensorModel.getCompanyModel());
-        existing.setPositioning(tireSensorModel.getPositioning());
+        existing.setPositioningModel(tireSensorModel.getPositioningModel());
 
         // Guardar el registro actualizado en la base de datos
         return tireSensorRepository.save(existing);

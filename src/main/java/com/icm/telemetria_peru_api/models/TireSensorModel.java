@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -53,7 +52,7 @@ import java.time.ZonedDateTime;
 
     @ManyToOne
     @JoinColumn(name = "positioning", nullable = true)
-    private PositioningModel positioning;
+    private PositioningModel positioningModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

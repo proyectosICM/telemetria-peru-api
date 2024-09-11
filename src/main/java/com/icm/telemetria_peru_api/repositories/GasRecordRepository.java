@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.models.GasRecordModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

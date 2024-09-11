@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.models.ImpactIncidentLoggingModel;
 import com.icm.telemetria_peru_api.models.RoleModel;
 import com.icm.telemetria_peru_api.models.TireSensorModel;
@@ -101,28 +102,37 @@ public class TireSensorController {
         }
     }
 
-    @GetMapping("/findByVehicleModelId")
+    @GetMapping("/findByStatus/{status}")
     public ResponseEntity<?> findByStatus(@RequestParam Boolean status) {
         try {
-            List<TireSensorModel> data = tireSensorService.findByCompanyModelId(status);
+            List<TireSensorModel> data = tireSensorService.findByStatus(status);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/findByVehicleModelId-page/{status}")
+    @GetMapping("/findByStatus-page/{status}")
     public ResponseEntity<?> findByStatusPage(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size,
                                           @PathVariable Boolean status) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<TireSensorModel> data = tireSensorService.findByCompanyModelId(status, pageable);
+            Page<TireSensorModel> data = tireSensorService.findByStatus(status, pageable);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @PostMapping
+    public ResponseEntity<?> save(@RequestBody TireSensorModel tireSensorModel){
+        try {
+            TireSensorModel data = tireSensorService.save(tireSensorModel);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
