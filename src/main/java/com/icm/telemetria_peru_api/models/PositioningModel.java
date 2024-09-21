@@ -32,7 +32,7 @@ public class PositioningModel {
 
     @ManyToOne
     @JoinColumn(name = "type", nullable = false)
-    private VehicletypeModel vehicleTypeModel;
+    private VehicleTypeModel vehicleTypeModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

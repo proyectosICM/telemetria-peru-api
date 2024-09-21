@@ -1,7 +1,7 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.models.VehicletypeModel;
-import com.icm.telemetria_peru_api.services.VehicletypeService;
+import com.icm.telemetria_peru_api.models.VehicleTypeModel;
+import com.icm.telemetria_peru_api.services.VehicleTypeService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -18,44 +18,44 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/vehicle-type")
-public class VehicletypeController {
+public class VehicleTypeController {
     @Autowired
-    private VehicletypeService vehicletypeService;
+    private VehicleTypeService vehicletypeService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<VehicletypeModel> getVehicletypeById(@PathVariable @NotNull Long id) {
-        Optional<VehicletypeModel> vehicletype = vehicletypeService.findById(id);
+    public ResponseEntity<VehicleTypeModel> getVehicletypeById(@PathVariable @NotNull Long id) {
+        Optional<VehicleTypeModel> vehicletype = vehicletypeService.findById(id);
         return vehicletype
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @GetMapping
-    public ResponseEntity<List<VehicletypeModel>> getAllVehicletypes() {
-        List<VehicletypeModel> vehicletypes = vehicletypeService.findAll();
+    public ResponseEntity<List<VehicleTypeModel>> getAllVehicletypes() {
+        List<VehicleTypeModel> vehicletypes = vehicletypeService.findAll();
         return ResponseEntity.ok(vehicletypes);
     }
 
     @GetMapping("/paged")
-    public ResponseEntity<Page<VehicletypeModel>> getAllVehicletypes(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<VehicleTypeModel>> getAllVehicletypes(@RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<VehicletypeModel> vehicletypes = vehicletypeService.findAll(pageable);
+        Page<VehicleTypeModel> vehicletypes = vehicletypeService.findAll(pageable);
         return ResponseEntity.ok(vehicletypes);
     }
 
     @PostMapping
-    public ResponseEntity<VehicletypeModel> createVehicletype(@RequestBody @Valid VehicletypeModel vehicletypeModel) {
-        VehicletypeModel createdVehicletype = vehicletypeService.save(vehicletypeModel);
+    public ResponseEntity<VehicleTypeModel> createVehicletype(@RequestBody @Valid VehicleTypeModel vehicletypeModel) {
+        VehicleTypeModel createdVehicletype = vehicletypeService.save(vehicletypeModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVehicletype);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VehicletypeModel> updateVehicletype(
+    public ResponseEntity<VehicleTypeModel> updateVehicletype(
             @PathVariable @NotNull Long id,
-            @RequestBody @Valid VehicletypeModel vehicletypeModel) {
+            @RequestBody @Valid VehicleTypeModel vehicletypeModel) {
         try {
-            VehicletypeModel updatedVehicletype = vehicletypeService.update(id, vehicletypeModel);
+            VehicleTypeModel updatedVehicletype = vehicletypeService.update(id, vehicletypeModel);
             return ResponseEntity.ok(updatedVehicletype);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

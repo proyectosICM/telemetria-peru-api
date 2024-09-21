@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.models;
 
+import com.icm.telemetria_peru_api.embedded.GasRange;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -55,7 +56,7 @@ public class VehicleModel {
 
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id", nullable = false)
-    private VehicletypeModel vehicletypeModel;
+    private VehicleTypeModel vehicletypeModel;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
