@@ -80,7 +80,7 @@ public class WebSecurityConfig {
                     auth.requestMatchers("/hello").permitAll();
                     auth.requestMatchers("/api/role").permitAll();
                     auth.requestMatchers("/api/users").permitAll();
-                    auth.requestMatchers("/api/companies");
+                    auth.requestMatchers("/api/companies").permitAll();
                            // .hasRole("ADMINISTRATOR");
                     auth.requestMatchers("/api/example").permitAll();
                     auth.requestMatchers("/unprotected").permitAll();
