@@ -45,7 +45,7 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://telemetriaperu.com:3010"));
+        configuration.setAllowedOrigins(Arrays.asList("http://telemetriaperu.com:3010", "http://localhost:3000", "http://192.168.1.232:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
@@ -63,7 +63,7 @@ public class WebSecurityConfig {
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
         jwtAuthenticationFilter.setFilterProcessesUrl("/login");
 
-        HeaderWriter headerWriter = new StaticHeadersWriter("Access-Control-Allow-Origin", "http://telemetriaperu.com:3010");
+        HeaderWriter headerWriter = new StaticHeadersWriter("Access-Control-Allow-Origin", "http://telemetriaperu.com:3010", "http://localhost:3000", "http://192.168.1.232:3000");
         //  .headers(headers -> headers.addHeaderWriter(headerWriter))  // Agregar el encabezado Access-Control-Allow-Origin
         return httpSecurity
                 .cors()
