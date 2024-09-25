@@ -25,7 +25,7 @@ public class BatteryController {
         return batteryService.findAll();
     }
 
-    @GetMapping("/page")
+    @GetMapping("/paged")
     public Page<BatteryModel> findAll(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
