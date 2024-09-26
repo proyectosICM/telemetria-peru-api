@@ -81,6 +81,7 @@ public class WebSecurityConfig {
                     auth.requestMatchers("/api/role").permitAll();
                     auth.requestMatchers("/api/users").permitAll();
                     auth.requestMatchers("/api/companies").permitAll();
+                    auth.requestMatchers("/api/checklist-records").permitAll();
                            // .hasRole("ADMINISTRATOR");
                     auth.requestMatchers("/api/example").permitAll();
                     auth.requestMatchers("/unprotected").permitAll();

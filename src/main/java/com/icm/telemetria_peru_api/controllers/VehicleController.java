@@ -173,13 +173,6 @@ public class VehicleController {
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
-    /** Update vehicle speed */
-    @PutMapping("/update-speed/{vehicleId}")
-    public ResponseEntity<VehicleModel> speedUpdate(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Integer speed){
-        VehicleModel dataModel = vehicleService.speedUpdate(vehicleId, speed);
-        return new ResponseEntity<>(dataModel, HttpStatus.OK);
-    }
-
     /** Update vehicle time on */
     @PutMapping("/update-time-on/{vehicleId}")
     public ResponseEntity<VehicleModel> timeOnUpdate(@PathVariable @NotNull Long vehicleId, @RequestParam @NotNull Long timeOn){

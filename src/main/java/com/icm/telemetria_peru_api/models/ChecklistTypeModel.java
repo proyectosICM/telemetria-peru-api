@@ -13,28 +13,14 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "checklist-record")
-public class ChecklistRecordModel {
+@Table(name = "checklist-type")
+public class ChecklistTypeModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
 
     private String name;
-
-    private String fileName;
-
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
-    private VehicleModel vehicleModel;
-
-    @ManyToOne
-    @JoinColumn(name = "checklist_type", referencedColumnName = "id", nullable = false)
-    private ChecklistTypeModel checklistTypeModel;
-
-    @ManyToOne
-    @JoinColumn(name = "company", referencedColumnName = "id", nullable = false)
-    private CompanyModel companyModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

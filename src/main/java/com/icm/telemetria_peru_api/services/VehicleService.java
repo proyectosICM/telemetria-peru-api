@@ -168,13 +168,6 @@ public class VehicleService {
         return existing;
     }
 
-    /** Update vehicle speed */
-    public VehicleModel speedUpdate(Long vehicleId,@Valid Integer speed){
-        VehicleModel existing = getVehicleById(vehicleId);
-        existing.setSpeed(speed);
-        return vehicleRepository.save(existing);
-    }
-
     /** Update vehicle time on */
     public VehicleModel timeOnUpdate(Long vehicleId, @Valid Long timeOn){
         VehicleModel existing = getVehicleById(vehicleId);

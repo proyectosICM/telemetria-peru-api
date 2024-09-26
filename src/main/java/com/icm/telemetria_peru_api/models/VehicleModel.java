@@ -34,8 +34,6 @@ public class VehicleModel {
     @Column(name = "licensePlate", nullable = false, length = 20)
     private String licensePlate;
 
-    private Integer speed;
-
     private Boolean alarmStatus;
 
     private Boolean engineStatus;
