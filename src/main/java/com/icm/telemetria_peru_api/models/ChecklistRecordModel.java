@@ -25,6 +25,10 @@ public class ChecklistRecordModel {
     private String fileName;
 
     @ManyToOne
+    @JoinColumn(name = "driver_id", referencedColumnName = "id")
+    private DriverModel driverModel;
+
+    @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
     private VehicleModel vehicleModel;
 
