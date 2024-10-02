@@ -1,7 +1,6 @@
 package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.models.ChecklistRecordModel;
-import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.models.ImagesCLModel;
 import com.icm.telemetria_peru_api.repositories.ImagesCLRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,13 +12,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ImagesCLService {
+
+    public final ImagesCLRepository imagesCLRepository;
+
     @Autowired
-    private ImagesCLRepository imagesCLRepository;
+    public ImagesCLService(ImagesCLRepository imagesCLRepository) {
+        this.imagesCLRepository = imagesCLRepository;
+    }
 
     @Value("${file.image}")
     private String fileImagen;
@@ -47,13 +55,19 @@ public class ImagesCLService {
 
 
     // Guardar imagen con el registro asociado
-    public ImagesCLModel save(MultipartFile file, Long clId) {
+    public ImagesCLModel save(MultipartFile file, Long clId) throws IOException {
+        // Obtener el nombre original del archivo
         String originalFilename = file.getOriginalFilename();
+
+        // Verificar que el nombre no sea nulo o vacío
         if (originalFilename == null || originalFilename.isEmpty()) {
             throw new IllegalArgumentException("Invalid file name");
         }
 
+        // Extraer la extensión del archivo
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        // Definir la ruta base donde se almacenarán las imágenes
         String basePath = fileImagen + "/";
 
         // Crear directorio si no existe
@@ -62,20 +76,39 @@ public class ImagesCLService {
             baseDirectory.mkdirs();
         }
 
-        // Generar un nombre de archivo único
+        // Generar un nombre de archivo único usando UUID
         String randomFileName = UUID.randomUUID().toString();
 
-        // Construir la ruta completa del archivo con el nombre aleatorio
+        // Crear la ruta completa del archivo
         String filePath = basePath + randomFileName + fileExtension;
         File newFile = new File(filePath);
 
-        // Manejar colisión de nombres (aunque UUID es casi único)
+        // Manejar la posible colisión de nombres, aunque sea muy raro con UUID
+        int i = 1;
         while (newFile.exists()) {
             randomFileName = UUID.randomUUID().toString();
             filePath = basePath + randomFileName + fileExtension;
             newFile = new File(filePath);
+            i++;
         }
 
+        // Guardar la imagen en la ruta generada
+        Path path = Paths.get(filePath);
+        Files.write(path, file.getBytes());
+
+        // Crear una instancia del modelo relacionado con la imagen (ImagesCLModel)
+        ImagesCLModel imagesCLModel = new ImagesCLModel();
+        ChecklistRecordModel cl = new ChecklistRecordModel();
+        cl.setId(clId); // Asociar el ID del checklist
+
+        // Establecer el nombre del archivo en el modelo (sin la ruta completa, solo el nombre y extensión)
+        imagesCLModel.setUrlImage(randomFileName + fileExtension);
+        imagesCLModel.setChecklistRecordModel(cl); // Asociar la imagen al checklist
+
+
+        return imagesCLRepository.save(imagesCLModel);
+    }
+/*
         try {
             // Guardar archivo en el sistema
             file.transferTo(newFile);
@@ -83,18 +116,15 @@ public class ImagesCLService {
             ChecklistRecordModel cl = new ChecklistRecordModel();
             cl.setId(clId);
             // Establecer la ruta completa del archivo en el objeto de modelo
-            System.out.println("ppp" + filePath);
-            imagesCLModel.setUrlImage(filePath); // Aquí se guarda la ruta completa de la imagen.
+            imagesCLModel.setUrlImage(randomFileName + fileExtension); // Aquí se guarda la ruta completa de la imagen.
             imagesCLModel.setChecklistRecordModel(cl);
             // Guardar el objeto ImagesCLModel en la base de datos
             return imagesCLRepository.save(imagesCLModel);
-            //System.out.println("S" + clId );
-            //return "dd";
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar la imagen: " + e.getMessage(), e);
         }
-    }
 
+        */
 
     public void deleteById(Long id) {
         imagesCLRepository.deleteById(id);

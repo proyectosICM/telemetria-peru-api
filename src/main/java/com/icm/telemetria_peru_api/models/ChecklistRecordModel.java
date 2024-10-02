@@ -24,6 +24,8 @@ public class ChecklistRecordModel {
 
     private String fileName;
 
+    private int timer;
+
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private DriverModel driverModel;
