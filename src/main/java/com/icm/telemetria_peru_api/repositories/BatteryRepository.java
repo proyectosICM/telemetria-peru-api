@@ -12,4 +12,6 @@ import java.util.List;
 public interface BatteryRepository extends JpaRepository<BatteryModel, Long> {
     List<BatteryModel> findByVehicleModelId(Long vehicleId);
     Page<BatteryModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
+    List<BatteryModel> findByCompanyModelId(Long companyId);
+    Page<BatteryModel> findByCompanyModelId(Long companyId, Pageable pageable);
 }

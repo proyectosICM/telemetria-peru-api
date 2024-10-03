@@ -22,7 +22,7 @@ import java.util.UUID;
 @Service
 public class ImagesCLService {
 
-    public final ImagesCLRepository imagesCLRepository;
+    private final ImagesCLRepository imagesCLRepository;
 
     @Autowired
     public ImagesCLService(ImagesCLRepository imagesCLRepository) {

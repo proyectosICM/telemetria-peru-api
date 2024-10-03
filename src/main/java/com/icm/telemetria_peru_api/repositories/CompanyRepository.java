@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface CompanyRepository extends JpaRepository<CompanyModel, Long> {
-    /** Retrieves companies by status, as a list and paginated. */
     List<CompanyModel> findByStatus(Boolean status);
     Page<CompanyModel> findByStatus(Boolean status, Pageable pageable);
 }

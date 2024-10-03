@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+
+
 
 @Data
 @NoArgsConstructor
@@ -48,7 +51,7 @@ public class DriverModel {
     @Column(name = "licenseExpireDate", nullable = false)
     private LocalDate licenseExpireDate;
 
-    @Pattern(regexp = "^[+0-9\\-\\(\\)\\s]{1,15}$", message = "Phone number must be up to 15 characters long and can only contain digits, plus signs, dashes, parentheses, and spaces")
+    @Pattern(regexp = "^[+0-9\\-()\\s]{1,15}$", message = "Phone number must be up to 15 characters long and can only contain digits, plus signs, dashes, parentheses, and spaces")
     @Column(name = "driverPhoneNumber", length = 15)
     private String driverPhoneNumber;
 
@@ -58,7 +61,7 @@ public class DriverModel {
     private CompanyModel companyModel;
 
     @NotBlank(message = "RFID number is required")
-    @Pattern(regexp = "^[0-9]{1,50}$", message = "RFID must be a numeric value with up to 50 digits")
+    @Pattern(regexp = "^\\d{1,50}$", message = "RFID must be a numeric value with up to 50 digits")
     @Column(name = "rfid", length = 50, unique = true)
     private String rfid;
 

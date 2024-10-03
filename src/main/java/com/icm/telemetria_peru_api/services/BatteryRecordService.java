@@ -1,9 +1,7 @@
 package com.icm.telemetria_peru_api.services;
 
-import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.models.BatteryRecordModel;
 import com.icm.telemetria_peru_api.repositories.BatteryRecordRepository;
-import com.icm.telemetria_peru_api.repositories.BatteryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,8 +12,17 @@ import java.util.List;
 
 @Service
 public class BatteryRecordService {
+    private final BatteryRecordRepository batteryRecordRepository;
+
     @Autowired
-    private BatteryRecordRepository batteryRecordRepository;
+    public BatteryRecordService(BatteryRecordRepository batteryRecordRepository){
+        this.batteryRecordRepository =  batteryRecordRepository;
+    }
+
+    public BatteryRecordModel findById(Long id){
+        return batteryRecordRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
+    }
 
     public List<BatteryRecordModel> findAll(){
         return batteryRecordRepository.findAll();
@@ -23,11 +30,6 @@ public class BatteryRecordService {
 
     public Page<BatteryRecordModel> findAll(Pageable pageable){
         return batteryRecordRepository.findAll(pageable);
-    }
-
-    public BatteryRecordModel findById(Long id){
-        return batteryRecordRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
     }
 
     public List<BatteryRecordModel> findByBatteryId(Long batteryId){

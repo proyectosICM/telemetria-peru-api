@@ -1,6 +1,5 @@
 package com.icm.telemetria_peru_api.repositories;
 
-import com.icm.telemetria_peru_api.models.UserModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
