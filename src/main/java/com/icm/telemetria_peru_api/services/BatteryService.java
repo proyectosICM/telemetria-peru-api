@@ -1,8 +1,6 @@
 package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.dto.BatteryDTO;
-import com.icm.telemetria_peru_api.dto.CompanyDTO;
-import com.icm.telemetria_peru_api.dto.VehicleDTO;
 import com.icm.telemetria_peru_api.mappers.BatteryMapper;
 import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.repositories.BatteryRecordRepository;

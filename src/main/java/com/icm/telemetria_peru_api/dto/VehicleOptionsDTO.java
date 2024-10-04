@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BatteryRecordDTO {
+public class VehicleOptionsDTO {
     private Long id;
-    private Double voltage;
-    private Long batteryId;
-    private String nameBattery;
+    private String licensePlate;
+    private Boolean engineStatus;
+    private Boolean alarmStatus;
+    private Boolean lockStatus;
 }

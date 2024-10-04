@@ -10,4 +10,11 @@ import lombok.NoArgsConstructor;
 public class VehicleDTO {
     private Long id;
     private String licensePlate;
+    private Boolean status;
+
+    private Long vehicleTypeId;
+    private String vehicleTypeName;
+
+    private Long companyId;
+    private String companyName;
 }

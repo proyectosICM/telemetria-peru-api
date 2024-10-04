@@ -42,7 +42,7 @@ public class CompanyController {
 
     @GetMapping("/page")
     public Page<CompanyModel> findAll(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size) {
+                                      @RequestParam(defaultValue = "8") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return companyService.findAll(pageable);
     }
@@ -60,7 +60,7 @@ public class CompanyController {
     @GetMapping("/findByStatus-page")
     public ResponseEntity<Page<CompanyModel>> findByStatusPage(@RequestParam @NotNull Boolean status,
                                                                @RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "10") int size){
+                                                               @RequestParam(defaultValue = "8") int size){
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<CompanyModel> dataModel = companyService.findByStatus(status, pageable);

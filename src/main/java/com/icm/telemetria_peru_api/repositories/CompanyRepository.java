@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CompanyRepository extends JpaRepository<CompanyModel, Long> {
+public interface  CompanyRepository extends JpaRepository<CompanyModel, Long> {
     List<CompanyModel> findByStatus(Boolean status);
     Page<CompanyModel> findByStatus(Boolean status, Pageable pageable);
 }

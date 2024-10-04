@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 @Data
@@ -40,12 +39,6 @@ public class VehicleModel {
     private Boolean lockStatus;
 
     private Long timeOn;
-
-    @Column(precision = 20, scale = 15)
-    private BigDecimal longitud;
-
-    @Column(precision = 20, scale = 15)
-    private BigDecimal  latitud;
 
     @ManyToOne
     @JoinColumn(name = "driver", referencedColumnName ="id", nullable = true)
