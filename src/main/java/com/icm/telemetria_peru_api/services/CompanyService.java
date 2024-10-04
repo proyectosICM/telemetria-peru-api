@@ -10,22 +10,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CompanyService {
-    @Autowired
-    private CompanyRepository companyRepository;
+    private final CompanyRepository companyRepository;
+
+    public CompanyService(CompanyRepository companyRepository) {
+        this.companyRepository = companyRepository;
+    }
+
+    /*********************************/
+    /** Starting point for find methods **/
+    /*********************************/
+    public CompanyModel findById(Long id){
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
+    }
 
     public List<CompanyModel> findAll(){
         return companyRepository.findAll();
     }
+
     public Page<CompanyModel> findAll(Pageable pageable){
         return companyRepository.findAll(pageable);
-    }
-    public CompanyModel findById(Long id){
-        return companyRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
     }
 
     public List<CompanyModel> findByStatus(Boolean status){
@@ -36,7 +43,13 @@ public class CompanyService {
         return companyRepository.findByStatus(status, pageable);
     }
 
-    /** More CRUD methods */
+    /*********************************/
+    /** End of find methods section **/
+    /*********************************/
+
+    /*********************************/
+    /** More CRUD methods **/
+    /*********************************/
     public CompanyModel save(@Valid CompanyModel companyModel){
         return companyRepository.save(companyModel);
     }

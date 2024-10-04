@@ -29,6 +29,9 @@ public class VehicleService {
     @Autowired
     private DriverRepository driverRepository;
 
+    /*********************************/
+    /** Starting point for find methods **/
+    /*********************************/
     private VehicleModel getVehicleById(Long vehicleId){
         return vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));

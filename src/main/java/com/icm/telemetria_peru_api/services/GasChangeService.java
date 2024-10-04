@@ -15,12 +15,18 @@ import java.util.Optional;
 
 @Service
 public class GasChangeService {
-    @Autowired
-    private GasChangeRepository gasChangeRepository;
+    private final GasChangeRepository gasChangeRepository;
+    private final VehicleRepository vehicleRepository;
 
     @Autowired
-    private VehicleRepository vehicleRepository;
+    public GasChangeService(GasChangeRepository gasChangeRepository, VehicleRepository vehicleRepository) {
+        this.gasChangeRepository = gasChangeRepository;
+        this.vehicleRepository = vehicleRepository;
+    }
 
+    /*********************************/
+    /** Starting point for find methods **/
+    /*********************************/
     public Optional<GasChangeModel> findById(Long gasChangeId) {
         return gasChangeRepository.findById(gasChangeId);
     }
@@ -41,7 +47,13 @@ public class GasChangeService {
         return gasChangeRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
-    /** More CRUD methods */
+    /*********************************/
+    /** End of find methods section **/
+    /*********************************/
+
+    /*********************************/
+    /** More CRUD methods **/
+    /*********************************/
     public GasChangeModel saveFromDTO(GasChangeDTO gasChangeDTO) {
         GasChangeModel gasChangeModel = gasChangeDTO.toGasChangeModel();
 
@@ -55,6 +67,7 @@ public class GasChangeService {
         return gasChangeRepository.save(gasChangeModel);
     }
 
-
-
+    public void deleteById(Long id){
+        gasChangeRepository.deleteById(id);
+    }
 }

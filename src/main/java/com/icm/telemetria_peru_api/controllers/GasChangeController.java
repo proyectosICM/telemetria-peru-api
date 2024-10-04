@@ -1,7 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.dto.GasChangeDTO;
-import com.icm.telemetria_peru_api.models.DriverModel;
 import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.services.GasChangeService;
 import jakarta.validation.Valid;
@@ -15,13 +14,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/gas-changes")
 public class GasChangeController {
+    private final GasChangeService gasChangeService;
+
     @Autowired
-    private GasChangeService gasChangeService;
+    public GasChangeController(GasChangeService gasChangeService) {
+        this.gasChangeService = gasChangeService;
+    }
 
     @GetMapping("/{gasChangeId}")
     public ResponseEntity<GasChangeModel> findById(@PathVariable @NotNull Long gasChangeId) {
@@ -48,7 +50,7 @@ public class GasChangeController {
         List<GasChangeModel> dataModel = gasChangeService.findByVehicleModelId(vehicleId);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
-    @GetMapping("/findByVehicleModelId-page")
+    @GetMapping("/findByVehicleModelId-paged")
     public ResponseEntity<Page<GasChangeModel>> findByVehicleModelId(@RequestParam @NotNull Long vehicleId,
                                                               @RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "10") int size){
@@ -57,14 +59,19 @@ public class GasChangeController {
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
-    /** More CRUD methods */
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody @Valid GasChangeDTO gasChangeDTO){
+    public ResponseEntity<Object> save(@RequestBody @Valid GasChangeDTO gasChangeDTO){
         try {
             GasChangeModel dataModel = gasChangeService.saveFromDTO(gasChangeDTO);
             return new ResponseEntity<>(dataModel, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @DeleteMapping("/{gasChangeId}")
+    public ResponseEntity<Object> delete(@PathVariable @NotNull Long gasChangeId){
+        gasChangeService.deleteById(gasChangeId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

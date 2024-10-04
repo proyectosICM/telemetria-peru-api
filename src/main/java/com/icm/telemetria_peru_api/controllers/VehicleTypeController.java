@@ -19,12 +19,17 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/vehicle-type")
 public class VehicleTypeController {
+
+    private final VehicleTypeService vehicleTypeService;
+
     @Autowired
-    private VehicleTypeService vehicletypeService;
+    public VehicleTypeController(VehicleTypeService vehicleTypeService) {
+        this.vehicleTypeService = vehicleTypeService;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<VehicleTypeModel> getVehicletypeById(@PathVariable @NotNull Long id) {
-        Optional<VehicleTypeModel> vehicletype = vehicletypeService.findById(id);
+        Optional<VehicleTypeModel> vehicletype = vehicleTypeService.findById(id);
         return vehicletype
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -32,7 +37,7 @@ public class VehicleTypeController {
 
     @GetMapping
     public ResponseEntity<List<VehicleTypeModel>> getAllVehicletypes() {
-        List<VehicleTypeModel> vehicletypes = vehicletypeService.findAll();
+        List<VehicleTypeModel> vehicletypes = vehicleTypeService.findAll();
         return ResponseEntity.ok(vehicletypes);
     }
 
@@ -40,13 +45,13 @@ public class VehicleTypeController {
     public ResponseEntity<Page<VehicleTypeModel>> getAllVehicletypes(@RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<VehicleTypeModel> vehicletypes = vehicletypeService.findAll(pageable);
+        Page<VehicleTypeModel> vehicletypes = vehicleTypeService.findAll(pageable);
         return ResponseEntity.ok(vehicletypes);
     }
 
     @PostMapping
     public ResponseEntity<VehicleTypeModel> createVehicletype(@RequestBody @Valid VehicleTypeModel vehicletypeModel) {
-        VehicleTypeModel createdVehicletype = vehicletypeService.save(vehicletypeModel);
+        VehicleTypeModel createdVehicletype = vehicleTypeService.save(vehicletypeModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVehicletype);
     }
 
@@ -55,7 +60,7 @@ public class VehicleTypeController {
             @PathVariable @NotNull Long id,
             @RequestBody @Valid VehicleTypeModel vehicletypeModel) {
         try {
-            VehicleTypeModel updatedVehicletype = vehicletypeService.update(id, vehicletypeModel);
+            VehicleTypeModel updatedVehicletype = vehicleTypeService.update(id, vehicletypeModel);
             return ResponseEntity.ok(updatedVehicletype);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

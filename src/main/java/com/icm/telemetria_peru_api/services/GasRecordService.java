@@ -3,27 +3,32 @@ package com.icm.telemetria_peru_api.services;
 import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.repositories.GasRecordRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GasRecordService {
-    @Autowired
-    private GasRecordRepository gasRecordRepository;
+    private final GasRecordRepository gasRecordRepository;
 
-    public List<GasRecordModel> findAll(){ return gasRecordRepository.findAll(); }
-    public Page<GasRecordModel> findAll(Pageable pageable){
-        return gasRecordRepository.findAll(pageable);
+    public GasRecordService(GasRecordRepository gasRecordRepository) {
+        this.gasRecordRepository = gasRecordRepository;
     }
+
+    /*********************************/
+    /** Starting point for find methods **/
+    /*********************************/
     public GasRecordModel findById(Long id){
         return gasRecordRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
+    }
+
+    public List<GasRecordModel> findAll(){ return gasRecordRepository.findAll(); }
+
+    public Page<GasRecordModel> findAll(Pageable pageable){
+        return gasRecordRepository.findAll(pageable);
     }
 
     public List<GasRecordModel> findByVehicleId(Long vehicleId){
@@ -34,7 +39,13 @@ public class GasRecordService {
         return gasRecordRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
+    /*********************************/
+    /** End of find methods section **/
+    /*********************************/
+
+    /*********************************/
     /** More CRUD methods **/
+    /*********************************/
     public GasRecordModel save(GasRecordModel gasRecordModel){
         return gasRecordRepository.save(gasRecordModel);
     }

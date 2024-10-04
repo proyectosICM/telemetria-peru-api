@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BatteryDTO {
+public class BatteryRecordDTO {
     private Long id;
-    private String name;
-    private VehicleDTO vehicleModel;
-    private CompanyDTO companyModel;
+    private Double voltage;
+    private BatteryDTO batteryModel;
 }

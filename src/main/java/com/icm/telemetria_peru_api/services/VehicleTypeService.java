@@ -13,32 +13,46 @@ import java.util.Optional;
 
 @Service
 public class VehicleTypeService {
-    @Autowired
-    private VehicleTypeRepository vehicletypeRepository;
+    private final VehicleTypeRepository vehicleTypeRepository;
 
+    @Autowired
+    public VehicleTypeService(VehicleTypeRepository vehicleTypeRepository) {
+        this.vehicleTypeRepository = vehicleTypeRepository;
+    }
+
+    /*********************************/
+    /** Starting point for find methods **/
+    /*********************************/
     public Optional<VehicleTypeModel> findById(Long id) {
-        return vehicletypeRepository.findById(id);
+        return vehicleTypeRepository.findById(id);
     }
 
     public List<VehicleTypeModel> findAll(){
-        return vehicletypeRepository.findAll();
+        return vehicleTypeRepository.findAll();
     }
 
     public Page<VehicleTypeModel> findAll(Pageable pageable){
-        return vehicletypeRepository.findAll(pageable);
+        return vehicleTypeRepository.findAll(pageable);
     }
 
+    /*********************************/
+    /** End of find methods section **/
+    /*********************************/
+
+    /*********************************/
+    /** More CRUD methods **/
+    /*********************************/
     public VehicleTypeModel save(VehicleTypeModel vehicletypeModel){
-        return vehicletypeRepository.save(vehicletypeModel);
+        return vehicleTypeRepository.save(vehicletypeModel);
     }
 
     public VehicleTypeModel update(Long id, VehicleTypeModel vehicletypeModel){
-        return vehicletypeRepository.findById(id)
+        return vehicleTypeRepository.findById(id)
                 .map(existing -> {
                     existing.setName(vehicletypeModel.getName());
-                    return vehicletypeRepository.save(existing);
+                    return vehicleTypeRepository.save(existing);
                 })
-                .orElseThrow(() -> new EntityNotFoundException("Vehicletype with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("VehicleType with id " + id + " not found"));
 
     }
 }

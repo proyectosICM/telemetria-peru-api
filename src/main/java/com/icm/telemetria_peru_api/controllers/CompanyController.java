@@ -1,7 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.models.CompanyModel;
-import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.services.CompanyService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -14,25 +13,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.AuthenticationException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/companies")
 public class CompanyController {
-    @Autowired
-    private CompanyService companyService;
+    private final CompanyService companyService;
 
-    @GetMapping
-    public List<CompanyModel> findAll() {
-        return companyService.findAll();
-    }
-    @GetMapping("/page")
-    public Page<CompanyModel> findAll(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return companyService.findAll(pageable);
+    @Autowired
+    public CompanyController(CompanyService companyService) {
+        this.companyService = companyService;
     }
 
     @GetMapping("/{id}")
@@ -45,18 +35,30 @@ public class CompanyController {
         }
     }
 
+    @GetMapping
+    public List<CompanyModel> findAll() {
+        return companyService.findAll();
+    }
+
+    @GetMapping("/page")
+    public Page<CompanyModel> findAll(@RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return companyService.findAll(pageable);
+    }
+
     @GetMapping("/findByStatus")
-    public ResponseEntity<?> findByStatus(@RequestParam @NotNull Boolean status){
+    public ResponseEntity<List<CompanyModel>> findByStatus(@RequestParam @NotNull Boolean status){
         try{
             List<CompanyModel> data = companyService.findByStatus(status);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
-            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/findByStatus-page")
-    public ResponseEntity<?> findByStatusPage(@RequestParam @NotNull Boolean status,
+    public ResponseEntity<Page<CompanyModel>> findByStatusPage(@RequestParam @NotNull Boolean status,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size){
         try {
@@ -64,13 +66,12 @@ public class CompanyController {
             Page<CompanyModel> dataModel = companyService.findByStatus(status, pageable);
             return new ResponseEntity<>(dataModel, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /** More CRUD methods */
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody @Valid CompanyModel companyModel){
+    public ResponseEntity<Object> save(@RequestBody @Valid CompanyModel companyModel){
         try {
             CompanyModel dataModel = companyService.save(companyModel);
             return new ResponseEntity<>(dataModel, HttpStatus.CREATED);
@@ -80,7 +81,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{companyId}")
-    public ResponseEntity<?> update(@PathVariable @NotNull Long companyId,@RequestBody @Valid CompanyModel companyModel){
+    public ResponseEntity<Object> update(@PathVariable @NotNull Long companyId,@RequestBody @Valid CompanyModel companyModel){
         try {
             CompanyModel dataModel = companyService.update(companyId, companyModel);
             return new ResponseEntity<>(dataModel, HttpStatus.OK);
@@ -90,7 +91,7 @@ public class CompanyController {
     }
 
     @PutMapping("/changeStatus/{companyId}")
-    public ResponseEntity<?> changeStatus(@PathVariable @NotNull Long companyId){
+    public ResponseEntity<Object> changeStatus(@PathVariable @NotNull Long companyId){
         try {
             CompanyModel dataModel = companyService.changeStatus(companyId);
             return new ResponseEntity<>(dataModel, HttpStatus.OK);
@@ -100,7 +101,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{companyId}")
-    public ResponseEntity<?> delete(@PathVariable @NotNull Long companyId){
+    public ResponseEntity<Object> delete(@PathVariable @NotNull Long companyId){
         companyService.deleteById(companyId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

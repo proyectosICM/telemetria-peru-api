@@ -3,7 +3,6 @@ package com.icm.telemetria_peru_api.controllers;
 import com.icm.telemetria_peru_api.dto.BatteryDTO;
 import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.services.BatteryService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,9 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/batteries")
 public class BatteryController {
-
     private final BatteryService batteryService;
-
+    @Autowired
     public BatteryController(BatteryService batteryService) {
         this.batteryService = batteryService;
     }
@@ -38,12 +36,10 @@ public class BatteryController {
 
     @GetMapping("/paged")
     public Page<BatteryDTO> findAll(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size){
+                                    @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return batteryService.findAll(pageable);
     }
-
-
 
     @GetMapping("/findByVehicleId/{vehicleId}")
     public ResponseEntity<List<BatteryDTO>> findByVehicleId(@PathVariable Long vehicleId) {
@@ -111,9 +107,8 @@ public class BatteryController {
         }
     }
 
-
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody BatteryModel batteryModel){
+    public ResponseEntity<Object> save(@RequestBody BatteryModel batteryModel){
         try {
             BatteryModel data = batteryService.save(batteryModel);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -123,7 +118,7 @@ public class BatteryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> edit(@PathVariable Long id, @RequestBody BatteryModel batteryModel){
+    public ResponseEntity<Object> edit(@PathVariable Long id, @RequestBody BatteryModel batteryModel){
         try {
             BatteryModel data = batteryService.update(id, batteryModel);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -132,9 +127,8 @@ public class BatteryController {
         }
     }
 
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable Long id){
+    public ResponseEntity<String> deleteById(@PathVariable Long id){
         try {
             batteryService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
