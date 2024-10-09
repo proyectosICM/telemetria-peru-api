@@ -17,4 +17,6 @@ public class VehicleDTO {
 
     private Long companyId;
     private String companyName;
+
+    private Integer maxSpeed;
 }

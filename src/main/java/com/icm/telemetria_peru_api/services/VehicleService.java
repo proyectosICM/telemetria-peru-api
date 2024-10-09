@@ -223,7 +223,7 @@ public class VehicleService {
         vehicleRepository.save(existing);
 
         // Publicar el estado actualizado en un tema específico
-        String topic = "tmp_remoteOptions";
+        String topic = "tmp_remoteOptions/" + vehicleId;
         String payload = type + ":" + status;
 
         mqttOutbound.handleMessage(MessageBuilder.withPayload(payload).setHeader(MqttHeaders.TOPIC, topic).build());

@@ -40,6 +40,8 @@ public class VehicleModel {
 
     private Long timeOn;
 
+    private Integer maxSpeed;
+
     @ManyToOne
     @JoinColumn(name = "driver", referencedColumnName ="id", nullable = true)
     private DriverModel driverModel;

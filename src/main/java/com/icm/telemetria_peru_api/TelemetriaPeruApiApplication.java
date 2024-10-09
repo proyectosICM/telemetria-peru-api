@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TelemetriaPeruApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TelemetriaPeruApiApplication.class, args);
+		SpringApplication.run(
+				TelemetriaPeruApiApplication.class, args);
 	}
 
 }
