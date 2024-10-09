@@ -14,12 +14,18 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    /*********************************/
+    /** Starting point for find methods **/
+    /*********************************/
     private UserModel getUserById(Long userId){
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
@@ -75,10 +81,16 @@ public class UserService {
         return userRepository.findByCompanyModelIdAndStatus(companyId, status, pageable);
     }
 
-    /** More CRUD methods */
+    /*********************************/
+    /** End of find methods section **/
+    /*********************************/
+
+    /*********************************/
+    /** More CRUD methods **/
+    /*********************************/
     public UserModel save(UserModel userModel) {
         validateUser(userModel);
-        userModel.setPassword(passwordEncoder.encode(userModel.getPassword()));  // Encriptar la contraseña
+        userModel.setPassword(passwordEncoder.encode(userModel.getPassword()));
         return userRepository.save(userModel);
     }
 
@@ -89,13 +101,20 @@ public class UserService {
         boolean emailChanged = !existing.getEmail().equals(userModel.getEmail());
         boolean usernameChanged = !existing.getUsername().equals(userModel.getUsername());
 
-        if (emailChanged || usernameChanged) {
+        if (emailChanged) {
+            validateUser(userModel);
+        }
+
+        if (usernameChanged ) {
             validateUser(userModel);
         }
 
         existing.setEmail(userModel.getEmail());
         existing.setUsername(userModel.getUsername());
-        existing.setPassword(passwordEncoder.encode(userModel.getPassword()));
+        if (userModel.getPassword() != null && !userModel.getPassword().isEmpty()) {
+            existing.setPassword(passwordEncoder.encode(userModel.getPassword()));
+        }
+
         return userRepository.save(existing);
     }
 

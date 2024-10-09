@@ -111,7 +111,7 @@ public class BatteryController {
     public ResponseEntity<Object> save(@RequestBody BatteryModel batteryModel){
         try {
             BatteryModel data = batteryService.save(batteryModel);
-            return new ResponseEntity<>(data, HttpStatus.OK);
+            return new ResponseEntity<>(data, HttpStatus.CREATED);
         }catch (Exception e) {
             return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -31,7 +31,6 @@ public class UserModel {
     @Column(nullable = false, length = 50, unique = true)
     private String username;
 
-    @NotEmpty(message = "Password is required")
     @Column(nullable = false)
     private String password;
 

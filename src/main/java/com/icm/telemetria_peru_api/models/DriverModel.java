@@ -35,7 +35,7 @@ public class DriverModel {
 
     @NotBlank(message = "Last name is required")
     @Pattern(regexp = "^[a-zA-Z\\sÁÉÍÓÚáéíóúñÑ]{1,100}$", message = "Last name must be less than 100 characters")
-        @Column(name = "lastName", nullable = false, length = 100)
+    @Column(name = "lastName", nullable = false, length = 100)
     private String lastName;
 
     @NotBlank(message = "Driver license number is required")

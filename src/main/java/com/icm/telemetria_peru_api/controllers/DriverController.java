@@ -35,8 +35,8 @@ public class DriverController {
         return driverService.findAll();
     }
     @GetMapping("/paged")
-    public ResponseEntity<Page<DriverModel>> findById(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Page<DriverModel>> findAll(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "8") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<DriverModel> dataModel = driverService.findAll(pageable);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
@@ -51,7 +51,7 @@ public class DriverController {
     @GetMapping("/findByStatus-page")
     public ResponseEntity<Page<DriverModel>> findByStatusPage(@RequestParam @NotNull Boolean status,
                                                                @RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "10") int size){
+                                                               @RequestParam(defaultValue = "8") int size){
         Pageable pageable = PageRequest.of(page, size);
         Page<DriverModel> dataModel = driverService.findByStatus(status, pageable);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
@@ -67,7 +67,7 @@ public class DriverController {
     @GetMapping("/findByCompany-page/{companyId}")
     public ResponseEntity<Page<DriverModel>> findByCompanyModelId(@PathVariable @NotNull Long companyId,
                                                                   @RequestParam(defaultValue = "0") int page,
-                                                                  @RequestParam(defaultValue = "10") int size){
+                                                                  @RequestParam(defaultValue = "8") int size){
         Pageable pageable = PageRequest.of(page, size);
         Page<DriverModel> dataModel = driverService.findByCompanyModelId(companyId, pageable);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
