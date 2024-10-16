@@ -1,6 +1,5 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.models.PositioningModel;
 import com.icm.telemetria_peru_api.services.PositioningService;
 import jakarta.persistence.EntityNotFoundException;

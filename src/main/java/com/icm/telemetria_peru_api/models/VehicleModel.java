@@ -54,6 +54,13 @@ public class VehicleModel {
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private CompanyModel companyModel;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fuel_type", nullable = false)
+    private FuelType fuelType;
+
+    @Column(name = "max_fuel_volume", nullable = true)
+    private Double maxFuelVolume;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private ZonedDateTime createdAt;

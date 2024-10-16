@@ -19,4 +19,6 @@ public class VehicleDTO {
     private String companyName;
 
     private Integer maxSpeed;
+
+    private String fuelType;
 }

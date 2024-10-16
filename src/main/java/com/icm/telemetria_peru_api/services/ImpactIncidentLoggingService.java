@@ -1,6 +1,5 @@
 package com.icm.telemetria_peru_api.services;
 
-import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.models.ImpactIncidentLoggingModel;
 import com.icm.telemetria_peru_api.repositories.ImpactIncidentLoggingRepository;
 import jakarta.persistence.EntityNotFoundException;
