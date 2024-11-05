@@ -23,6 +23,8 @@ public class VehicleModel {
     @Column(unique = true, nullable = false)
     private Long id;
 
+    private String imei;
+
     @Column(name = "status", nullable = false)
     private Boolean status = true;
 
