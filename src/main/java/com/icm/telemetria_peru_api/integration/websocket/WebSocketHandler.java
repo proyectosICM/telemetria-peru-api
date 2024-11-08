@@ -12,9 +12,10 @@ import java.util.Set;
 public class WebSocketHandler extends TextWebSocketHandler {
 
     private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
-
-    @Autowired
-    private WebSocketService webSocketService;
+    private final WebSocketService webSocketService;
+    public WebSocketHandler(WebSocketService webSocketService) {
+        this.webSocketService = webSocketService;
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {

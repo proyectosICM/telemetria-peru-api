@@ -78,6 +78,10 @@ public class VehicleService {
                 .toList();
     }
 
+    public Optional<VehicleModel> findByImei(String imei) {
+        return vehicleRepository.findByImei(imei);
+    }
+
     public Page<VehicleDTO> findByStatus(Boolean status, Pageable pageable) {
         Page<VehicleModel> vehicleModelsPage = vehicleRepository.findByStatus(status, pageable);
         List<VehicleDTO> vehicleDTOs = vehicleModelsPage.stream()

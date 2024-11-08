@@ -36,7 +36,7 @@ public class MqttSubscriber {
 
     @PostConstruct
     public void init() {
-        String[] topics = {"data", "status"};
+        String[] topics = {"data", "status", "prueba"};
         subscribeToTopics(topics);
         subscribeToJson("dataJ");
     }
