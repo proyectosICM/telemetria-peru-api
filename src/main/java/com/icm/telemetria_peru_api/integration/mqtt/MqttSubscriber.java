@@ -65,6 +65,11 @@ public class MqttSubscriber {
             Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
 
 
+            if (vehicleId == null && imei != null) {
+                Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
+                vehicleId = vehicleOptional.map(VehicleModel::getId).orElse(null);
+            }
+
             if (vehicleId != null) {
                 telData(vehicleId, jsonNode);
                 //SpeedExcessLogger(vehicleId, speed);

@@ -11,6 +11,7 @@ public class VehicleDTO {
     private Long id;
     private String licensePlate;
     private Boolean status;
+    private String imei;
 
     private Long vehicleTypeId;
     private String vehicleTypeName;

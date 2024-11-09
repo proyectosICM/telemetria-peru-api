@@ -13,7 +13,7 @@ public class VehicleMapper {
         Long companyId = vehicleModel.getCompanyModel().getId();
         String companyName = vehicleModel.getCompanyModel().getName();
 
-        return new VehicleDTO(vehicleModel.getId(), vehicleModel.getLicensePlate(), vehicleModel.getStatus(),
+        return new VehicleDTO(vehicleModel.getId(), vehicleModel.getLicensePlate(), vehicleModel.getStatus(), vehicleModel.getImei(),
                 vehicleTypeId, vehicleTypeName, companyId, companyName, vehicleModel.getMaxSpeed(), vehicleModel.getFuelType().toString());
     }
 }
