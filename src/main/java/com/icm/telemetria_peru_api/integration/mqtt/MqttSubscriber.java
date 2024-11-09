@@ -109,7 +109,7 @@ public class MqttSubscriber {
             String topic = "telData/" + vehicleId;
             mqttClient.publish(topic, mqttMessage);
 
-            System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
+            //System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
 
         } catch (MqttException | IOException e) {
             e.printStackTrace();
