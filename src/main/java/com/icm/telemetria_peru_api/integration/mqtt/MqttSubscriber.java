@@ -63,11 +63,9 @@ public class MqttSubscriber {
             Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
             String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
             Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
-            System.out.println("EMpezando");
 
             if (vehicleId == null && imei != null) {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
-                System.out.println(vehicleOptional);
                 vehicleId = vehicleOptional.map(VehicleModel::getId).orElse(null);
             }
 
