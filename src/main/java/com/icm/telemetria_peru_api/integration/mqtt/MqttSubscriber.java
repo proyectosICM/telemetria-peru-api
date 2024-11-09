@@ -134,7 +134,7 @@ public class MqttSubscriber {
             mqttMessage.setQos(1);
 
             // Publicar el mensaje en el tema mapa/{vehicleId}
-            String topic = "mapa";
+            String topic = "mapData";
             mqttClient.publish(topic, mqttMessage);
 
             //System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
