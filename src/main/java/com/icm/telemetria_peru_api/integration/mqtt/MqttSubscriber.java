@@ -47,7 +47,7 @@ public class MqttSubscriber {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
-                    System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
+                    //System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
                     processJsonPayload(payload);
                 }
             });
@@ -67,6 +67,7 @@ public class MqttSubscriber {
 
             if (vehicleId != null) {
                 SpeedExcessLogger(vehicleId, speed);
+                telData(vehicleId, jsonNode);
             }
 
         } catch (IOException e) {
@@ -104,7 +105,7 @@ public class MqttSubscriber {
             String topic = "telData/" + vehicleId;
             mqttClient.publish(topic, mqttMessage);
 
-            System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
+            //System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
 
         } catch (MqttException | IOException e) {
             e.printStackTrace();
@@ -121,10 +122,10 @@ public class MqttSubscriber {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
-                    System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
+                    //System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
 
                     // Procesa el payload aquí sin intentar deserializar
-                    System.out.println("Payload: " + payload);
+                    //System.out.println("Payload: " + payload);
                 }
             });
         } catch (MqttException e) {
@@ -139,10 +140,10 @@ public class MqttSubscriber {
                     @Override
                     public void messageArrived(String topic, MqttMessage message) throws Exception {
                         String payload = new String(message.getPayload());
-                        System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
+                       // System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
 
                         // Procesa el payload aquí sin intentar deserializar
-                        System.out.println("Payload: " + payload);
+                        //System.out.println("Payload: " + payload);
                     }
                 });
             }
