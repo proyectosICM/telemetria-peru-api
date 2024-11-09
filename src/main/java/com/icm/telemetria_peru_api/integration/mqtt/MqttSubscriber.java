@@ -134,10 +134,10 @@ public class MqttSubscriber {
             mqttMessage.setQos(1);
 
             // Publicar el mensaje en el tema mapa/{vehicleId}
-            String topic = "mapa/" + vehicleId;
+            String topic = "mapa";
             mqttClient.publish(topic, mqttMessage);
 
-            System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
+            //System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
 
         } catch (MqttException | IOException e) {
             e.printStackTrace();
