@@ -39,7 +39,7 @@ public class MqttSubscriber {
     public void init() {
         String[] topics = {"data", "status", "prueba"};
         subscribeToTopics(topics);
-        subscribeToJson("dataJ");
+        subscribeToJson("prueba");
     }
     public void subscribeToJson(String topic) {
         try {
