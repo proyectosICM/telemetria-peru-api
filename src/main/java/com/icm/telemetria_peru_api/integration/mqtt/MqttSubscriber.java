@@ -61,16 +61,19 @@ public class MqttSubscriber {
             JsonNode jsonNode = objectMapper.readTree(payload);
 
             Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
+            String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
             String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
             Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
 
             if (vehicleId == null && imei != null) {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
                 vehicleId = vehicleOptional.map(VehicleModel::getId).orElse(null);
+                licensePlate = vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null);
             }
 
             if (vehicleId != null) {
                 telData(vehicleId, jsonNode);
+                mapData(vehicleId, licensePlate, jsonNode);
                 //SpeedExcessLogger(vehicleId, speed);
             }
 
@@ -117,6 +120,30 @@ public class MqttSubscriber {
         }
     }
 
+    public void mapData(Long vehicleId, String licensePlate, JsonNode originalJson) {
+        try {
+            // Agregar el ID del vehículo y la placa al JSON original
+            ((ObjectNode) originalJson).put("vehicleId", vehicleId);
+            ((ObjectNode) originalJson).put("licensePlate", licensePlate);
+
+            // Serializar el JSON modificado a una cadena de texto
+            String updatedPayload = objectMapper.writeValueAsString(originalJson);
+
+            // Crear el mensaje MQTT
+            MqttMessage mqttMessage = new MqttMessage(updatedPayload.getBytes());
+            mqttMessage.setQos(1);
+
+            // Publicar el mensaje en el tema mapa/{vehicleId}
+            String topic = "mapa/" + vehicleId;
+            mqttClient.publish(topic, mqttMessage);
+
+            System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
+
+        } catch (MqttException | IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al enviar el mensaje mapData: " + e.getMessage());
+        }
+    }
 
     /* */
 
