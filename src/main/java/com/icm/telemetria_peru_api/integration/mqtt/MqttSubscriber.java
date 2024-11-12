@@ -61,7 +61,7 @@ public class MqttSubscriber {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
 
-            Long companyId;
+            Long companyId = null;
             Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
             String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
             String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
