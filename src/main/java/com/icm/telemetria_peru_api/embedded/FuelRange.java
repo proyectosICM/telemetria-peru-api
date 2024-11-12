@@ -20,5 +20,5 @@ public class FuelRange {
     private int veryLowFuelRangeStart;
 
     @Column(nullable = false)
-    private int maxFuelPressure;
+    private int maxFuelValue;
 }
