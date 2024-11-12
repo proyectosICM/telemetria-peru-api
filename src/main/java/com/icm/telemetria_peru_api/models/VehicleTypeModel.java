@@ -1,9 +1,6 @@
 package com.icm.telemetria_peru_api.models;
 
-import com.icm.telemetria_peru_api.embedded.BatteryRange;
-import com.icm.telemetria_peru_api.embedded.GasRange;
-import com.icm.telemetria_peru_api.embedded.GasolineRange;
-import com.icm.telemetria_peru_api.embedded.TirePressureRange;
+import com.icm.telemetria_peru_api.embedded.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -32,10 +29,7 @@ public class VehicleTypeModel {
     private String name;
 
     @Embedded
-    private GasRange gasRange;
-
-    @Embedded
-    private GasolineRange gasolineRange;
+    private FuelRange fuelRange;
 
     @Embedded
     private BatteryRange batteryRange;
