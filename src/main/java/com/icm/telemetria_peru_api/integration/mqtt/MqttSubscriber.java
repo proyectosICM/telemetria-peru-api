@@ -15,6 +15,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.icm.telemetria_peru_api.models.CompanyModel;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -60,6 +61,7 @@ public class MqttSubscriber {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
 
+            Long companyId;
             Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
             String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
             String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
@@ -69,11 +71,15 @@ public class MqttSubscriber {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
                 vehicleId = vehicleOptional.map(VehicleModel::getId).orElse(null);
                 licensePlate = vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null);
+                companyId = vehicleOptional
+                        .map(VehicleModel::getCompanyModel)
+                        .map(CompanyModel::getId)
+                        .orElse(null);
             }
 
             if (vehicleId != null) {
                 telData(vehicleId, jsonNode);
-                mapData(vehicleId, licensePlate, jsonNode);
+                mapData(vehicleId, companyId, licensePlate, jsonNode);
                 //SpeedExcessLogger(vehicleId, speed);
             }
 
@@ -121,7 +127,7 @@ public class MqttSubscriber {
         }
     }
 
-    public void mapData(Long vehicleId, String licensePlate, JsonNode originalJson) {
+    public void mapData(Long vehicleId, Long companyId, String licensePlate, JsonNode originalJson) {
         try {
             // Agregar el ID del vehículo y la placa al JSON original
             ((ObjectNode) originalJson).put("vehicleId", vehicleId);
@@ -136,7 +142,7 @@ public class MqttSubscriber {
             mqttMessage.setRetained(true);
 
             // Publicar el mensaje en el tema mapa/{vehicleId}
-            String topic = "mapData";
+            String topic = "mapData/" + companyId;
             mqttClient.publish(topic, mqttMessage);
 
             //System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
