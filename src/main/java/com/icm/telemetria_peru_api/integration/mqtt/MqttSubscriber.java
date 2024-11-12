@@ -107,6 +107,7 @@ public class MqttSubscriber {
             // Crear el mensaje MQTT
             MqttMessage mqttMessage = new MqttMessage(updatedPayload.getBytes());
             mqttMessage.setQos(1);
+            mqttMessage.setRetained(true);
 
             // Publicar el mensaje en el tema telData/{vehicleId}
             String topic = "telData/" + vehicleId;
@@ -132,6 +133,7 @@ public class MqttSubscriber {
             // Crear el mensaje MQTT
             MqttMessage mqttMessage = new MqttMessage(updatedPayload.getBytes());
             mqttMessage.setQos(1);
+            mqttMessage.setRetained(true);
 
             // Publicar el mensaje en el tema mapa/{vehicleId}
             String topic = "mapData";
