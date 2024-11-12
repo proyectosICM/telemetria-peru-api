@@ -35,6 +35,7 @@ public class MqttSubscriber {
     private SpeedExcessLoggerRepository speedExcessLoggerRepository;
 
     private ObjectMapper objectMapper = new ObjectMapper();
+    private MqttMessagePublisher mqttMessagePublisher;
 
     @PostConstruct
     public void init() {
@@ -78,8 +79,8 @@ public class MqttSubscriber {
             }
 
             if (vehicleId != null) {
-                telData(vehicleId, jsonNode);
-                mapData(vehicleId, companyId, licensePlate, jsonNode);
+                mqttMessagePublisher.telData(vehicleId, jsonNode);
+                mqttMessagePublisher.mapData(vehicleId, companyId, licensePlate, jsonNode);
                 //SpeedExcessLogger(vehicleId, speed);
             }
 
@@ -101,59 +102,6 @@ public class MqttSubscriber {
         }
 
     }
-
-    private void telData(Long vehicleId, JsonNode originalJson) {
-        try {
-            // Agregar el ID del vehículo al JSON original
-            ((ObjectNode) originalJson).put("vehicleId", vehicleId);
-
-            // Serializar el JSON modificado a una cadena de texto
-            String updatedPayload = objectMapper.writeValueAsString(originalJson);
-
-            // Crear el mensaje MQTT
-            MqttMessage mqttMessage = new MqttMessage(updatedPayload.getBytes());
-            mqttMessage.setQos(1);
-            mqttMessage.setRetained(true);
-
-            // Publicar el mensaje en el tema telData/{vehicleId}
-            String topic = "telData/" + vehicleId;
-            mqttClient.publish(topic, mqttMessage);
-
-            //System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
-
-        } catch (MqttException | IOException e) {
-            e.printStackTrace();
-            System.out.println("Error al enviar el mensaje telData: " + e.getMessage());
-        }
-    }
-
-    public void mapData(Long vehicleId, Long companyId, String licensePlate, JsonNode originalJson) {
-        try {
-            // Agregar el ID del vehículo y la placa al JSON original
-            ((ObjectNode) originalJson).put("vehicleId", vehicleId);
-            ((ObjectNode) originalJson).put("licensePlate", licensePlate);
-
-            // Serializar el JSON modificado a una cadena de texto
-            String updatedPayload = objectMapper.writeValueAsString(originalJson);
-
-            // Crear el mensaje MQTT
-            MqttMessage mqttMessage = new MqttMessage(updatedPayload.getBytes());
-            mqttMessage.setQos(1);
-            mqttMessage.setRetained(true);
-
-            // Publicar el mensaje en el tema mapa/{vehicleId}
-            String topic = "mapData/" + companyId;
-            mqttClient.publish(topic, mqttMessage);
-
-            //System.out.println("Mensaje enviado al tema " + topic + ": " + updatedPayload);
-
-        } catch (MqttException | IOException e) {
-            e.printStackTrace();
-            System.out.println("Error al enviar el mensaje mapData: " + e.getMessage());
-        }
-    }
-
-    /* */
 
     public void subscribeToTopic(String topic) {
         try {
