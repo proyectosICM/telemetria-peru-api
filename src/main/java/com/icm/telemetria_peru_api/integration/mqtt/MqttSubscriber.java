@@ -36,6 +36,9 @@ public class MqttSubscriber {
     @Autowired
     private MqttMessagePublisher mqttMessagePublisher;
 
+    @Autowired
+    private MqttHandler mqttHandler;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
@@ -43,67 +46,8 @@ public class MqttSubscriber {
     public void init() {
         String[] topics = {"data", "status", "prueba"};
         mqttMessagePublisher = new MqttMessagePublisher(mqttClient);
+        subscribeToTopic("prueba");
         subscribeToTopics(topics);
-        subscribeToJson("prueba");
-    }
-    public void subscribeToJson(String topic) {
-        try {
-            mqttClient.subscribe(topic, new IMqttMessageListener() {
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
-                    String payload = new String(message.getPayload());
-                    //System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
-                    processJsonPayload(payload);
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void processJsonPayload(String payload) {
-        try {
-            JsonNode jsonNode = objectMapper.readTree(payload);
-
-            Long companyId = null;
-            Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
-            String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
-            String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
-            Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
-
-            if (vehicleId == null && imei != null) {
-                Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
-                vehicleId = vehicleOptional.map(VehicleModel::getId).orElse(null);
-                licensePlate = vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null);
-                companyId = vehicleOptional
-                        .map(VehicleModel::getCompanyModel)
-                        .map(CompanyModel::getId)
-                        .orElse(null);
-            }
-
-            if (vehicleId != null) {
-                mqttMessagePublisher.telData(vehicleId, jsonNode);
-                mqttMessagePublisher.mapData(vehicleId, companyId, licensePlate, jsonNode);
-                //SpeedExcessLogger(vehicleId, speed);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error al procesar el JSON: " + e.getMessage());
-        }
-    }
-
-    private void SpeedExcessLogger(Long vehicleId, Integer speed){
-        Optional<VehicleModel> vehicle = vehicleRepository.findById(vehicleId);
-        if (vehicle.isPresent()){
-            if (vehicle.get().getMaxSpeed() < speed){
-                SpeedExcessLoggerModel speedExcessLoggerModel = new SpeedExcessLoggerModel();
-                speedExcessLoggerModel.setDescription("Velocidad maxima exedida en " + speed + " km/h");
-                speedExcessLoggerModel.setVehicleModel(vehicle.get());
-                speedExcessLoggerRepository.save(speedExcessLoggerModel);
-            }
-        }
-
     }
 
     public void subscribeToTopic(String topic) {
@@ -113,9 +57,7 @@ public class MqttSubscriber {
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
                     //System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
-
-                    // Procesa el payload aquí sin intentar deserializar
-                    //System.out.println("Payload: " + payload);
+                    mqttHandler.processJsonPayload(payload);
                 }
             });
         } catch (MqttException e) {
@@ -130,7 +72,7 @@ public class MqttSubscriber {
                     @Override
                     public void messageArrived(String topic, MqttMessage message) throws Exception {
                         String payload = new String(message.getPayload());
-                       // System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
+                        // System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
 
                         // Procesa el payload aquí sin intentar deserializar
                         //System.out.println("Payload: " + payload);
