@@ -33,9 +33,11 @@ public class MqttSubscriber {
     private VehicleRepository vehicleRepository;
     @Autowired
     private SpeedExcessLoggerRepository speedExcessLoggerRepository;
+    @Autowired
+    private MqttMessagePublisher mqttMessagePublisher;
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private MqttMessagePublisher mqttMessagePublisher;
+
 
     @PostConstruct
     public void init() {
