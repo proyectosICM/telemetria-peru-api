@@ -45,6 +45,7 @@ public class MqttSubscriber {
     @PostConstruct
     public void init() {
         String[] topics = {"data", "status", "prueba"};
+        System.out.println("suscript");
         mqttMessagePublisher = new MqttMessagePublisher(mqttClient);
         subscribeToTopic("prueba");
         subscribeToTopics(topics);
