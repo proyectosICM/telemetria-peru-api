@@ -57,11 +57,12 @@ public class MqttSubscriber {
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
                     System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
-                    processJsonPayload(payload);
+                    mqttHandler.processJsonPayload(payload);
                 }
             });
         } catch (MqttException e) {
             e.printStackTrace();
+            System.out.println("Error " + e);
         }
     }
 
