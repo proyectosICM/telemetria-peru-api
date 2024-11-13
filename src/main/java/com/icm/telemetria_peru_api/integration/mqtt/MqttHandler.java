@@ -7,6 +7,8 @@ import com.icm.telemetria_peru_api.models.SpeedExcessLoggerModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
+import jakarta.annotation.PostConstruct;
+import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,8 @@ import java.util.Optional;
 @Component
 public class MqttHandler {
     @Autowired
+    private IMqttClient mqttClient;
+    @Autowired
     private VehicleRepository vehicleRepository;
     @Autowired
     private SpeedExcessLoggerRepository speedExcessLoggerRepository;
@@ -23,6 +27,13 @@ public class MqttHandler {
     private MqttMessagePublisher mqttMessagePublisher;
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    @PostConstruct
+    public void init() {
+        System.out.println("suscript2");
+        mqttMessagePublisher = new MqttMessagePublisher(mqttClient);
+
+    }
 
     public void processJsonPayload(String payload) {
         try {
