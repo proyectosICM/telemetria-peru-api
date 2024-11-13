@@ -61,8 +61,9 @@ public class MqttSubscriber {
                 }
             });
         } catch (MqttException e) {
-            e.printStackTrace();
             System.out.println("Error " + e);
+            e.printStackTrace();
+
         }
     }
 
