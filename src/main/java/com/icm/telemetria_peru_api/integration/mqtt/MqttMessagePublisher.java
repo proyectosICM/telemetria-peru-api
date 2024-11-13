@@ -6,9 +6,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-
+@Component
 public class MqttMessagePublisher {
     private IMqttClient mqttClient;
     private ObjectMapper objectMapper = new ObjectMapper();
