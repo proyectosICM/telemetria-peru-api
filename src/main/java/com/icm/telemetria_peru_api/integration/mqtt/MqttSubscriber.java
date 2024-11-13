@@ -33,6 +33,8 @@ public class MqttSubscriber {
     private VehicleRepository vehicleRepository;
     @Autowired
     private SpeedExcessLoggerRepository speedExcessLoggerRepository;
+    @Autowired
+    private MqttMessagePublisher mqttMessagePublisher;
 
     @Autowired
     private MqttHandler mqttHandler;
@@ -43,6 +45,7 @@ public class MqttSubscriber {
     @PostConstruct
     public void init() {
         String[] topics = {"data", "status", "prueba"};
+        mqttMessagePublisher = new MqttMessagePublisher(mqttClient);
         mqttHandler = new MqttHandler(mqttClient);
         subscribeToTopics(topics);
         subscribeToJson("prueba");
@@ -54,7 +57,7 @@ public class MqttSubscriber {
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
                     System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
-                    mqttHandler.processJsonPayload(payload);
+                    processJsonPayload(payload);
                 }
             });
         } catch (MqttException e) {
@@ -83,8 +86,8 @@ public class MqttSubscriber {
             }
 
             if (vehicleId != null) {
-                //mqttMessagePublisher.telData(vehicleId, jsonNode);
-                //mqttMessagePublisher.mapData(vehicleId, companyId, licensePlate, jsonNode);
+                mqttMessagePublisher.telData(vehicleId, jsonNode);
+                mqttMessagePublisher.mapData(vehicleId, companyId, licensePlate, jsonNode);
                 //SpeedExcessLogger(vehicleId, speed);
             }
 
