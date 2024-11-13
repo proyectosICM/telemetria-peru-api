@@ -28,6 +28,11 @@ public class MqttHandler {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    public MqttHandler(IMqttClient mqttClient) {
+        this.mqttClient = mqttClient;
+    }
+
+
     @PostConstruct
     public void init() {
         System.out.println("suscript2");
