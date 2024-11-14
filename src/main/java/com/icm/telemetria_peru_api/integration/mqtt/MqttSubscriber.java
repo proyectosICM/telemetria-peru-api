@@ -46,8 +46,8 @@ public class MqttSubscriber {
     public void init() {
         String[] topics = {"data", "status", "prueba"};
         mqttMessagePublisher = new MqttMessagePublisher(mqttClient);
-        subscribeToTopic("prueba");
         subscribeToTopics(topics);
+        subscribeToTopic("prueba");
     }
     public void subscribeToTopic(String topic) {
         try {
