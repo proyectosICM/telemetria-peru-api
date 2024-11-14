@@ -32,7 +32,7 @@ public class MqttHandler {
     public void processJsonPayload(String payload) {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
-            System.out.println("Processing JSON payload");
+            //System.out.println("Processing JSON payload");
             Long companyId = null;
             Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
             String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
