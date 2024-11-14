@@ -47,9 +47,9 @@ public class MqttSubscriber {
         String[] topics = {"data", "status", "prueba"};
         mqttMessagePublisher = new MqttMessagePublisher(mqttClient);
         subscribeToTopics(topics);
-        subscribeToJson("prueba");
+        subscribeToTopic("prueba");
     }
-    public void subscribeToJson(String topic) {
+    public void subscribeToTopic(String topic) {
         try {
             mqttClient.subscribe(topic, new IMqttMessageListener() {
                 @Override
@@ -110,7 +110,7 @@ public class MqttSubscriber {
         }
 
     }
-
+/*
     public void subscribeToTopic(String topic) {
         try {
             mqttClient.subscribe(topic, new IMqttMessageListener() {
@@ -127,7 +127,7 @@ public class MqttSubscriber {
             e.printStackTrace();
         }
     }
-
+*/
     public void subscribeToTopics(String[] topics) {
         try {
             for (String topic : topics) {
