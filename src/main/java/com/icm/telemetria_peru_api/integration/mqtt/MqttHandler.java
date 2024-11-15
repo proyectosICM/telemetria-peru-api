@@ -82,6 +82,7 @@ public class MqttHandler {
         }
     }
 
+
     private void analyzeTimestamp(String timestamp) {
         try {
             // Convertir el timestamp de String a long
@@ -92,8 +93,8 @@ public class MqttHandler {
                     .atZone(ZoneId.systemDefault())
                     .toLocalTime();
 
-            // Verificar si la hora está entre 08:00 y 08:02
-            if (!time.isBefore(LocalTime.of(8, 0)) && !time.isAfter(LocalTime.of(8, 2))) {
+            // Verificar si está en los primeros 2 minutos de cualquier hora
+            if (time.getMinute() >= 0 && time.getMinute() <= 20) {
                 System.out.println("Hora inicial detectada: " + time);
             }
         } catch (Exception e) {
