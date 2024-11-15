@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Component
@@ -38,6 +40,11 @@ public class MqttHandler {
             String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
             String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
             Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
+            String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
+
+            if (timestamp != null) {
+                analyzeTimestamp(timestamp);
+            }
 
             if (vehicleId == null && imei != null) {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
@@ -70,6 +77,21 @@ public class MqttHandler {
                 speedExcessLoggerModel.setVehicleModel(vehicle.get());
                 speedExcessLoggerRepository.save(speedExcessLoggerModel);
             }
+        }
+    }
+
+    private void analyzeTimestamp(String timestamp) {
+        try {
+            // Parsear el timestamp a formato de hora
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            LocalTime time = LocalTime.parse(timestamp, formatter);
+
+            // Verificar si la hora está entre 08:00 y 08:02
+            if (!time.isBefore(LocalTime.of(8, 0)) && !time.isAfter(LocalTime.of(8, 2))) {
+                System.out.println("Hora inicial detectada: " + time);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al analizar el timestamp: " + e.getMessage());
         }
     }
 }
