@@ -61,8 +61,8 @@ public class MqttHandler {
                         .map(CompanyModel::getId)
                         .orElse(null);
 
-                if (timestamp != null) {
-                    analyzeTimestamp(timestamp, fuelInfo, vehicleOptional);
+                if (vehicleOptional.isPresent() && fuelInfo != null && timestamp != null) {
+                    analyzeTimestamp(timestamp, fuelInfo, vehicleOptional.get());
                 }
             }
 
