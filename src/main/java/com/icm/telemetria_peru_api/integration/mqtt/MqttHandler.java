@@ -104,7 +104,7 @@ public class MqttHandler {
             // Verificar si está en los primeros 2 minutos de cualquier hora
             int minute = time.getMinute();
             if (minute % 10 >= 0 && minute % 10 <= 2) {
-                System.out.println("Hora inicial detectada: " + time);
+                //System.out.println("Hora inicial detectada: " + time);
                 FuelRecordModel fuelRecordModel = new FuelRecordModel();
                 fuelRecordModel.setValueData(fuelInfo);
                 fuelRecordModel.setVehicleModel(vehicleModel);
