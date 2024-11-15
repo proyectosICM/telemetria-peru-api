@@ -82,9 +82,13 @@ public class MqttHandler {
 
     private void analyzeTimestamp(String timestamp) {
         try {
-            // Parsear el timestamp a formato de hora
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            LocalTime time = LocalTime.parse(timestamp, formatter);
+            // Convertir el timestamp de String a long
+            long unixTimestamp = Long.parseLong(timestamp);
+
+            // Convertir el Unix timestamp a hora local
+            LocalTime time = Instant.ofEpochSecond(unixTimestamp)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalTime();
 
             // Verificar si la hora está entre 08:00 y 08:02
             if (!time.isBefore(LocalTime.of(8, 0)) && !time.isAfter(LocalTime.of(8, 2))) {
