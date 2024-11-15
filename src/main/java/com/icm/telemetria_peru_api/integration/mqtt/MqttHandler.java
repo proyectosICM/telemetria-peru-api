@@ -3,8 +3,10 @@ package com.icm.telemetria_peru_api.integration.mqtt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icm.telemetria_peru_api.models.CompanyModel;
+import com.icm.telemetria_peru_api.models.FuelRecordModel;
 import com.icm.telemetria_peru_api.models.SpeedExcessLoggerModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
+import com.icm.telemetria_peru_api.repositories.FuelRecordRepository;
 import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import jakarta.annotation.PostConstruct;
@@ -27,6 +29,9 @@ public class MqttHandler {
     private VehicleRepository vehicleRepository;
     @Autowired
     private SpeedExcessLoggerRepository speedExcessLoggerRepository;
+
+    @Autowired
+    private FuelRecordRepository fuelRecordRepository;
     @Autowired
     private MqttMessagePublisher mqttMessagePublisher;
 
@@ -43,10 +48,9 @@ public class MqttHandler {
             String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
             Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
             String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
+            Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
 
-            if (timestamp != null) {
-                analyzeTimestamp(timestamp);
-            }
+
 
             if (vehicleId == null && imei != null) {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
@@ -56,6 +60,10 @@ public class MqttHandler {
                         .map(VehicleModel::getCompanyModel)
                         .map(CompanyModel::getId)
                         .orElse(null);
+
+                if (timestamp != null) {
+                    analyzeTimestamp(timestamp, fuelInfo, vehicleOptional);
+                }
             }
 
             if (vehicleId != null) {
@@ -83,7 +91,7 @@ public class MqttHandler {
     }
 
 
-    private void analyzeTimestamp(String timestamp) {
+    private void analyzeTimestamp(String timestamp, Double fuelInfo, VehicleModel vehicleModel ) {
         try {
             // Convertir el timestamp de String a long
             long unixTimestamp = Long.parseLong(timestamp);
@@ -96,6 +104,10 @@ public class MqttHandler {
             // Verificar si está en los primeros 2 minutos de cualquier hora
             if (time.getMinute() >= 0 && time.getMinute() <= 20) {
                 System.out.println("Hora inicial detectada: " + time);
+                FuelRecordModel fuelRecordModel = new FuelRecordModel();
+                fuelRecordModel.setValueData(fuelInfo);
+                fuelRecordModel.setVehicleModel(vehicleModel);
+                fuelRecordRepository.save(fuelRecordModel);
             }
         } catch (Exception e) {
             System.out.println("Error al analizar el timestamp: " + e.getMessage());
