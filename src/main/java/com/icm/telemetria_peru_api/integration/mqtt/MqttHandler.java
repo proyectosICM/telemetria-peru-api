@@ -51,7 +51,7 @@ public class MqttHandler {
             Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
             String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
             Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
-
+            Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
 
 
             if (vehicleId == null && imei != null) {
@@ -65,6 +65,10 @@ public class MqttHandler {
 
                 if (vehicleOptional.isPresent() && fuelInfo != null && timestamp != null) {
                     analyzeTimestamp(timestamp, fuelInfo, vehicleOptional.get());
+
+                }
+
+                if (vehicleOptional.isPresent() && alarmInfo!= null && alarmInfo != 0){
                     handleAlarmInfo(vehicleOptional.get());
                 }
             }
