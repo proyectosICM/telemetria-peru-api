@@ -2,10 +2,8 @@ package com.icm.telemetria_peru_api.integration.mqtt;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.icm.telemetria_peru_api.models.CompanyModel;
-import com.icm.telemetria_peru_api.models.FuelRecordModel;
-import com.icm.telemetria_peru_api.models.SpeedExcessLoggerModel;
-import com.icm.telemetria_peru_api.models.VehicleModel;
+import com.icm.telemetria_peru_api.models.*;
+import com.icm.telemetria_peru_api.repositories.AlarmRecordRepository;
 import com.icm.telemetria_peru_api.repositories.FuelRecordRepository;
 import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
@@ -32,6 +30,10 @@ public class MqttHandler {
 
     @Autowired
     private FuelRecordRepository fuelRecordRepository;
+
+    @Autowired
+    private AlarmRecordRepository alarmRecordRepository;
+
     @Autowired
     private MqttMessagePublisher mqttMessagePublisher;
 
@@ -63,6 +65,7 @@ public class MqttHandler {
 
                 if (vehicleOptional.isPresent() && fuelInfo != null && timestamp != null) {
                     analyzeTimestamp(timestamp, fuelInfo, vehicleOptional.get());
+                    handleAlarmInfo(vehicleOptional.get());
                 }
             }
 
@@ -113,5 +116,11 @@ public class MqttHandler {
         } catch (Exception e) {
             System.out.println("Error al analizar el timestamp: " + e.getMessage());
         }
+    }
+
+    private void handleAlarmInfo(VehicleModel vehicleModel) {
+        AlarmRecordModel alarmRecordModel = new AlarmRecordModel();
+        alarmRecordModel.setVehicleModel(vehicleModel);
+        alarmRecordRepository.save(alarmRecordModel);
     }
 }
