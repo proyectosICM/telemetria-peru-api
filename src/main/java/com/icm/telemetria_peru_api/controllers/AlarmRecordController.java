@@ -34,16 +34,21 @@ public class AlarmRecordController {
         return alarmRecordService.findAll(pageable);
     }
 
-    @GetMapping
+    @GetMapping("/findByVehicle/{vehicleId}")
     public List<AlarmRecordModel> findByVehicleModelId(@PathVariable Long vehicleId){
         return alarmRecordService.findByVehicleModelId(vehicleId);
     }
 
-    @GetMapping("/paged")
+    @GetMapping("/findByVehicle-paged/{vehicleId}")
     public Page<AlarmRecordModel> findByVehicleModelId(@PathVariable Long vehicleId,
                                                        @RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return alarmRecordService.findByVehicleModelId(vehicleId, pageable);
+    }
+
+    @PostMapping
+    public AlarmRecordModel save(@RequestBody AlarmRecordModel alarmRecordModel){
+        return alarmRecordService.save(alarmRecordModel);
     }
 }
