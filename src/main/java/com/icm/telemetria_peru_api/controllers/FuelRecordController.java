@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/fuel-records")
@@ -21,6 +23,12 @@ public class FuelRecordController {
 
     public FuelRecordController(FuelRecordService fuelRecordService) {
         this.fuelRecordService = fuelRecordService;
+    }
+
+    @GetMapping("/hourly-averages")
+    public List<Map<String, Object>> getHourlyAverages(@RequestParam(required = false) String date) {
+        LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
+        return fuelRecordService.getHourlyAveragesByDate(localDate);
     }
 
     @GetMapping("/{id}")
