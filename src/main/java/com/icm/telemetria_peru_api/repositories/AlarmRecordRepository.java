@@ -18,8 +18,15 @@ public interface AlarmRecordRepository extends JpaRepository<AlarmRecordModel, L
     Page<AlarmRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 
     /** Stats */
-    /* Conteo de cargas en un dia de un carril */
-    //@Query("SELECT rc.diaCarga AS fecha, COUNT(rc) AS cantidad FROM AlarmRecordModel a WHERE rc.carrilesModel.id = :carrilId AND rc.diaCarga = :fecha GROUP BY rc.diaCarga")
-    //Map<String, Object> groupByDiaCargaAndCount(@Param("carrilId") Long carrilId, @Param("fecha") LocalDate fecha);
-
+    /* Conteo  promedio de combustible en un dia */
+    @Query(value = """
+        SELECT 
+            DATE_FORMAT(ar.createdAt, '%Y-%m-%d %H:00:00') AS hour,
+            AVG(ar.valueData) AS averageValue
+        FROM alarm_records ar
+        WHERE DATE(ar.createdAt) = :date
+        GROUP BY DATE_FORMAT(ar.createdAt, '%Y-%m-%d %H:00:00')
+        ORDER BY hour
+    """, nativeQuery = true)
+    List<Map<String, Object>> findHourlyAverageByDate(@Param("date") LocalDate date);
 }

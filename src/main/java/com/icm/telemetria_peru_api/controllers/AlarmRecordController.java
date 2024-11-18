@@ -11,7 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/alarm-record")
@@ -48,6 +50,18 @@ public class AlarmRecordController {
         return alarmRecordService.findByVehicleModelId(vehicleId, pageable);
     }
 
+    @GetMapping("/hourly-averages")
+    public List<Map<String, Object>> getHourlyAverages(@RequestParam(required = false) String date) {
+        LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
+        return alarmRecordService.getHourlyAveragesByDate(localDate);
+    }
+/*
+    @GetMapping("/hourly-averages")
+    public List<Map<String, Object>> getHourlyAverages(@RequestParam String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return alarmRecordService.getHourlyAveragesByDate(localDate);
+    }
+*/
     @PostMapping
     public AlarmRecordModel save(@RequestBody AlarmRecordModel alarmRecordModel){
         return alarmRecordService.save(alarmRecordModel);

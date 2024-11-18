@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AlarmRecordService {
@@ -40,6 +42,10 @@ public class AlarmRecordService {
 
     public AlarmRecordModel save(AlarmRecordModel alarmRecordModel){
         return alarmRecordRepository.save(alarmRecordModel);
+    }
+
+    public List<Map<String, Object>> getHourlyAveragesByDate(LocalDate date) {
+        return alarmRecordRepository.findHourlyAverageByDate(date);
     }
 
 }
