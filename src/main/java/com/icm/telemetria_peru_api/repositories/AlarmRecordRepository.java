@@ -19,7 +19,7 @@ public interface AlarmRecordRepository extends JpaRepository<AlarmRecordModel, L
 
     /** Stats */
     /* Conteo de cargas en un dia de un carril */
-    @Query("SELECT rc.diaCarga AS fecha, COUNT(rc) AS cantidad FROM AlarmRecordModel a WHERE rc.carrilesModel.id = :carrilId AND rc.diaCarga = :fecha GROUP BY rc.diaCarga")
-    Map<String, Object> groupByDiaCargaAndCount(@Param("carrilId") Long carrilId, @Param("fecha") LocalDate fecha);
+    //@Query("SELECT rc.diaCarga AS fecha, COUNT(rc) AS cantidad FROM AlarmRecordModel a WHERE rc.carrilesModel.id = :carrilId AND rc.diaCarga = :fecha GROUP BY rc.diaCarga")
+    //Map<String, Object> groupByDiaCargaAndCount(@Param("carrilId") Long carrilId, @Param("fecha") LocalDate fecha);
 
 }
