@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "alarm-records")
+@Table(name = "alarm_records")
 public class AlarmRecordModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

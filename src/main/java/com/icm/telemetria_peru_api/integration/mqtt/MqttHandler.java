@@ -70,7 +70,7 @@ public class MqttHandler {
 
                 if (vehicleOptional.isPresent() && alarmInfo!= null && alarmInfo != 0){
                     handleAlarmInfo(vehicleOptional.get());
-                }
+                }   
             }
 
             if (vehicleId != null) {
