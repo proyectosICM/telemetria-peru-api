@@ -20,7 +20,7 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
     @Query(value = """
     SELECT 
         DATE_FORMAT(fr.created_at, '%Y-%m-%d %H:00:00') AS hour,
-        AVG(fr.valueData) AS averageValue
+        AVG(fr.value_data) AS averageValue
     FROM fuel_records fr
     WHERE DATE(fr.created_at) = :date
     GROUP BY DATE_FORMAT(fr.created_at, '%Y-%m-%d %H:00:00')
