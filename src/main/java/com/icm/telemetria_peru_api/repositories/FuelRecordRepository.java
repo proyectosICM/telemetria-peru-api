@@ -18,13 +18,13 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
     Page<FuelRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 
     @Query(value = """
-        SELECT 
-            DATE_FORMAT(fr.createdAt, '%Y-%m-%d %H:00:00') AS hour,
-            AVG(fr.valueData) AS averageValue
-        FROM fuel_records fr
-        WHERE DATE(fr.created_at) = :date
-        GROUP BY DATE_FORMAT(fr.created_at, '%Y-%m-%d %H:00:00')
-        ORDER BY hour
-    """, nativeQuery = true)
+    SELECT 
+        DATE_FORMAT(fr.created_at, '%Y-%m-%d %H:00:00') AS hour,
+        AVG(fr.valueData) AS averageValue
+    FROM fuel_records fr
+    WHERE DATE(fr.created_at) = :date
+    GROUP BY DATE_FORMAT(fr.created_at, '%Y-%m-%d %H:00:00')
+    ORDER BY hour
+""", nativeQuery = true)
     List<Map<String, Object>> findHourlyAverageByDate(@Param("date") LocalDate date);
 }
