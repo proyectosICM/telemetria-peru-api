@@ -19,8 +19,8 @@ public class FuelRecordService {
         this.fuelRecordRepository = fuelRecordRepository;
     }
 
-    public List<Map<String, Object>> getHourlyAveragesByDate(LocalDate date) {
-        return fuelRecordRepository.findHourlyAverageByDate(date);
+    public List<Map<String, Object>> getHourlyAveragesByDate(LocalDate date, Long vehicleId) {
+        return fuelRecordRepository.findHourlyAverageByDate(date, vehicleId);
     }
 
     public List<Map<String, Object>> findDailyAveragesForLast7Days() {

@@ -20,11 +20,12 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
         DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d %H:00:00') AS hour,
         AVG(fr.value_data) AS averageValue
     FROM fuel_records fr
-    WHERE DATE(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) = :date
+    WHERE DATE(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) = :date 
+    AND vehicle_id = :vehicle_id
     GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d %H:00:00')
     ORDER BY hour
     """, nativeQuery = true)
-    List<Map<String, Object>> findHourlyAverageByDate(@Param("date") LocalDate date);
+    List<Map<String, Object>> findHourlyAverageByDate(@Param("date") LocalDate date, Long vehicleId);
 
 
     @Query(value = """

@@ -25,10 +25,10 @@ public class FuelRecordController {
         this.fuelRecordService = fuelRecordService;
     }
 
-    @GetMapping("/hourly-averages")
-    public List<Map<String, Object>> getHourlyAverages(@RequestParam(required = false) String date) {
+    @GetMapping("/hourly-averages/{vehicleId}")
+    public List<Map<String, Object>> getHourlyAverages(@RequestParam(required = false) String date, @PathVariable Long vehicleId) {
         LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
-        return fuelRecordService.getHourlyAveragesByDate(localDate);
+        return fuelRecordService.getHourlyAveragesByDate(localDate, vehicleId);
     }
 
     @GetMapping("/week-averages")
