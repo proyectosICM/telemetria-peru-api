@@ -21,7 +21,7 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
         AVG(fr.value_data) AS averageValue
     FROM fuel_records fr
     WHERE DATE(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) = :date 
-    AND vehicle_id = :vehicle_id
+    AND fr.vehicle_id = :vehicleId
     GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d %H:00:00')
     ORDER BY hour
     """, nativeQuery = true)
