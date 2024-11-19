@@ -23,16 +23,16 @@ public class FuelRecordService {
         return fuelRecordRepository.findHourlyAverageByDate(date, vehicleId);
     }
 
-    public List<Map<String, Object>> findDailyAveragesForLast7Days() {
-        return fuelRecordRepository.findDailyAveragesForLast7Days();
+    public List<Map<String, Object>> findDailyAveragesForLast7Days(Long vehicleId) {
+        return fuelRecordRepository.findDailyAveragesForLast7Days(vehicleId);
     }
 
-    public List<Map<String, Object>> findDailyAveragesForCurrentMonth() {
-        return fuelRecordRepository.findDailyAveragesForCurrentMonth();
+    public List<Map<String, Object>> findDailyAveragesForCurrentMonth(Long vehicleId) {
+        return fuelRecordRepository.findDailyAveragesForCurrentMonth(vehicleId);
     }
 
-    public List<Map<String, Object>> findMonthlyAveragesForCurrentYear() {
-        return fuelRecordRepository.findMonthlyAveragesForCurrentYear();
+    public List<Map<String, Object>> findMonthlyAveragesForCurrentYear(Long vehicleId) {
+        return fuelRecordRepository.findMonthlyAveragesForCurrentYear(vehicleId);
     }
 
     /*********************************/

@@ -31,22 +31,22 @@ public class FuelRecordController {
         return fuelRecordService.getHourlyAveragesByDate(localDate, vehicleId);
     }
 
-    @GetMapping("/week-averages")
-    public List<Map<String, Object>> findDailyAveragesForLast7Days() {
+    @GetMapping("/week-averages/{vehicleId}")
+    public List<Map<String, Object>> findDailyAveragesForLast7Days(@PathVariable Long vehicleId) {
         //LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
-        return fuelRecordService.findDailyAveragesForLast7Days();
+        return fuelRecordService.findDailyAveragesForLast7Days(vehicleId);
     }
 
-    @GetMapping("/month-averages")
-    public List<Map<String, Object>> findDailyAveragesForCurrentMonth() {
+    @GetMapping("/month-averages/{vehicleId}")
+    public List<Map<String, Object>> findDailyAveragesForCurrentMonth(@PathVariable Long vehicleId) {
         //LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
-        return fuelRecordService.findDailyAveragesForCurrentMonth();
+        return fuelRecordService.findDailyAveragesForCurrentMonth(vehicleId);
     }
 
-    @GetMapping("/year-averages")
-    public List<Map<String, Object>> findMonthlyAveragesForCurrentYear() {
+    @GetMapping("/year-averages/{vehicleId}")
+    public List<Map<String, Object>> findMonthlyAveragesForCurrentYear(@PathVariable Long vehicleId) {
         //LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
-        return fuelRecordService.findMonthlyAveragesForCurrentYear();
+        return fuelRecordService.findMonthlyAveragesForCurrentYear(vehicleId);
     }
 
 

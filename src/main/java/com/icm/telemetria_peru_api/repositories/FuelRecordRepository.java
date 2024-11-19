@@ -25,7 +25,7 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
     GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d %H:00:00')
     ORDER BY hour
     """, nativeQuery = true)
-    List<Map<String, Object>> findHourlyAverageByDate(@Param("date") LocalDate date, Long vehicleId);
+    List<Map<String, Object>> findHourlyAverageByDate(@Param("date") LocalDate date,@Param("vehicleId")  Long vehicleId);
 
 
     @Query(value = """
@@ -34,10 +34,11 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
         AVG(fr.value_data) AS averageValue
     FROM fuel_records fr
     WHERE DATE(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) BETWEEN CURDATE() - INTERVAL 6 DAY AND CURDATE()
+    AND fr.vehicle_id = :vehicleId
     GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d')
     ORDER BY day
     """, nativeQuery = true)
-    List<Map<String, Object>> findDailyAveragesForLast7Days();
+    List<Map<String, Object>> findDailyAveragesForLast7Days(@Param("vehicleId") Long vehicleId);
 
     @Query(value = """
     SELECT 
@@ -45,21 +46,23 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
         AVG(fr.value_data) AS averageValue
     FROM fuel_records fr
     WHERE DATE(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND CURDATE()
+    AND fr.vehicle_id = :vehicleId
     GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d')
     ORDER BY day
     """, nativeQuery = true)
-    List<Map<String, Object>> findDailyAveragesForCurrentMonth();
+    List<Map<String, Object>> findDailyAveragesForCurrentMonth(@Param("vehicleId") Long vehicleId);
 
     @Query(value = """
     SELECT 
         DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
         AVG(fr.value_data) AS averageValue
     FROM fuel_records fr
+    AND fr.vehicle_id = :vehicleId
     WHERE YEAR(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) = YEAR(CURDATE())
     GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m')
     ORDER BY month
     """, nativeQuery = true)
-    List<Map<String, Object>> findMonthlyAveragesForCurrentYear();
+    List<Map<String, Object>> findMonthlyAveragesForCurrentYear(@Param("vehicleId") Long vehicleId);
 
     List<FuelRecordModel> findByVehicleModelId(Long vehicleId);
     Page<FuelRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
