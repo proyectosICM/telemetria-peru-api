@@ -27,6 +27,9 @@ public class FuelRecordService {
         return fuelRecordRepository.findDailyAveragesForLast7Days();
     }
 
+    public List<Map<String, Object>> findDailyAveragesForCurrentMonth() {
+        return fuelRecordRepository.findDailyAveragesForCurrentMonth();
+    }
 
     /*********************************/
     /** Starting point for find methods **/
