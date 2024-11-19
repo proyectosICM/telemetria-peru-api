@@ -31,6 +31,10 @@ public class FuelRecordService {
         return fuelRecordRepository.findDailyAveragesForCurrentMonth();
     }
 
+    public List<Map<String, Object>> findMonthlyAveragesForCurrentYear() {
+        return fuelRecordRepository.findMonthlyAveragesForCurrentYear();
+    }
+
     /*********************************/
     /** Starting point for find methods **/
     /*********************************/

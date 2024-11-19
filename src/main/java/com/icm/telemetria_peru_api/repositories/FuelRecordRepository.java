@@ -49,6 +49,17 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
     """, nativeQuery = true)
     List<Map<String, Object>> findDailyAveragesForCurrentMonth();
 
+    @Query(value = """
+    SELECT 
+        DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
+        AVG(fr.value_data) AS averageValue
+    FROM fuel_records fr
+    WHERE YEAR(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) = YEAR(CURDATE())
+    GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m')
+    ORDER BY month
+    """, nativeQuery = true)
+    List<Map<String, Object>> findMonthlyAveragesForCurrentYear();
+
     List<FuelRecordModel> findByVehicleModelId(Long vehicleId);
     Page<FuelRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 }
