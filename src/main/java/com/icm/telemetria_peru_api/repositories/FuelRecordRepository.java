@@ -14,8 +14,6 @@ import java.util.Map;
 
 @Repository
 public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Long> {
-    List<FuelRecordModel> findByVehicleModelId(Long vehicleId);
-    Page<FuelRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 
     @Query(value = """
     SELECT 
@@ -25,7 +23,21 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
     WHERE DATE(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) = :date
     GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d %H:00:00')
     ORDER BY hour
-""", nativeQuery = true)
+    """, nativeQuery = true)
     List<Map<String, Object>> findHourlyAverageByDate(@Param("date") LocalDate date);
 
+
+    @Query(value = """
+    SELECT 
+        DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d') AS day,
+        AVG(fr.value_data) AS averageValue
+    FROM fuel_records fr
+    WHERE DATE(CONVERT_TZ(fr.created_at, '+00:00', '-05:00')) BETWEEN CURDATE() - INTERVAL 6 DAY AND CURDATE()
+    GROUP BY DATE_FORMAT(CONVERT_TZ(fr.created_at, '+00:00', '-05:00'), '%Y-%m-%d')
+    ORDER BY day
+    """, nativeQuery = true)
+    List<Map<String, Object>> findDailyAveragesForLast7Days();
+
+    List<FuelRecordModel> findByVehicleModelId(Long vehicleId);
+    Page<FuelRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 }

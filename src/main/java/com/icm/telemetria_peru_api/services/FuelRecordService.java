@@ -19,6 +19,15 @@ public class FuelRecordService {
         this.fuelRecordRepository = fuelRecordRepository;
     }
 
+    public List<Map<String, Object>> getHourlyAveragesByDate(LocalDate date) {
+        return fuelRecordRepository.findHourlyAverageByDate(date);
+    }
+
+    public List<Map<String, Object>> findDailyAveragesForLast7Days() {
+        return fuelRecordRepository.findDailyAveragesForLast7Days();
+    }
+
+
     /*********************************/
     /** Starting point for find methods **/
     /*********************************/
@@ -39,10 +48,6 @@ public class FuelRecordService {
 
     public Page<FuelRecordModel> findByVehicleId(Long vehicleId, Pageable pageable){
         return fuelRecordRepository.findByVehicleModelId(vehicleId, pageable);
-    }
-
-    public List<Map<String, Object>> getHourlyAveragesByDate(LocalDate date) {
-        return fuelRecordRepository.findHourlyAverageByDate(date);
     }
 
     /*********************************/

@@ -31,6 +31,13 @@ public class FuelRecordController {
         return fuelRecordService.getHourlyAveragesByDate(localDate);
     }
 
+    @GetMapping("/week-averages")
+    public List<Map<String, Object>> findDailyAveragesForLast7Days() {
+        //LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
+        return fuelRecordService.findDailyAveragesForLast7Days();
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<FuelRecordModel> findById(@PathVariable @NotNull Long id) {
         try {
