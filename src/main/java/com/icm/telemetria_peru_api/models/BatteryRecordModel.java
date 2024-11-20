@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "battery-records")
+@Table(name = "battery_records")
 public class BatteryRecordModel {
     @Id
     @Column(unique = true, nullable = false)
