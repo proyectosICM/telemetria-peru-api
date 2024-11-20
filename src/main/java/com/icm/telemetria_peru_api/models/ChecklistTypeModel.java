@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "checklist-type")
+@Table(name = "checklist_types")
 public class ChecklistTypeModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
