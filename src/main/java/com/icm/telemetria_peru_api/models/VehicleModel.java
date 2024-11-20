@@ -60,9 +60,6 @@ public class VehicleModel {
     @Column(name = "fuel_type", nullable = false)
     private FuelType fuelType;
 
-    @Column(name = "max_fuel_volume", nullable = true)
-    private Double maxFuelVolume;
-
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private ZonedDateTime createdAt;
