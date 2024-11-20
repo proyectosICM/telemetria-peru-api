@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "vehicle")
+@Table(name = "vehicles")
 public class VehicleModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
