@@ -48,4 +48,8 @@ public class AlarmRecordService {
         return alarmRecordRepository.findHourlyAverageByDate(date);
     }
 
+    public void deleteById(Long id){
+        alarmRecordRepository.deleteById(id);
+    }
+
 }

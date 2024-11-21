@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -55,15 +57,15 @@ public class AlarmRecordController {
         LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
         return alarmRecordService.getHourlyAveragesByDate(localDate);
     }
-/*
-    @GetMapping("/hourly-averages")
-    public List<Map<String, Object>> getHourlyAverages(@RequestParam String date) {
-        LocalDate localDate = LocalDate.parse(date);
-        return alarmRecordService.getHourlyAveragesByDate(localDate);
-    }
-*/
+
     @PostMapping
     public AlarmRecordModel save(@RequestBody AlarmRecordModel alarmRecordModel){
         return alarmRecordService.save(alarmRecordModel);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AlarmRecordModel> delete(@PathVariable Long id){
+        alarmRecordService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
