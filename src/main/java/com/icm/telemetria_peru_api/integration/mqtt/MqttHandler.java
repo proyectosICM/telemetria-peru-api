@@ -72,7 +72,7 @@ public class MqttHandler {
                     handleAlarmInfo(vehicleOptional.get());
                 }
 
-                if (vehicleOptional.isPresent() && alarmInfo!= null){
+                if (vehicleOptional.isPresent() && ignitionInfo!= null){
                     handleIgnitionInfo(vehicleOptional.get(), ignitionInfo);
                 }
 
