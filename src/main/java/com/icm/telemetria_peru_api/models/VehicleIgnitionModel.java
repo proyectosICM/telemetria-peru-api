@@ -20,6 +20,8 @@ public class VehicleIgnitionModel {
     @Column(unique = true, nullable = false)
     private Long id;
 
+    private Boolean status;
+
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
     private VehicleModel vehicleModel;

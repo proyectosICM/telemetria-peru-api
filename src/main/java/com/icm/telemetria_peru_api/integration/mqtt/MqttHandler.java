@@ -3,10 +3,7 @@ package com.icm.telemetria_peru_api.integration.mqtt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icm.telemetria_peru_api.models.*;
-import com.icm.telemetria_peru_api.repositories.AlarmRecordRepository;
-import com.icm.telemetria_peru_api.repositories.FuelRecordRepository;
-import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
-import com.icm.telemetria_peru_api.repositories.VehicleRepository;
+import com.icm.telemetria_peru_api.repositories.*;
 import jakarta.annotation.PostConstruct;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,9 @@ public class MqttHandler {
     private IMqttClient mqttClient;
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private VehicleIgnitionRepository vehicleIgnitionRepository;
     @Autowired
     private SpeedExcessLoggerRepository speedExcessLoggerRepository;
 
@@ -52,7 +52,7 @@ public class MqttHandler {
             String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
             Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
             Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
-
+            Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
 
             if (vehicleId == null && imei != null) {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
@@ -70,7 +70,12 @@ public class MqttHandler {
 
                 if (vehicleOptional.isPresent() && alarmInfo!= null && alarmInfo != 0){
                     handleAlarmInfo(vehicleOptional.get());
-                }   
+                }
+
+                if (vehicleOptional.isPresent() && alarmInfo!= null){
+                    handleIgnitionInfo(vehicleOptional.get(), ignitionInfo);
+                }
+
             }
 
             if (vehicleId != null) {
@@ -127,4 +132,18 @@ public class MqttHandler {
         alarmRecordModel.setVehicleModel(vehicleModel);
         alarmRecordRepository.save(alarmRecordModel);
     }
+
+    private void handleIgnitionInfo(VehicleModel vehicleModel, Boolean currentStatus) {
+        VehicleIgnitionModel lastRecord = vehicleIgnitionRepository
+                .findTopByVehicleModelOrderByCreatedAtDesc(vehicleModel);
+
+        // Si no hay registros previos o el estado actual es diferente al último, guardar un nuevo registro
+        if (lastRecord == null || !lastRecord.getStatus().equals(currentStatus)) {
+            VehicleIgnitionModel newRecord = new VehicleIgnitionModel();
+            newRecord.setVehicleModel(vehicleModel);
+            newRecord.setStatus(currentStatus);
+            vehicleIgnitionRepository.save(newRecord);
+        }
+    }
+
 }
