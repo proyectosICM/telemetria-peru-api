@@ -54,8 +54,15 @@ public class VehicleIgnitionService {
                 // Apagado: calcular la duración y agregar a la lista
                 Duration duration = Duration.between(lastStart, record.getCreatedAt());
                 long hours = duration.toHours();
-                long minutes = duration.toMinutesPart(); // Parte restante en minutos
-                durations.add(new IgnitionDuration(lastStart, record.getCreatedAt(), hours, minutes));
+                long minutes = duration.toMinutesPart();
+
+                // Formatear duración como HH:MM
+                String durationFormatted = String.format("%02d:%02d", hours, minutes);
+
+                // Convertir duración a formato decimal
+                double durationInDecimal = hours + (minutes / 60.0);
+
+                durations.add(new IgnitionDuration(lastStart, record.getCreatedAt(), durationFormatted, durationInDecimal));
                 lastStart = null;
             }
         }

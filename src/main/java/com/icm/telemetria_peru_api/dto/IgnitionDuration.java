@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 public class IgnitionDuration {
     private ZonedDateTime start;
     private ZonedDateTime end;
-    private long durationInHours;
-    private long durationInMinutes;
+    private String durationFormatted;
+    private double durationInDecimal;
 
 }
