@@ -53,7 +53,9 @@ public class VehicleIgnitionService {
             } else if (lastStart != null) {
                 // Apagado: calcular la duración y agregar a la lista
                 Duration duration = Duration.between(lastStart, record.getCreatedAt());
-                durations.add(new IgnitionDuration(lastStart, record.getCreatedAt(), duration.toHours()));
+                long hours = duration.toHours();
+                long minutes = duration.toMinutesPart(); // Parte restante en minutos
+                durations.add(new IgnitionDuration(lastStart, record.getCreatedAt(), hours, minutes));
                 lastStart = null;
             }
         }
