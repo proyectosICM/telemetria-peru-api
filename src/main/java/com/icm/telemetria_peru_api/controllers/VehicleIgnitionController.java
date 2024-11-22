@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.IgnitionDuration;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleIgnitionModel;
 import com.icm.telemetria_peru_api.services.VehicleIgnitionService;
@@ -19,6 +20,11 @@ public class VehicleIgnitionController {
     @Autowired
     public VehicleIgnitionController(VehicleIgnitionService vehicleIgnitionService) {
         this.vehicleIgnitionService = vehicleIgnitionService;
+    }
+
+    @GetMapping("/active-durations/{vehicleId}")
+    public List<IgnitionDuration> getActiveDurations(@PathVariable Long vehicleId) {
+        return vehicleIgnitionService.calculateActiveDurations(vehicleId);
     }
 
     @GetMapping

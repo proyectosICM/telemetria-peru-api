@@ -14,6 +14,7 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     List<VehicleIgnitionModel> findByVehicleModelId(Long vehicleId);
     Page<VehicleIgnitionModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 
-    VehicleIgnitionModel findTopByVehicleModelOrderByCreatedAtDesc(VehicleModel vehicleModel);
+    VehicleIgnitionModel findTopByVehicleModelOrderByCreatedAtDesc(VehicleModel  vehicleModel);
+    List<VehicleIgnitionModel> findByVehicleModelIdOrderByCreatedAt(Long vehicleId);
 
 }
