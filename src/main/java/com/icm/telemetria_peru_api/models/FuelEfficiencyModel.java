@@ -13,19 +13,33 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "fuel_records")
-public class FuelRecordModel {
+@Table(name = "fuel_efficiency")
+public class FuelEfficiencyModel {
     @Id
     @Column(unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Double valueData;
-
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
     private VehicleModel vehicleModel;
+
+    @Column(nullable = false)
+    private ZonedDateTime startTime;
+
+    @Column(nullable = false)
+    private ZonedDateTime endTime;
+
+    @Column(nullable = false)
+    private Double accumulatedHours;
+
+    @Column(nullable = false)
+    private Double initialFuel;
+
+    @Column(nullable = false)
+    private Double finalFuel;
+
+    private String coordinates;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
