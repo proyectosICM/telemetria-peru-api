@@ -24,5 +24,5 @@ public class FuelEfficiencyService {
 
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel){
         return fuelEfficiencyRepository.save(fuelEfficiencyModel);
-    }
+    }   
 }
