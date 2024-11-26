@@ -27,7 +27,7 @@ public class FuelEfficiencyController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @GetMapping("/findByVehicle/{vehicleModelId}")
+    @GetMapping("/findByVehicle-paged/{vehicleModelId}")
     public ResponseEntity<Page<FuelEfficiencyModel>> findByVehicleModelId(
             @PathVariable Long vehicleModelId,
             @RequestParam(defaultValue = "0") int page,
