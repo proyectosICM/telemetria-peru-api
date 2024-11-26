@@ -14,15 +14,15 @@ public class FuelEfficiencyService {
     @Autowired
     private FuelEfficiencyRepository fuelEfficiencyRepository;
 
-    public List<FuelEfficiencyModel> findByVehicleModelId(Long id){
-        return fuelEfficiencyRepository.findByVehicleModelId(id);
+    public List<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId){
+        return fuelEfficiencyRepository.findByVehicleModelId(vehicleId);
     }
 
-    public Page<FuelEfficiencyModel> findByVehicleModelId(Long id, Pageable pageable){
-        return fuelEfficiencyRepository.findByVehicleModelId(id, pageable);
+    public Page<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId, Pageable pageable){
+        return fuelEfficiencyRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel){
         return fuelEfficiencyRepository.save(fuelEfficiencyModel);
-    }   
+    }
 }
