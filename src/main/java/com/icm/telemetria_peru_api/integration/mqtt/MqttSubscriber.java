@@ -1,10 +1,6 @@
 package com.icm.telemetria_peru_api.integration.mqtt;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.icm.telemetria_peru_api.models.ImpactIncidentLoggingModel;
-import com.icm.telemetria_peru_api.models.SpeedExcessLoggerModel;
-import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import jakarta.annotation.PostConstruct;
@@ -14,11 +10,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.icm.telemetria_peru_api.models.CompanyModel;
-
-import java.io.IOException;
-import java.util.Optional;
 
 /**
  * Component responsible for subscribing to MQTT topics and processing received messages.

@@ -4,42 +4,36 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icm.telemetria_peru_api.models.*;
 import com.icm.telemetria_peru_api.repositories.*;
-import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class MqttHandler {
-    @Autowired
-    private IMqttClient mqttClient;
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    private final IMqttClient mqttClient;
+    private final VehicleRepository vehicleRepository;
+    private final VehicleIgnitionRepository vehicleIgnitionRepository;
+    private final SpeedExcessLoggerRepository speedExcessLoggerRepository;
+    private final FuelRecordRepository fuelRecordRepository;
+    private final AlarmRecordRepository alarmRecordRepository;
+    private final MqttMessagePublisher mqttMessagePublisher;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    private VehicleIgnitionRepository vehicleIgnitionRepository;
-    @Autowired
-    private SpeedExcessLoggerRepository speedExcessLoggerRepository;
-
-    @Autowired
-    private FuelRecordRepository fuelRecordRepository;
-
-    @Autowired
-    private AlarmRecordRepository alarmRecordRepository;
-
-    @Autowired
-    private MqttMessagePublisher mqttMessagePublisher;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
-
-
+    /**
+     * Processes the JSON message received via MQTT, extracting relevant information
+     * about vehicles and events. Depending on the content, it triggers related functions
+     * such as ignition logging, alarms, speed excess, or fuel consumption, and publishes
+     * processed messages to other systems.
+     *
+     * @param payload the JSON message received via MQTT
+     */
     public void processJsonPayload(String payload) {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
@@ -58,24 +52,13 @@ public class MqttHandler {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
                 vehicleId = vehicleOptional.map(VehicleModel::getId).orElse(null);
                 licensePlate = vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null);
-                companyId = vehicleOptional
-                        .map(VehicleModel::getCompanyModel)
-                        .map(CompanyModel::getId)
-                        .orElse(null);
+                companyId = vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null);
 
-                if (vehicleOptional.isPresent() && fuelInfo != null && timestamp != null) {
+                if (vehicleOptional.isPresent()) {
                     analyzeTimestamp(timestamp, fuelInfo, vehicleOptional.get());
-
-                }
-
-                if (vehicleOptional.isPresent() && alarmInfo!= null && alarmInfo != 0){
-                    handleAlarmInfo(vehicleOptional.get());
-                }
-
-                if (vehicleOptional.isPresent() && ignitionInfo!= null){
+                    handleAlarmInfo(vehicleOptional.get(), alarmInfo);
                     handleIgnitionInfo(vehicleOptional.get(), ignitionInfo);
                 }
-
             }
 
             if (vehicleId != null) {
@@ -86,58 +69,93 @@ public class MqttHandler {
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Error al procesar el JSON: " + e.getMessage());
+            System.out.println("Error processing the JSON: " + e.getMessage());
         }
     }
 
-    private void SpeedExcessLogger(Long vehicleId, Integer speed){
+    /**
+     * Logs an event if the vehicle's speed exceeds its maximum allowed limit.
+     *
+     * @param vehicleId the ID of the vehicle
+     * @param speed the current speed of the vehicle
+     */
+    private void SpeedExcessLogger(Long vehicleId, Integer speed) {
         Optional<VehicleModel> vehicle = vehicleRepository.findById(vehicleId);
-        if (vehicle.isPresent()){
-            if (vehicle.get().getMaxSpeed() < speed){
+        if (vehicle.isPresent()) {
+            if (vehicle.get().getMaxSpeed() < speed) {
                 SpeedExcessLoggerModel speedExcessLoggerModel = new SpeedExcessLoggerModel();
-                speedExcessLoggerModel.setDescription("Velocidad maxima exedida en " + speed + " km/h");
+                speedExcessLoggerModel.setDescription("Maximum speed exceeded at " + speed + " km/h");
                 speedExcessLoggerModel.setVehicleModel(vehicle.get());
                 speedExcessLoggerRepository.save(speedExcessLoggerModel);
             }
         }
     }
 
-
-    private void analyzeTimestamp(String timestamp, Double fuelInfo, VehicleModel vehicleModel ) {
+    /**
+     * Analyzes the received timestamp to determine if it falls within a specific interval
+     * (the first 2 minutes of every tenth of the hour) and, if so, records a fuel data
+     * entry associated with the vehicle.
+     *
+     * @param timestamp the timestamp in Unix format (as a String) received in the message
+     * @param fuelInfo the fuel value associated with the vehicle
+     * @param vehicleModel the vehicle model to which the data belongs
+     */
+    private void analyzeTimestamp(String timestamp, Double fuelInfo, VehicleModel vehicleModel) {
         try {
-            // Convertir el timestamp de String a long
+
+            if (fuelInfo == null && timestamp == null) {
+                return;
+            }
+
             long unixTimestamp = Long.parseLong(timestamp);
 
-            // Convertir el Unix timestamp a hora local
-            LocalTime time = Instant.ofEpochSecond(unixTimestamp)
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalTime();
+            LocalTime time = Instant.ofEpochSecond(unixTimestamp).atZone(ZoneId.systemDefault()).toLocalTime();
 
-            // Verificar si está en los primeros 2 minutos de cualquier hora
             int minute = time.getMinute();
             if (minute % 10 >= 0 && minute % 10 <= 2) {
-                //System.out.println("Hora inicial detectada: " + time);
+                //System.out.println("Initial hour detected: " + time);
                 FuelRecordModel fuelRecordModel = new FuelRecordModel();
                 fuelRecordModel.setValueData(fuelInfo);
                 fuelRecordModel.setVehicleModel(vehicleModel);
                 fuelRecordRepository.save(fuelRecordModel);
             }
         } catch (Exception e) {
-            System.out.println("Error al analizar el timestamp: " + e.getMessage());
+            System.out.println("Error analyzing the timestamp: " + e.getMessage());
         }
     }
 
-    private void handleAlarmInfo(VehicleModel vehicleModel) {
+    /**
+     * Handles alarm information by checking if an alarm event exists
+     * and saving a record associated with the vehicle if valid.
+     *
+     * @param vehicleModel the vehicle model associated with the alarm
+     * @param alarmInfo the alarm information value; a non-null and non-zero value indicates an active alarm
+     */
+    private void handleAlarmInfo(VehicleModel vehicleModel, Integer alarmInfo) {
+        if (alarmInfo == null || alarmInfo == 0) {
+            return;
+        }
         AlarmRecordModel alarmRecordModel = new AlarmRecordModel();
         alarmRecordModel.setVehicleModel(vehicleModel);
         alarmRecordRepository.save(alarmRecordModel);
     }
 
+    /**
+     * Handles ignition status updates by checking the current ignition state
+     * and comparing it with the last recorded state. If the state has changed
+     * or there are no previous records, a new ignition record is saved.
+     *
+     * @param vehicleModel the vehicle model associated with the ignition status
+     * @param currentStatus the current ignition status (true for on, false for off)
+     */
     private void handleIgnitionInfo(VehicleModel vehicleModel, Boolean currentStatus) {
-        VehicleIgnitionModel lastRecord = vehicleIgnitionRepository
-                .findTopByVehicleModelOrderByCreatedAtDesc(vehicleModel);
 
-        // Si no hay registros previos o el estado actual es diferente al último, guardar un nuevo registro
+        if (currentStatus == null) {
+            return;
+        }
+
+        VehicleIgnitionModel lastRecord = vehicleIgnitionRepository.findTopByVehicleModelOrderByCreatedAtDesc(vehicleModel);
+
         if (lastRecord == null || !lastRecord.getStatus().equals(currentStatus)) {
             VehicleIgnitionModel newRecord = new VehicleIgnitionModel();
             newRecord.setVehicleModel(vehicleModel);
@@ -145,5 +163,4 @@ public class MqttHandler {
             vehicleIgnitionRepository.save(newRecord);
         }
     }
-
 }
