@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -16,19 +17,13 @@ import org.springframework.stereotype.Component;
  * Utilizes the Paho MQTT client library for MQTT communication.
  */
 @Component
+@RequiredArgsConstructor
 public class MqttSubscriber {
-    @Autowired
-    private IMqttClient mqttClient;
-
-    @Autowired
-    private VehicleRepository vehicleRepository;
-    @Autowired
-    private SpeedExcessLoggerRepository speedExcessLoggerRepository;
-    @Autowired
-    private MqttMessagePublisher mqttMessagePublisher;
-
-    @Autowired
-    private MqttHandler mqttHandler;
+    private final IMqttClient mqttClient;
+    private final VehicleRepository vehicleRepository;
+    private final SpeedExcessLoggerRepository speedExcessLoggerRepository;
+    private final MqttMessagePublisher mqttMessagePublisher;
+    private final MqttHandler mqttHandler;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -36,10 +31,10 @@ public class MqttSubscriber {
     @PostConstruct
     public void init() {
         String[] topics = {"data", "status", "prueba"};
-        mqttMessagePublisher = new MqttMessagePublisher(mqttClient);
         subscribeToTopics(topics);
         subscribeToTopic("prueba");
     }
+
     public void subscribeToTopic(String topic) {
         try {
             mqttClient.subscribe(topic, new IMqttMessageListener() {

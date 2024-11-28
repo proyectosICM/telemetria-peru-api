@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.models;
 
+import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,23 +21,28 @@ import java.time.ZonedDateTime;
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private FuelEfficiencyStatus fuelEfficiencyStatus;
+
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
     private VehicleModel vehicleModel;
 
-    @Column(nullable = false)
-    private ZonedDateTime startTime;
+    @C
 
-    @Column(nullable = false)
+
+
+    vate ZonedDateTime startTime;
+
     private ZonedDateTime endTime;
 
-    @Column(nullable = false)
+    @Column(nullable = false)0
     private Double accumulatedHours;
 
     @Column(nullable = false)
     private Double initialFuel;
 
-    @Column(nullable = false)
     private Double finalFuel;
 
     private String coordinates;

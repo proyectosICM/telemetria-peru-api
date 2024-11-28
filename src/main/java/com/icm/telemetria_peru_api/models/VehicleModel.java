@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.models;
 
+import com.icm.telemetria_peru_api.enums.FuelType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
