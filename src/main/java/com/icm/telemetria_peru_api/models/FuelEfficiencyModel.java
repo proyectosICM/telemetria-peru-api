@@ -29,15 +29,12 @@ import java.time.ZonedDateTime;
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
     private VehicleModel vehicleModel;
 
-    @C
-
-
-
-    vate ZonedDateTime startTime;
+    @Column(nullable = false)
+    private ZonedDateTime startTime;
 
     private ZonedDateTime endTime;
 
-    @Column(nullable = false)0
+    @Column(nullable = false)
     private Double accumulatedHours;
 
     @Column(nullable = false)
