@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.integration.mqtt;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
 import com.icm.telemetria_peru_api.models.*;
 import com.icm.telemetria_peru_api.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,9 @@ public class MqttHandler {
     private final AlarmRecordRepository alarmRecordRepository;
     private final MqttMessagePublisher mqttMessagePublisher;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+
+
 
     /**
      * Processes the JSON message received via MQTT, extracting relevant information
@@ -58,6 +62,7 @@ public class MqttHandler {
                     analyzeTimestamp(timestamp, fuelInfo, vehicleOptional.get());
                     handleAlarmInfo(vehicleOptional.get(), alarmInfo);
                     handleIgnitionInfo(vehicleOptional.get(), ignitionInfo);
+                    fuelEfficiencyInfoLogs(vehicleOptional.get(), timestamp);
                 }
             }
 
@@ -73,11 +78,24 @@ public class MqttHandler {
         }
     }
 
+    private VehiclePayloadMqttDTO  validateJson(JsonNode jsonNode){
+        Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
+        String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
+        String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
+        Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
+        String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
+        Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
+        Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
+        Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
+
+        return new VehiclePayloadMqttDTO(vehicleId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo);
+    }
+
     /**
      * Logs an event if the vehicle's speed exceeds its maximum allowed limit.
      *
      * @param vehicleId the ID of the vehicle
-     * @param speed the current speed of the vehicle
+     * @param speed     the current speed of the vehicle
      */
     private void SpeedExcessLogger(Long vehicleId, Integer speed) {
         Optional<VehicleModel> vehicle = vehicleRepository.findById(vehicleId);
@@ -96,8 +114,8 @@ public class MqttHandler {
      * (the first 2 minutes of every tenth of the hour) and, if so, records a fuel data
      * entry associated with the vehicle.
      *
-     * @param timestamp the timestamp in Unix format (as a String) received in the message
-     * @param fuelInfo the fuel value associated with the vehicle
+     * @param timestamp    the timestamp in Unix format (as a String) received in the message
+     * @param fuelInfo     the fuel value associated with the vehicle
      * @param vehicleModel the vehicle model to which the data belongs
      */
     private void analyzeTimestamp(String timestamp, Double fuelInfo, VehicleModel vehicleModel) {
@@ -129,7 +147,7 @@ public class MqttHandler {
      * and saving a record associated with the vehicle if valid.
      *
      * @param vehicleModel the vehicle model associated with the alarm
-     * @param alarmInfo the alarm information value; a non-null and non-zero value indicates an active alarm
+     * @param alarmInfo    the alarm information value; a non-null and non-zero value indicates an active alarm
      */
     private void handleAlarmInfo(VehicleModel vehicleModel, Integer alarmInfo) {
         if (alarmInfo == null || alarmInfo == 0) {
@@ -145,11 +163,10 @@ public class MqttHandler {
      * and comparing it with the last recorded state. If the state has changed
      * or there are no previous records, a new ignition record is saved.
      *
-     * @param vehicleModel the vehicle model associated with the ignition status
+     * @param vehicleModel  the vehicle model associated with the ignition status
      * @param currentStatus the current ignition status (true for on, false for off)
      */
     private void handleIgnitionInfo(VehicleModel vehicleModel, Boolean currentStatus) {
-
         if (currentStatus == null) {
             return;
         }
@@ -162,5 +179,9 @@ public class MqttHandler {
             newRecord.setStatus(currentStatus);
             vehicleIgnitionRepository.save(newRecord);
         }
+    }
+
+    private void fuelEfficiencyInfoLogs(VehicleModel vehicleModel, String time) {
+
     }
 }
