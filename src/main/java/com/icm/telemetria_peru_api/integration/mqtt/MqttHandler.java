@@ -183,13 +183,10 @@ public class MqttHandler {
     }
 
     private void fuelEfficiencyInfoLogs(VehicleModel vehicleModel, Boolean ignitionInfo, VehiclePayloadMqttDTO jsonNode) {
-        // Primero determinar el estado del bus actual
         FuelEfficiencyStatus determinate = determinateStatus(jsonNode.getIgnitionInfo(), jsonNode.getSpeed());
 
-        // Buscar el ultimo registro
         FuelEfficiencyModel lastRecord = fuelEfficiencyRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
-        // Si el ultimo registro no existe, crear uno nuevo
         if(lastRecord == null){
             FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
             newRecord.setFuelEfficiencyStatus(determinate);
@@ -201,9 +198,6 @@ public class MqttHandler {
         if (lastRecord.getFuelEfficiencyStatus() != determinate){
             //Si son diferentes registrar un evento de cambio
         }
-
-
-
     }
 
     // Evento de cambio
