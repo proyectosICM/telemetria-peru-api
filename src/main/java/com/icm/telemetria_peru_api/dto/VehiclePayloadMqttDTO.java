@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VehiclePayloadMqttDTO {
     private Long vehicleId;
+    private Long companyId;
     private String licensePlate;
     private String imei;
     private Integer speed;

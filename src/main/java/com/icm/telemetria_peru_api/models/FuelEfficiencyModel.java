@@ -30,11 +30,11 @@ import java.time.ZonedDateTime;
     private VehicleModel vehicleModel;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private ZonedDateTime startTime;
 
     private ZonedDateTime endTime;
 
-    @Column(nullable = false)
     private Double accumulatedHours;
 
     @Column(nullable = false)

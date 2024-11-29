@@ -25,6 +25,7 @@ public class FuelEfficiencyService {
     }
 
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel){
+
         FuelEfficiencyModel savedData = fuelEfficiencyRepository.save(fuelEfficiencyModel);
         if (savedData.getVehicleModel() != null) {
             mqttMessagePublisher.fuelEfficient(savedData.getId(), savedData.getVehicleModel().getId());

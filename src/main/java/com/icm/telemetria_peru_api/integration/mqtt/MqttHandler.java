@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.integration.mqtt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
+import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.models.*;
 import com.icm.telemetria_peru_api.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,10 @@ public class MqttHandler {
     private final VehicleRepository vehicleRepository;
     private final VehicleIgnitionRepository vehicleIgnitionRepository;
     private final SpeedExcessLoggerRepository speedExcessLoggerRepository;
+    private final FuelEfficiencyRepository fuelEfficiencyRepository;
     private final FuelRecordRepository fuelRecordRepository;
     private final AlarmRecordRepository alarmRecordRepository;
+
     private final MqttMessagePublisher mqttMessagePublisher;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -41,36 +44,25 @@ public class MqttHandler {
     public void processJsonPayload(String payload) {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
+            VehiclePayloadMqttDTO data = validateJson(jsonNode);
             //System.out.println("Processing JSON payload");
-            Long companyId = null;
-            Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
-            String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
-            String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
-            Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
-            String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
-            Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
-            Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
-            Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
 
-            if (vehicleId == null && imei != null) {
-                Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(imei);
-                vehicleId = vehicleOptional.map(VehicleModel::getId).orElse(null);
-                licensePlate = vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null);
-                companyId = vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null);
+
+            if (data.getVehicleId() == null && data.getImei() != null) {
+                Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(data.getImei());
+                data.setCompanyId(vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null));
+                data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
+                data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
 
                 if (vehicleOptional.isPresent()) {
-                    analyzeTimestamp(timestamp, fuelInfo, vehicleOptional.get());
-                    handleAlarmInfo(vehicleOptional.get(), alarmInfo);
-                    handleIgnitionInfo(vehicleOptional.get(), ignitionInfo);
-                    fuelEfficiencyInfoLogs(vehicleOptional.get(), timestamp);
+                    analyzeTimestamp(data.getTimestamp(), data.getFuelInfo(), vehicleOptional.get());
+                    handleAlarmInfo(vehicleOptional.get(), data.getAlarmInfo());
+                    handleIgnitionInfo(vehicleOptional.get(), data.getIgnitionInfo());
+                    //fuelEfficiencyInfoLogs(vehicleOptional.get(), data.getTimestamp());
                 }
             }
 
-            if (vehicleId != null) {
-                mqttMessagePublisher.telData(vehicleId, jsonNode);
-                mqttMessagePublisher.mapData(vehicleId, companyId, licensePlate, jsonNode);
-                //SpeedExcessLogger(vehicleId, speed);
-            }
+            publisherData(jsonNode, data);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,8 +70,17 @@ public class MqttHandler {
         }
     }
 
+    private void publisherData( JsonNode jsonNode,  VehiclePayloadMqttDTO vehiclePayloadMqttDTO){
+        if (vehiclePayloadMqttDTO.getVehicleId() != null) {
+            mqttMessagePublisher.telData(vehiclePayloadMqttDTO.getVehicleId(),  jsonNode);
+            mqttMessagePublisher.mapData(vehiclePayloadMqttDTO.getVehicleId(), vehiclePayloadMqttDTO.getCompanyId(), vehiclePayloadMqttDTO.getLicensePlate(), jsonNode);
+            //SpeedExcessLogger(vehicleId, speed);
+        }
+    }
+
     private VehiclePayloadMqttDTO  validateJson(JsonNode jsonNode){
         Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
+        Long companyId = jsonNode.has("companyId") ? jsonNode.get("companyId").asLong() : null;
         String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
         String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
         Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
@@ -88,7 +89,7 @@ public class MqttHandler {
         Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
         Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
 
-        return new VehiclePayloadMqttDTO(vehicleId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo);
+        return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo);
     }
 
     /**
@@ -181,7 +182,46 @@ public class MqttHandler {
         }
     }
 
-    private void fuelEfficiencyInfoLogs(VehicleModel vehicleModel, String time) {
+    private void fuelEfficiencyInfoLogs(VehicleModel vehicleModel, Boolean ignitionInfo, VehiclePayloadMqttDTO jsonNode) {
+        // Primero determinar el estado del bus actual
+        FuelEfficiencyStatus determinate = determinateStatus(jsonNode.getIgnitionInfo(), jsonNode.getSpeed());
 
+        // Buscar el ultimo registro
+        FuelEfficiencyModel lastRecord = fuelEfficiencyRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
+
+        // Si el ultimo registro no existe, crear uno nuevo
+        if(lastRecord == null){
+            FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
+            newRecord.setFuelEfficiencyStatus(determinate);
+            newRecord.setVehicleModel(vehicleModel);
+            newRecord.setInitialFuel(jsonNode.getFuelInfo());
+            fuelEfficiencyRepository.save(newRecord);
+        }
+
+        if (lastRecord.getFuelEfficiencyStatus() != determinate){
+            //Si son diferentes registrar un evento de cambio
+        }
+
+
+
+    }
+
+    // Evento de cambio
+    // Si se acumulan 3 eventos de cambios en el mismo vehiculo registar el cambio.
+
+
+    private FuelEfficiencyStatus determinateStatus(Boolean ignitionInfo, Integer speed){
+        if (ignitionInfo == null && speed == 0) {
+            return FuelEfficiencyStatus.ESTACIONADO;
+        }
+
+        if (ignitionInfo != null && ignitionInfo) {
+            if (speed == 0) {
+                return FuelEfficiencyStatus.RALENTI;
+            } else if (speed > 0) {
+                return FuelEfficiencyStatus.OPERACION;
+            }
+        }
+        return FuelEfficiencyStatus.ESTACIONADO;
     }
 }
