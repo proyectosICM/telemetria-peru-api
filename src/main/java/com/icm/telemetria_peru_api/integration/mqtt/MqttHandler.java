@@ -59,7 +59,7 @@ public class MqttHandler {
                     analyzeTimestamp(data.getTimestamp(), data.getFuelInfo(), vehicleOptional.get());
                     handleAlarmInfo(vehicleOptional.get(), data.getAlarmInfo());
                     handleIgnitionInfo(vehicleOptional.get(), data.getIgnitionInfo());
-                    //fuelEfficiencyInfoLogs(vehicleOptional.get(), data.getTimestamp());
+                    fuelEfficiencyInfoLogs(vehicleOptional.get(), data);
                 }
             }
 
@@ -183,7 +183,7 @@ public class MqttHandler {
         }
     }
 
-    private void fuelEfficiencyInfoLogs(VehicleModel vehicleModel, Boolean ignitionInfo, VehiclePayloadMqttDTO jsonNode) {
+    private void fuelEfficiencyInfoLogs(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode) {
         FuelEfficiencyStatus determinate = determinateStatus(jsonNode.getIgnitionInfo(), jsonNode.getSpeed());
 
         FuelEfficiencyModel lastRecord = fuelEfficiencyRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
