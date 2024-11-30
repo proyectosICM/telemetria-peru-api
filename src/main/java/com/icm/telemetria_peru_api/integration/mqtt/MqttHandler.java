@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @Component
@@ -195,8 +196,18 @@ public class MqttHandler {
             fuelEfficiencyRepository.save(newRecord);
         }
 
-        if (lastRecord.getFuelEfficiencyStatus() != determinate){
-            //Si son diferentes registrar un evento de cambio
+        if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() != determinate){
+            //Cierra el registro anterior
+            lastRecord.setEndTime(ZonedDateTime.now());
+            lastRecord.setFinalFuel(jsonNode.getFuelInfo());
+            fuelEfficiencyRepository.save(lastRecord);
+
+            //Crear e nuevo registro
+            FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
+            newRecord.setFuelEfficiencyStatus(determinate);
+            newRecord.setVehicleModel(vehicleModel);
+            newRecord.setInitialFuel(jsonNode.getFuelInfo());
+            fuelEfficiencyRepository.save(newRecord);
         }
     }
 
