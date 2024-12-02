@@ -43,12 +43,16 @@ import java.util.List;
 
     private Double finalFuel;
 
+    private Double distance;
+
     private String coordinates;
 
     @ElementCollection
     @CollectionTable(name = "speeds", joinColumns = @JoinColumn(name = "fuel_efficiency_id"))
     @Column(name = "speed")
     private List<Double> speeds;
+
+    private Double fuelEfficiency;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

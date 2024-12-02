@@ -10,11 +10,30 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class FuelEfficiencyHandler {
     private final FuelEfficiencyRepository fuelEfficiencyRepository;
+
+    private void createNewFuelEfficiencyRecord(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode, FuelEfficiencyStatus status) {
+        FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
+        newRecord.setFuelEfficiencyStatus(status);
+        newRecord.setVehicleModel(vehicleModel);
+        newRecord.setInitialFuel(jsonNode.getFuelInfo());
+        fuelEfficiencyRepository.save(newRecord);
+    }
+
+    private void addNewSpeedToRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
+        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
+            if (lastRecord.getSpeeds() == null) {
+                lastRecord.setSpeeds(new ArrayList<>());
+            }
+            lastRecord.getSpeeds().add(jsonNode.getSpeed());
+            fuelEfficiencyRepository.save(lastRecord);
+        }
+    }
 
     public void processFuelEfficiencyInfo(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode) {
         FuelEfficiencyStatus determinate = determinateStatus(jsonNode.getIgnitionInfo(), jsonNode.getSpeed());
@@ -33,6 +52,32 @@ public class FuelEfficiencyHandler {
             //Cierra el registro anterior
             lastRecord.setEndTime(ZonedDateTime.now());
             lastRecord.setFinalFuel(jsonNode.getFuelInfo());
+
+            // Calcular el tiempo transcurrido en horas
+            double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
+            lastRecord.setAccumulatedHours(accumulatedHours);
+
+            // Calcular la distancia
+            double totalSpeed = 0.0;
+            double distance = 0.0;
+            List<Double> speeds = lastRecord.getSpeeds();
+            if (speeds != null && !speeds.isEmpty()) {
+                totalSpeed = speeds.stream().mapToDouble(Double::doubleValue).sum();
+                double averageSpeed = totalSpeed / speeds.size();
+                distance = averageSpeed * accumulatedHours;
+                lastRecord.setDistance(distance);
+            }
+
+            double initialFuel = lastRecord.getInitialFuel();
+            double finalFuel = jsonNode.getFuelInfo();
+
+            double fuelUsed = initialFuel - finalFuel;
+            if (fuelUsed > 0) {
+                double fuelEfficiency = distance / fuelUsed;
+                lastRecord.setFuelEfficiency(fuelEfficiency);
+            }
+
+
             fuelEfficiencyRepository.save(lastRecord);
 
             //Crear e nuevo registro
@@ -68,5 +113,13 @@ public class FuelEfficiencyHandler {
             }
         }
         return FuelEfficiencyStatus.ESTACIONADO;
+    }
+
+    private double calculateElapsedTimeInHours(ZonedDateTime startTime, ZonedDateTime endTime) {
+        if (startTime != null && endTime != null) {
+            long elapsedMillis = java.time.Duration.between(startTime, endTime).toMillis();
+            return elapsedMillis / 3600000.0;  // Convertir milisegundos a horas
+        }
+        return 0.0;
     }
 }
