@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -43,6 +44,11 @@ import java.time.ZonedDateTime;
     private Double finalFuel;
 
     private String coordinates;
+
+    @ElementCollection
+    @CollectionTable(name = "speeds", joinColumns = @JoinColumn(name = "fuel_efficiency_id"))
+    @Column(name = "speed")
+    private List<Double> speeds;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

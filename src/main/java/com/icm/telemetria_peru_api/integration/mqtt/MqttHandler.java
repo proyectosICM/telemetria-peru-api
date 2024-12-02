@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Component
@@ -30,8 +31,6 @@ public class MqttHandler {
 
     private final MqttMessagePublisher mqttMessagePublisher;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-
 
 
     /**
@@ -71,20 +70,20 @@ public class MqttHandler {
         }
     }
 
-    private void publisherData( JsonNode jsonNode,  VehiclePayloadMqttDTO vehiclePayloadMqttDTO){
+    private void publisherData(JsonNode jsonNode, VehiclePayloadMqttDTO vehiclePayloadMqttDTO) {
         if (vehiclePayloadMqttDTO.getVehicleId() != null) {
-            mqttMessagePublisher.telData(vehiclePayloadMqttDTO.getVehicleId(),  jsonNode);
+            mqttMessagePublisher.telData(vehiclePayloadMqttDTO.getVehicleId(), jsonNode);
             mqttMessagePublisher.mapData(vehiclePayloadMqttDTO.getVehicleId(), vehiclePayloadMqttDTO.getCompanyId(), vehiclePayloadMqttDTO.getLicensePlate(), jsonNode);
             //SpeedExcessLogger(vehicleId, speed);
         }
     }
 
-    private VehiclePayloadMqttDTO  validateJson(JsonNode jsonNode){
+    private VehiclePayloadMqttDTO validateJson(JsonNode jsonNode) {
         Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
         Long companyId = jsonNode.has("companyId") ? jsonNode.get("companyId").asLong() : null;
         String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
         String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
-        Integer speed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : 0;
+        Double speed = jsonNode.has("speed") ? jsonNode.get("speed").asDouble() : 0;
         String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
         Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
         Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
@@ -188,7 +187,7 @@ public class MqttHandler {
 
         FuelEfficiencyModel lastRecord = fuelEfficiencyRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
-        if(lastRecord == null){
+        if (lastRecord == null) {
             FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
             newRecord.setFuelEfficiencyStatus(determinate);
             newRecord.setVehicleModel(vehicleModel);
@@ -196,7 +195,7 @@ public class MqttHandler {
             fuelEfficiencyRepository.save(newRecord);
         }
 
-        if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() != determinate){
+        if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() != determinate) {
             //Cierra el registro anterior
             lastRecord.setEndTime(ZonedDateTime.now());
             lastRecord.setFinalFuel(jsonNode.getFuelInfo());
@@ -209,13 +208,24 @@ public class MqttHandler {
             newRecord.setInitialFuel(jsonNode.getFuelInfo());
             fuelEfficiencyRepository.save(newRecord);
         }
+
+        // Agregar un nuevo registro de velocidad
+        if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() == determinate) {
+            if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
+                if (lastRecord.getSpeeds() == null) {
+                    lastRecord.setSpeeds(new ArrayList<>());
+                }
+                lastRecord.getSpeeds().add(jsonNode.getSpeed());
+                fuelEfficiencyRepository.save(lastRecord);
+            }
+        }
     }
 
     // Evento de cambio
     // Si se acumulan 3 eventos de cambios en el mismo vehiculo registar el cambio.
 
 
-    private FuelEfficiencyStatus determinateStatus(Boolean ignitionInfo, Integer speed){
+    private FuelEfficiencyStatus determinateStatus(Boolean ignitionInfo, Double speed) {
         if (ignitionInfo == null && speed == 0) {
             return FuelEfficiencyStatus.ESTACIONADO;
         }
