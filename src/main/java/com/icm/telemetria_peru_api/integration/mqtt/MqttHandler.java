@@ -56,7 +56,7 @@ public class MqttHandler {
                     alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
                     ignitionHandler.updateIgnitionStatus(vehicleOptional.get(), data.getIgnitionInfo());
                     fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
-                    speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
+                    //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
             }
 
