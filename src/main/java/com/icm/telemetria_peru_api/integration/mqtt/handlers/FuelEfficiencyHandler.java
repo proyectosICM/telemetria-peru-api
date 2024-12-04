@@ -26,7 +26,7 @@ public class FuelEfficiencyHandler {
     }
 
     private void addNewSpeedToRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
-        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 0.0) {
+        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
             if (lastRecord.getSpeeds() == null) {
                 lastRecord.setSpeeds(new ArrayList<>());
             }
@@ -86,12 +86,15 @@ public class FuelEfficiencyHandler {
         }
 
         // Agregar un nuevo registro de velocidad
-
         if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() == determinate) {
-            addNewSpeedToRecord(lastRecord, jsonNode);
+            if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
+                if (lastRecord.getSpeeds() == null) {
+                    lastRecord.setSpeeds(new ArrayList<>());
+                }
+                lastRecord.getSpeeds().add(jsonNode.getSpeed());
+                fuelEfficiencyRepository.save(lastRecord);
+            }
         }
-
-
     }
 
     private FuelEfficiencyStatus determinateStatus(Boolean ignitionInfo, Double speed) {
