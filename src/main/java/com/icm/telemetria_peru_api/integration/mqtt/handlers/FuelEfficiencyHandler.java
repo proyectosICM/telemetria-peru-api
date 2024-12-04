@@ -87,6 +87,7 @@ public class FuelEfficiencyHandler {
 
         // Agregar un nuevo registro de velocidad
         if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() == determinate) {
+            /*
             if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
                 if (lastRecord.getSpeeds() == null) {
                     lastRecord.setSpeeds(new ArrayList<>());
@@ -94,6 +95,9 @@ public class FuelEfficiencyHandler {
                 lastRecord.getSpeeds().add(jsonNode.getSpeed());
                 fuelEfficiencyRepository.save(lastRecord);
             }
+             */
+            addNewSpeedToRecord(lastRecord, jsonNode);
+            return;
         }
     }
 
