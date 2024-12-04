@@ -35,6 +35,15 @@ public class FuelEfficiencyHandler {
         }
     }
 
+    private void closeLastRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
+        lastRecord.setEndTime(ZonedDateTime.now());
+        lastRecord.setFinalFuel(jsonNode.getFuelInfo());
+
+        double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
+        lastRecord.setAccumulatedHours(accumulatedHours);
+
+    }
+
     public void processFuelEfficiencyInfo(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode) {
         FuelEfficiencyStatus determinate = determinateStatus(jsonNode.getIgnitionInfo(), jsonNode.getSpeed());
 
@@ -103,5 +112,9 @@ public class FuelEfficiencyHandler {
             return elapsedMillis / 3600000.0;  // Convertir milisegundos a horas
         }
         return 0.0;
+    }
+
+    private void calculateDistanceAndEfficiency(FuelEfficiencyModel record, double hours, double finalFuel) {
+        List<Double> speeds = record.getSpeeds();
     }
 }
