@@ -54,12 +54,16 @@ public class MqttHandler {
                 if (vehicleOptional.isPresent()) {
                     System.out.println("Entrp 3");
                     fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
-                    alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
-                    ignitionHandler.updateIgnitionStatus(vehicleOptional.get(), data.getIgnitionInfo());
-                    fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
                     System.out.println("Entrp 4");
+                    alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
+                    System.out.println("Entrp 5");
+                    ignitionHandler.updateIgnitionStatus(vehicleOptional.get(), data.getIgnitionInfo());
+                    System.out.println("Entrp 6");
+                    fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
+                    System.out.println("Entrp 7");
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
+                System.out.println("Publicar");
                 publisherData(data, jsonNode);
 
             }
