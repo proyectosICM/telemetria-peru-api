@@ -45,6 +45,47 @@ public class FuelEfficiencyHandler {
             return;
         }
 
+        if (lastRecord.getFuelEfficiencyStatus() != determinate) {
+            //Cierra el registro anterior
+            lastRecord.setEndTime(ZonedDateTime.now());
+            lastRecord.setFinalFuel(jsonNode.getFuelInfo());
+/*
+            // Calcular el tiempo transcurrido en horas
+            double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
+            lastRecord.setAccumulatedHours(accumulatedHours);
+
+            // Calcular la distancia
+            double totalSpeed = 0.0;
+            double distance = 0.0;
+            List<Double> speeds = lastRecord.getSpeeds();
+            if (speeds != null && !speeds.isEmpty()) {
+                totalSpeed = speeds.stream().mapToDouble(Double::doubleValue).sum();
+                double averageSpeed = totalSpeed / speeds.size();
+                distance = averageSpeed * accumulatedHours;
+                lastRecord.setDistance(distance);
+            }
+
+            double initialFuel = lastRecord.getInitialFuel();
+            double finalFuel = jsonNode.getFuelInfo();
+
+            double fuelUsed = initialFuel - finalFuel;
+            if (fuelUsed > 0) {
+                double fuelEfficiency = distance / fuelUsed;
+                lastRecord.setFuelEfficiency(fuelEfficiency);
+            }
+
+*/
+            fuelEfficiencyRepository.save(lastRecord);
+
+            //Crear e nuevo registro
+            FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
+            newRecord.setFuelEfficiencyStatus(determinate);
+            newRecord.setVehicleModel(vehicleModel);
+            newRecord.setInitialFuel(jsonNode.getFuelInfo());
+            fuelEfficiencyRepository.save(newRecord);
+        } else {
+            addNewSpeedToRecord(lastRecord, jsonNode);
+        }
     }
 
     private FuelEfficiencyStatus determinateStatus(Boolean ignitionInfo, Double speed) {
