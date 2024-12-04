@@ -26,7 +26,7 @@ public class FuelEfficiencyHandler {
     }
 
     private void addNewSpeedToRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
-        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
+        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 0.0) {
             if (lastRecord.getSpeeds() == null) {
                 lastRecord.setSpeeds(new ArrayList<>());
             }
@@ -41,11 +41,8 @@ public class FuelEfficiencyHandler {
         FuelEfficiencyModel lastRecord = fuelEfficiencyRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
         if (lastRecord == null) {
-            FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
-            newRecord.setFuelEfficiencyStatus(determinate);
-            newRecord.setVehicleModel(vehicleModel);
-            newRecord.setInitialFuel(jsonNode.getFuelInfo());
-            fuelEfficiencyRepository.save(newRecord);
+            createNewFuelEfficiencyRecord(vehicleModel, jsonNode, determinate);
+            return;
         }
 
         if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() != determinate) {
@@ -90,13 +87,7 @@ public class FuelEfficiencyHandler {
 
         // Agregar un nuevo registro de velocidad
         if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() == determinate) {
-            if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
-                if (lastRecord.getSpeeds() == null) {
-                    lastRecord.setSpeeds(new ArrayList<>());
-                }
-                lastRecord.getSpeeds().add(jsonNode.getSpeed());
-                fuelEfficiencyRepository.save(lastRecord);
-            }
+            addNewSpeedToRecord(lastRecord, jsonNode);
         }
     }
 
