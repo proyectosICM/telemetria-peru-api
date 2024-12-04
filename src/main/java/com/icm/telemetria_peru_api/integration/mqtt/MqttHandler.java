@@ -52,10 +52,12 @@ public class MqttHandler {
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
                 System.out.println("Entrp 2");
                 if (vehicleOptional.isPresent()) {
+                    System.out.println("Entrp 3");
                     fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
                     alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
                     ignitionHandler.updateIgnitionStatus(vehicleOptional.get(), data.getIgnitionInfo());
                     fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
+                    System.out.println("Entrp 4");
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
                 publisherData(data, jsonNode);
