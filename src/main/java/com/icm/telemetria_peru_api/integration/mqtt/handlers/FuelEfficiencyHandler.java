@@ -45,7 +45,7 @@ public class FuelEfficiencyHandler {
             return;
         }
 
-        if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() != determinate) {
+        if (lastRecord.getFuelEfficiencyStatus() != determinate) {
             //Cierra el registro anterior
             lastRecord.setEndTime(ZonedDateTime.now());
             lastRecord.setFinalFuel(jsonNode.getFuelInfo());
@@ -83,21 +83,8 @@ public class FuelEfficiencyHandler {
             newRecord.setVehicleModel(vehicleModel);
             newRecord.setInitialFuel(jsonNode.getFuelInfo());
             fuelEfficiencyRepository.save(newRecord);
-        }
-
-        // Agregar un nuevo registro de velocidad
-        if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() == determinate) {
-            /*
-            if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
-                if (lastRecord.getSpeeds() == null) {
-                    lastRecord.setSpeeds(new ArrayList<>());
-                }
-                lastRecord.getSpeeds().add(jsonNode.getSpeed());
-                fuelEfficiencyRepository.save(lastRecord);
-            }
-             */
+        } else {
             addNewSpeedToRecord(lastRecord, jsonNode);
-            return;
         }
     }
 
