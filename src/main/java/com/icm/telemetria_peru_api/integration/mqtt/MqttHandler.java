@@ -42,7 +42,7 @@ public class MqttHandler {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
             VehiclePayloadMqttDTO data = validateJson(jsonNode);
-            //System.out.println("Processing JSON payload");
+            System.out.println("Processing JSON payload");
 
             System.out.println("Entrp");
             if (data.getVehicleId() == null && data.getImei() != null) {
