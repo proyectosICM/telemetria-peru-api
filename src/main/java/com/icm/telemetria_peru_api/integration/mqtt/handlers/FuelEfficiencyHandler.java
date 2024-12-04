@@ -49,7 +49,7 @@ public class FuelEfficiencyHandler {
             //Cierra el registro anterior
             lastRecord.setEndTime(ZonedDateTime.now());
             lastRecord.setFinalFuel(jsonNode.getFuelInfo());
-/*
+
             // Calcular el tiempo transcurrido en horas
             double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
             lastRecord.setAccumulatedHours(accumulatedHours);
@@ -73,16 +73,10 @@ public class FuelEfficiencyHandler {
                 double fuelEfficiency = distance / fuelUsed;
                 lastRecord.setFuelEfficiency(fuelEfficiency);
             }
-
-*/
             fuelEfficiencyRepository.save(lastRecord);
 
             //Crear e nuevo registro
-            FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
-            newRecord.setFuelEfficiencyStatus(determinate);
-            newRecord.setVehicleModel(vehicleModel);
-            newRecord.setInitialFuel(jsonNode.getFuelInfo());
-            fuelEfficiencyRepository.save(newRecord);
+            createNewFuelEfficiencyRecord(vehicleModel, jsonNode, determinate);
         } else {
             addNewSpeedToRecord(lastRecord, jsonNode);
         }
