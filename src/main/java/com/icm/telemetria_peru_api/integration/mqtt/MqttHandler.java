@@ -50,7 +50,7 @@ public class MqttHandler {
                 data.setCompanyId(vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null));
                 data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
-                System.out.println(vehicleOptional.get());
+                System.out.println("Entrp");
                 if (vehicleOptional.isPresent()) {
                     fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
                     alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
@@ -58,17 +58,16 @@ public class MqttHandler {
                     fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
+                publisherData(data, jsonNode);
+
             }
-
-            publisherData(jsonNode, data);
-
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error processing the JSON: " + e.getMessage());
         }
     }
 
-    private void publisherData(JsonNode jsonNode, VehiclePayloadMqttDTO vehiclePayloadMqttDTO) {
+    private void publisherData( VehiclePayloadMqttDTO vehiclePayloadMqttDTO, JsonNode jsonNode) {
         if (vehiclePayloadMqttDTO.getVehicleId() != null) {
             mqttMessagePublisher.telData(vehiclePayloadMqttDTO.getVehicleId(), jsonNode);
             mqttMessagePublisher.mapData(vehiclePayloadMqttDTO.getVehicleId(), vehiclePayloadMqttDTO.getCompanyId(), vehiclePayloadMqttDTO.getLicensePlate(), jsonNode);
