@@ -44,13 +44,13 @@ public class MqttHandler {
             VehiclePayloadMqttDTO data = validateJson(jsonNode);
             //System.out.println("Processing JSON payload");
 
-
+            System.out.println("Entrp");
             if (data.getVehicleId() == null && data.getImei() != null) {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(data.getImei());
                 data.setCompanyId(vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null));
                 data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
-                System.out.println("Entrp");
+                System.out.println("Entrp 2");
                 if (vehicleOptional.isPresent()) {
                     fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
                     alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
