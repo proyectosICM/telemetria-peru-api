@@ -86,12 +86,12 @@ public class FuelEfficiencyHandler {
         }
 
         // Agregar un nuevo registro de velocidad
-        /*
+
         if (lastRecord != null && lastRecord.getFuelEfficiencyStatus() == determinate) {
             addNewSpeedToRecord(lastRecord, jsonNode);
         }
 
-         */
+
     }
 
     private FuelEfficiencyStatus determinateStatus(Boolean ignitionInfo, Double speed) {
