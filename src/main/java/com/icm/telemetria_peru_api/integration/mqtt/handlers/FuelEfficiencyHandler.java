@@ -52,7 +52,7 @@ public class FuelEfficiencyHandler {
             //Cierra el registro anterior
             lastRecord.setEndTime(ZonedDateTime.now());
             lastRecord.setFinalFuel(jsonNode.getFuelInfo());
-
+/*
             // Calcular el tiempo transcurrido en horas
             double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
             lastRecord.setAccumulatedHours(accumulatedHours);
@@ -77,7 +77,7 @@ public class FuelEfficiencyHandler {
                 lastRecord.setFuelEfficiency(fuelEfficiency);
             }
 
-
+*/
             fuelEfficiencyRepository.save(lastRecord);
 
             //Crear e nuevo registro
