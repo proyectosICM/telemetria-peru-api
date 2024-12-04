@@ -41,7 +41,8 @@ public class FuelEfficiencyHandler {
 
         double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
         lastRecord.setAccumulatedHours(accumulatedHours);
-
+        calculateDistanceAndEfficiency(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
+        fuelEfficiencyRepository.save(lastRecord);
     }
 
     public void processFuelEfficiencyInfo(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode) {
@@ -55,36 +56,7 @@ public class FuelEfficiencyHandler {
         }
 
         if (lastRecord.getFuelEfficiencyStatus() != determinate) {
-            //Cierra el registro anterior
-            lastRecord.setEndTime(ZonedDateTime.now());
-            lastRecord.setFinalFuel(jsonNode.getFuelInfo());
-
-            // Calcular el tiempo transcurrido en horas
-            double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
-            lastRecord.setAccumulatedHours(accumulatedHours);
-
-            // Calcular la distancia
-            double totalSpeed = 0.0;
-            double distance = 0.0;
-            List<Double> speeds = lastRecord.getSpeeds();
-            if (speeds != null && !speeds.isEmpty()) {
-                totalSpeed = speeds.stream().mapToDouble(Double::doubleValue).sum();
-                double averageSpeed = totalSpeed / speeds.size();
-                distance = averageSpeed * accumulatedHours;
-                lastRecord.setDistance(distance);
-            }
-
-            double initialFuel = lastRecord.getInitialFuel();
-            double finalFuel = jsonNode.getFuelInfo();
-
-            double fuelUsed = initialFuel - finalFuel;
-            if (fuelUsed > 0) {
-                double fuelEfficiency = distance / fuelUsed;
-                lastRecord.setFuelEfficiency(fuelEfficiency);
-            }
-            fuelEfficiencyRepository.save(lastRecord);
-
-            //Crear e nuevo registro
+            closeLastRecord(lastRecord, jsonNode);
             createNewFuelEfficiencyRecord(vehicleModel, jsonNode, determinate);
         } else {
             addNewSpeedToRecord(lastRecord, jsonNode);
@@ -116,5 +88,17 @@ public class FuelEfficiencyHandler {
 
     private void calculateDistanceAndEfficiency(FuelEfficiencyModel record, double hours, double finalFuel) {
         List<Double> speeds = record.getSpeeds();
+        if (speeds != null && !speeds.isEmpty()) {
+            double totalSpeed = speeds.stream().mapToDouble(Double::doubleValue).sum();
+            double averageSpeed = totalSpeed / speeds.size();
+            double distance = averageSpeed * hours;
+            record.setDistance(distance);
+
+            double fuelUsed = record.getInitialFuel() - finalFuel;
+            if (fuelUsed > 0) {
+                double fuelEfficiency = distance / fuelUsed;
+                record.setFuelEfficiency(fuelEfficiency);
+            }
+        }
     }
 }
