@@ -59,7 +59,7 @@ public class MqttHandler {
                     System.out.println("Entrp 5");
                     ignitionHandler.updateIgnitionStatus(vehicleOptional.get(), data.getIgnitionInfo());
                     System.out.println("Entrp 6");
-                    fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
+                    //fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
                     System.out.println("Entrp 7");
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
