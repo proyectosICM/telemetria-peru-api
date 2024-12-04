@@ -42,28 +42,22 @@ public class MqttHandler {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
             VehiclePayloadMqttDTO data = validateJson(jsonNode);
-            System.out.println("Processing JSON payload");
+            //System.out.println("Processing JSON payload");
 
-            System.out.println("Entrp");
             if (data.getVehicleId() == null && data.getImei() != null) {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(data.getImei());
                 data.setCompanyId(vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null));
                 data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
-                System.out.println("Entrp 2");
                 if (vehicleOptional.isPresent()) {
-                    System.out.println("Entrp 3");
                     fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
-                    System.out.println("Entrp 4");
                     alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
-                    System.out.println("Entrp 5");
                     ignitionHandler.updateIgnitionStatus(vehicleOptional.get(), data.getIgnitionInfo());
                     System.out.println("Entrp 6");
-                    //fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
+                    fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
                     System.out.println("Entrp 7");
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
-                System.out.println("Publicar");
                 publisherData(data, jsonNode);
 
             }
