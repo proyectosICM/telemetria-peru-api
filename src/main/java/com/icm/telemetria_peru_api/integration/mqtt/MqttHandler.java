@@ -50,7 +50,7 @@ public class MqttHandler {
                 data.setCompanyId(vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null));
                 data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
-
+                System.out.println(vehicleOptional.get());
                 if (vehicleOptional.isPresent()) {
                     fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
                     alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
