@@ -46,4 +46,10 @@ public class FuelEfficiencyController {
         FuelEfficiencyModel saveData = fuelEfficiencyService.save(fuelEfficiencyModel);
         return new ResponseEntity<>(saveData, HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<FuelEfficiencyModel> delete(@PathVariable Long id){
+        fuelEfficiencyService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

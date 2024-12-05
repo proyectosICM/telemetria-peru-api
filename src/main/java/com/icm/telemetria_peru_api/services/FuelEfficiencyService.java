@@ -34,4 +34,8 @@ public class FuelEfficiencyService {
         }
         return savedData;
     }
+
+    public void deleteById(Long id){
+        fuelEfficiencyRepository.deleteById(id);
+    }
 }

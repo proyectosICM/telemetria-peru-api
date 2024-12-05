@@ -21,7 +21,7 @@ public class MqttHandler {
     private final IgnitionHandler ignitionHandler;
     private final AlarmHandler alarmHandler;
     private final FuelRecordHandler fuelRecordHandler;
-    private final FuelEfficiencyHandler fuelEfficiencyHandler;
+    private final FuelEfficiencyHandler     fuelEfficiencyHandler;
     private final SpeedExcessHandler speedExcessHandler;
     private final IMqttClient mqttClient;
     private final VehicleRepository vehicleRepository;
