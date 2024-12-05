@@ -51,6 +51,7 @@ public class MqttHandler {
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
                 if (vehicleOptional.isPresent()) {
                     VehicleModel vehicle = vehicleOptional.get();
+                    publishDataWithErrorHandling(data, jsonNode);
                     processHandlersWithErrorHandling(data, vehicle);
                     /*
                     fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
@@ -60,7 +61,7 @@ public class MqttHandler {
                     */
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
-                publishDataWithErrorHandling(data, jsonNode);
+
                 //publisherData(data, jsonNode);
 
             }
