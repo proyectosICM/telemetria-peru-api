@@ -60,7 +60,8 @@ public class MqttHandler {
                     */
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
-                publisherData(data, jsonNode);
+                publishDataWithErrorHandling(data, jsonNode);
+                //publisherData(data, jsonNode);
 
             }
         } catch (IOException e) {
