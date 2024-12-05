@@ -17,4 +17,5 @@ public class VehiclePayloadMqttDTO {
     private Double fuelInfo;
     private Integer alarmInfo;
     private Boolean ignitionInfo;
+    private String coordinates;
 }

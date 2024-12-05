@@ -53,17 +53,8 @@ public class MqttHandler {
                     VehicleModel vehicle = vehicleOptional.get();
                     publishDataWithErrorHandling(data, jsonNode);
                     processHandlersWithErrorHandling(data, vehicle);
-                    /*
-                    fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
-                    alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
-                    ignitionHandler.updateIgnitionStatus(vehicleOptional.get(), data.getIgnitionInfo());
-                    fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
-                    */
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
-
-                //publisherData(data, jsonNode);
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -110,7 +101,13 @@ public class MqttHandler {
         Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
         Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
         Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
+        // Obtener latitud y longitud
+        Double latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asDouble() : null;
+        Double longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asDouble() : null;
 
-        return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo);
+        // Combinar las coordenadas en un solo string
+        String coordinates = (latitude != null && longitude != null) ? latitude + "," + longitude : null;
+
+        return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, coordinates);
     }
 }

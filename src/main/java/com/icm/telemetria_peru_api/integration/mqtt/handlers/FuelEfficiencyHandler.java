@@ -38,6 +38,7 @@ public class FuelEfficiencyHandler {
     private void closeLastRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
         lastRecord.setEndTime(ZonedDateTime.now());
         lastRecord.setFinalFuel(jsonNode.getFuelInfo());
+        lastRecord.setCoordinates(jsonNode.getCoordinates());
 
         double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
         lastRecord.setAccumulatedHours(accumulatedHours);
