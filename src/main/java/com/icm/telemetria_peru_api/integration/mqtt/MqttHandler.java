@@ -50,12 +50,14 @@ public class MqttHandler {
                 data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
                 if (vehicleOptional.isPresent()) {
+                    VehicleModel vehicle = vehicleOptional.get();
+                    processHandlersWithErrorHandling(data, vehicle);
+                    /*
                     fuelRecordHandler.analyzeFuelTimestamp(data, vehicleOptional.get());
                     alarmHandler.saveAlarmRecord(vehicleOptional.get(), data.getAlarmInfo());
                     ignitionHandler.updateIgnitionStatus(vehicleOptional.get(), data.getIgnitionInfo());
-                    //System.out.println("Entrp 6");
                     fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicleOptional.get(), data);
-                    //System.out.println("Entrp 7");
+                    */
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                 }
                 publisherData(data, jsonNode);
@@ -66,6 +68,27 @@ public class MqttHandler {
             System.out.println("Error processing the JSON: " + e.getMessage());
         }
     }
+
+    private void processHandlersWithErrorHandling(VehiclePayloadMqttDTO data, VehicleModel vehicle) {
+        executeSafely(() -> fuelRecordHandler.analyzeFuelTimestamp(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
+        executeSafely(() -> alarmHandler.saveAlarmRecord(vehicle, data.getAlarmInfo()), "alarmHandler.saveAlarmRecord");
+        executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
+        executeSafely(() -> fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicle, data), "fuelEfficiencyHandler.processFuelEfficiencyInfo");
+    }
+
+    private void publishDataWithErrorHandling(VehiclePayloadMqttDTO data, JsonNode jsonNode) {
+        executeSafely(() -> publisherData(data, jsonNode), "publisherData");
+    }
+
+    private void executeSafely(Runnable action, String actionName) {
+        try {
+            action.run();
+        } catch (Exception e) {
+            System.err.println("Error in " + actionName + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     private void publisherData( VehiclePayloadMqttDTO vehiclePayloadMqttDTO, JsonNode jsonNode) {
         if (vehiclePayloadMqttDTO.getVehicleId() != null) {
