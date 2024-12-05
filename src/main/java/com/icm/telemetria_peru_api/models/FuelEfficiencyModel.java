@@ -47,7 +47,7 @@ import java.util.List;
 
     private String coordinates;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "speeds", joinColumns = @JoinColumn(name = "fuel_efficiency_id"))
     @Column(name = "speed")
     private List<Double> speeds;
