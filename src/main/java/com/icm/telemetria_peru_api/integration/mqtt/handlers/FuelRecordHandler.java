@@ -35,7 +35,7 @@ public class FuelRecordHandler {
             LocalTime time = Instant.ofEpochSecond(unixTimestamp).atZone(ZoneId.systemDefault()).toLocalTime();
 
             int minute = time.getMinute();
-            if (minute % 10 >= 0 && minute % 10 <= 2) {
+            if (minute % 10 >= 0 && minute  % 10 <= 2) {
                 //System.out.println("Initial hour detected: " + time);
                 FuelRecordModel fuelRecordModel = new FuelRecordModel();
                 fuelRecordModel.setValueData(data.getFuelInfo());

@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/batteries")
 public class BatteryController {
-    private final BatteryService batteryService;
+        private final BatteryService batteryService;
     @Autowired
     public BatteryController(BatteryService batteryService) {
         this.batteryService = batteryService;
