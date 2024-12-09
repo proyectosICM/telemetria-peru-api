@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,11 @@ public class FuelEfficiencyService {
 
     private final FuelEfficiencyRepository fuelEfficiencyRepository;
     private final MqttMessagePublisher mqttMessagePublisher;
+
+    public Optional<FuelEfficiencyModel> findById(Long id) {
+        return fuelEfficiencyRepository.findById(id);
+    }
+
     public List<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId){
         return fuelEfficiencyRepository.findByVehicleModelId(vehicleId);
     }

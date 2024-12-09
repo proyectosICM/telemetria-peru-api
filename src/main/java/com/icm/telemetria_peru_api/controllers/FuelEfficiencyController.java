@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/fuel-efficiency")
@@ -23,6 +24,13 @@ import java.util.List;
 public class FuelEfficiencyController {
     private final FuelEfficiencyService fuelEfficiencyService;
     private final MqttMessagePublisher mqttMessagePublisher;
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<FuelEfficiencyModel>> findById(@PathVariable Long id){
+        Optional<FuelEfficiencyModel> data = fuelEfficiencyService.findById(id);
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
 
     @GetMapping("/findByVehicle/{vehicleModelId}")
     public ResponseEntity<List<FuelEfficiencyModel>> findByVehicleModelId(
