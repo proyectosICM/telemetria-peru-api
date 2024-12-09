@@ -43,6 +43,7 @@ public class FuelEfficiencyHandler {
         double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
         lastRecord.setAccumulatedHours(accumulatedHours);
         calculateDistanceAndEfficiency(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
+        calculateEfficiencyByHour(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
         fuelEfficiencyRepository.save(lastRecord);
     }
 
@@ -100,6 +101,20 @@ public class FuelEfficiencyHandler {
                 double fuelEfficiency = distance / fuelUsed;
                 record.setFuelEfficiency(fuelEfficiency);
             }
+        }
+    }
+
+    private void calculateEfficiencyByHour(FuelEfficiencyModel record, double hours, double finalFuel) {
+        if (hours > 0) {
+            double fuelUsed = record.getInitialFuel() - finalFuel;
+            if (fuelUsed > 0) {
+                double efficiencyByHour = fuelUsed / hours;
+                record.setFuelConsumptionPerHour(efficiencyByHour);
+            } else {
+                record.setFuelConsumptionPerHour(0.0);
+            }
+        } else {
+            record.setFuelConsumptionPerHour(0.0);
         }
     }
 }

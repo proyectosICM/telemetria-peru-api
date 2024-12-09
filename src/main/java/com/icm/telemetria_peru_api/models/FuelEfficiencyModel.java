@@ -54,6 +54,8 @@ import java.util.List;
 
     private Double fuelEfficiency;
 
+    private Double fuelConsumptionPerHour;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private ZonedDateTime createdAt;
