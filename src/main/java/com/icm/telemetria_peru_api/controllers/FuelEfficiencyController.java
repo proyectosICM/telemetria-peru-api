@@ -1,12 +1,9 @@
 package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
-import com.icm.telemetria_peru_api.models.DriverModel;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
-import com.icm.telemetria_peru_api.repositories.FuelEfficiencyRepository;
 import com.icm.telemetria_peru_api.services.FuelEfficiencyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

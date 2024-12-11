@@ -71,12 +71,13 @@ public class MqttMessagePublisher {
         }
     }
 
+    /* EN DESUSO */
     public void fuelEfficient(Long logId, Long vehicleId) {
         try {
             MqttMessage mqttMessage = new MqttMessage();
             mqttMessage.setQos(1);
-            mqttMessage.setRetained(false); // Generalmente no es necesario que sea retenido para datos dinámicos
-            mqttMessage.setPayload(logId.toString().getBytes()); // Convierte Long a String y luego a bytes
+            mqttMessage.setRetained(false);
+            mqttMessage.setPayload(logId.toString().getBytes());
 
             // Publicar el mensaje en el tema fuelEfficient/{vehicleId}
             String topic = "fuelEfficient/" + vehicleId;
@@ -89,7 +90,7 @@ public class MqttMessagePublisher {
             }
         } catch (MqttException e) {
             System.err.println("Error al enviar el mensaje fuelEfficient: " + e.getMessage());
-            e.printStackTrace(); // Para debugging
+            e.printStackTrace();
         }
     }
 }

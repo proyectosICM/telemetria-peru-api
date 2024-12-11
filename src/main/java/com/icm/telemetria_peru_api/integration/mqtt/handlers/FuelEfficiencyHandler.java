@@ -17,36 +17,12 @@ import java.util.List;
 public class FuelEfficiencyHandler {
     private final FuelEfficiencyRepository fuelEfficiencyRepository;
 
-    private void createNewFuelEfficiencyRecord(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode, FuelEfficiencyStatus status) {
-        FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
-        newRecord.setFuelEfficiencyStatus(status);
-        newRecord.setVehicleModel(vehicleModel);
-        newRecord.setInitialFuel(jsonNode.getFuelInfo());
-        fuelEfficiencyRepository.save(newRecord);
-    }
-
-    private void addNewSpeedToRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
-        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
-            if (lastRecord.getSpeeds() == null) {
-                lastRecord.setSpeeds(new ArrayList<>());
-            }
-            lastRecord.getSpeeds().add(jsonNode.getSpeed());
-            fuelEfficiencyRepository.save(lastRecord);
-        }
-    }
-
-    private void closeLastRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
-        lastRecord.setEndTime(ZonedDateTime.now());
-        lastRecord.setFinalFuel(jsonNode.getFuelInfo());
-        lastRecord.setCoordinates(jsonNode.getCoordinates());
-
-        double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
-        lastRecord.setAccumulatedHours(accumulatedHours);
-        calculateDistanceAndEfficiency(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
-        calculateEfficiencyByHour(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
-        fuelEfficiencyRepository.save(lastRecord);
-    }
-
+    /**
+     * Processes fuel efficiency information based on the data received.
+     *
+     * @param vehicleModel Model of the related vehicle.
+     * @param jsonNode Vehicle telemetry data received via MQTT.
+     */
     public void processFuelEfficiencyInfo(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode) {
         FuelEfficiencyStatus determinate = determinateStatus(jsonNode.getIgnitionInfo(), jsonNode.getSpeed());
 
@@ -65,6 +41,13 @@ public class FuelEfficiencyHandler {
         }
     }
 
+    /**
+     * Determines fuel efficiency status based on ignition and speed.
+     *
+     * @param ignitionInfo Ignition status of the vehicle.
+     * @param speed Vehicle speed in km/h.
+     * @return The corresponding fuel efficiency status.
+     */
     private FuelEfficiencyStatus determinateStatus(Boolean ignitionInfo, Double speed) {
         if (ignitionInfo == null && speed == 0) {
             return FuelEfficiencyStatus.ESTACIONADO;
@@ -80,6 +63,55 @@ public class FuelEfficiencyHandler {
         return FuelEfficiencyStatus.ESTACIONADO;
     }
 
+    /**
+     * Creates a new fuel efficiency record for a vehicle.
+     *
+     * @param vehicleModel Vehicle model associated with the record.
+     * @param jsonNode Vehicle telemetry data including fuel information.
+     * @param status Initial fuel efficiency status (e.g., OPERATION, RALENTI).
+     */
+    private void createNewFuelEfficiencyRecord(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode, FuelEfficiencyStatus status) {
+        FuelEfficiencyModel newRecord = new FuelEfficiencyModel();
+        newRecord.setFuelEfficiencyStatus(status);
+        newRecord.setVehicleModel(vehicleModel);
+        newRecord.setInitialFuel(jsonNode.getFuelInfo());
+        fuelEfficiencyRepository.save(newRecord);
+    }
+
+    /**
+     * Close a record by adding the final data and performing fuel efficiency calculations.
+     *
+     * @param lastRecord model of the last saved record
+     * @param jsonNode Vehicle telemetry data including fuel information.
+     */
+    private void closeLastRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
+        lastRecord.setEndTime(ZonedDateTime.now());
+        lastRecord.setFinalFuel(jsonNode.getFuelInfo());
+        lastRecord.setCoordinates(jsonNode.getCoordinates());
+
+        double accumulatedHours = calculateElapsedTimeInHours(lastRecord.getStartTime(), ZonedDateTime.now());
+        lastRecord.setAccumulatedHours(accumulatedHours);
+        calculateDistanceAndEfficiency(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
+        calculateEfficiencyByHour(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
+        fuelEfficiencyRepository.save(lastRecord);
+    }
+
+    /**
+     * Adds a new speed value to the last fuel efficiency record if valid.
+     *
+     * @param lastRecord The last fuel efficiency record to update.
+     * @param jsonNode Vehicle telemetry data including the speed.
+     */
+    private void addNewSpeedToRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
+        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
+            if (lastRecord.getSpeeds() == null) {
+                lastRecord.setSpeeds(new ArrayList<>());
+            }
+            lastRecord.getSpeeds().add(jsonNode.getSpeed());
+            fuelEfficiencyRepository.save(lastRecord);
+        }
+    }
+
     private double calculateElapsedTimeInHours(ZonedDateTime startTime, ZonedDateTime endTime) {
         if (startTime != null && endTime != null) {
             long elapsedMillis = java.time.Duration.between(startTime, endTime).toMillis();
@@ -89,6 +121,11 @@ public class FuelEfficiencyHandler {
     }
 
     private void calculateDistanceAndEfficiency(FuelEfficiencyModel record, double hours, double finalFuel) {
+        if(record.getFuelEfficiencyStatus() != FuelEfficiencyStatus.OPERACION){
+            record.setFuelEfficiency(0.00);
+            return;
+        }
+
         List<Double> speeds = record.getSpeeds();
         if (speeds != null && !speeds.isEmpty()) {
             double totalSpeed = speeds.stream().mapToDouble(Double::doubleValue).sum();
@@ -105,6 +142,11 @@ public class FuelEfficiencyHandler {
     }
 
     private void calculateEfficiencyByHour(FuelEfficiencyModel record, double hours, double finalFuel) {
+        if(record.getFuelEfficiencyStatus() != FuelEfficiencyStatus.OPERACION){
+            record.setFuelConsumptionPerHour(0.00);
+            return;
+        }
+
         if (hours > 0) {
             double fuelUsed = record.getInitialFuel() - finalFuel;
             if (fuelUsed > 0) {
