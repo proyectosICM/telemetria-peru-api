@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.services;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.repositories.FuelEfficiencyRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,18 @@ public class FuelEfficiencyService {
             System.err.println("VehicleModel es nulo, no se puede enviar el mensaje MQTT.");
         }
         return savedData;
+    }
+
+    public FuelEfficiencyModel editEfficiency(Long id){
+        Optional<FuelEfficiencyModel> existing = fuelEfficiencyRepository.findById(id);
+        if(existing.isPresent()){
+            FuelEfficiencyModel fuelEfficiencyModel = existing.get();
+            fuelEfficiencyModel.setFuelEfficiency(0.00);
+            fuelEfficiencyModel.setFuelConsumptionPerHour(0.00);
+            return fuelEfficiencyRepository.save(fuelEfficiencyModel);
+        } else {
+            throw new EntityNotFoundException("Registro con ID " + id + " no encontrado.");
+        }
     }
 
     public void deleteById(Long id){

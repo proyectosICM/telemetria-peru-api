@@ -52,6 +52,12 @@ public class FuelEfficiencyController {
         return new ResponseEntity<>(saveData, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<FuelEfficiencyModel> editEffi(@PathVariable Long id){
+        FuelEfficiencyModel data = fuelEfficiencyService.editEfficiency(id);
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<FuelEfficiencyModel> delete(@PathVariable Long id){
         fuelEfficiencyService.deleteById(id);
