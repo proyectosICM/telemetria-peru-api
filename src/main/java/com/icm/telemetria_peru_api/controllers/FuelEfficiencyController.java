@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.controllers;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.services.FuelEfficiencyService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,6 +57,16 @@ public class FuelEfficiencyController {
     public ResponseEntity<FuelEfficiencyModel> editEffi(@PathVariable Long id){
         FuelEfficiencyModel data = fuelEfficiencyService.editEfficiency(id);
         return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
+    @PutMapping("/reset-non-operational")
+    public ResponseEntity<List<FuelEfficiencyModel>> resetNonOperationalEfficiencies() {
+        try {
+            List<FuelEfficiencyModel> updatedRecords = fuelEfficiencyService.resetNonOperationalEfficiencies();
+            return ResponseEntity.ok(updatedRecords);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @DeleteMapping("/{id}")

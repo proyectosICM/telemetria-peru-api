@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.repositories.FuelEfficiencyRepository;
@@ -52,6 +53,24 @@ public class FuelEfficiencyService {
         } else {
             throw new EntityNotFoundException("Registro con ID " + id + " no encontrado.");
         }
+    }
+
+    public List<FuelEfficiencyModel> resetNonOperationalEfficiencies() {
+        // Obtener todos los registros cuyo estado no sea OPERACION
+        List<FuelEfficiencyModel> nonOperationalRecords = fuelEfficiencyRepository.findByFuelEfficiencyStatusNot(FuelEfficiencyStatus.OPERACION);
+
+        if (nonOperationalRecords.isEmpty()) {
+            throw new EntityNotFoundException("No se encontraron registros con estados diferentes a OPERACION.");
+        }
+
+        // Actualizar cada registro
+        nonOperationalRecords.forEach(record -> {
+            record.setFuelEfficiency(0.00);
+            record.setFuelConsumptionPerHour(0.00);
+        });
+
+        // Guardar los cambios en la base de datos
+        return fuelEfficiencyRepository.saveAll(nonOperationalRecords);
     }
 
     public void deleteById(Long id){

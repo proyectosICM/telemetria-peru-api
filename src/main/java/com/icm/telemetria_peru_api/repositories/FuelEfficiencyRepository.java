@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.repositories;
 
+import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,6 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     Page<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 
     FuelEfficiencyModel findTopByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
+
+    List<FuelEfficiencyModel> findByFuelEfficiencyStatusNot(FuelEfficiencyStatus status);
 }
