@@ -27,11 +27,11 @@ public class FuelEfficiencyService {
         return fuelEfficiencyRepository.findById(id);
     }
 
-    public List<FuelEfficiencyModel> findByVehicleModelId2(Long vehicleId){
+    public List<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId){
         return fuelEfficiencyRepository.findByVehicleModelId(vehicleId);
     }
 
-    public List<FuelEfficiencyDTO> findByVehicleModelId(Long vehicleId) {
+    public List<FuelEfficiencyDTO> findByVehicleModelId2(Long vehicleId) {
         List<FuelEfficiencyModel> records = fuelEfficiencyRepository.findByVehicleModelId(vehicleId);
 
         if (records.isEmpty()) {
@@ -43,11 +43,11 @@ public class FuelEfficiencyService {
                 .toList();
     }
 
-    public Page<FuelEfficiencyModel> findByVehicleModelId2(Long vehicleId, Pageable pageable){
+    public Page<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId, Pageable pageable){
         return fuelEfficiencyRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
-    public Page<FuelEfficiencyDTO> findByVehicleModelId(Long vehicleId, Pageable pageable) {
+    public Page<FuelEfficiencyDTO> findByVehicleModelId2(Long vehicleId, Pageable pageable) {
         Page<FuelEfficiencyModel> records = fuelEfficiencyRepository.findByVehicleModelId(vehicleId, pageable);
 
         if (records.isEmpty()) {
