@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.dto.FuelEfficiencyDTO;
 import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
@@ -10,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,12 +27,34 @@ public class FuelEfficiencyService {
         return fuelEfficiencyRepository.findById(id);
     }
 
-    public List<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId){
+    public List<FuelEfficiencyModel> findByVehicleModelId2(Long vehicleId){
         return fuelEfficiencyRepository.findByVehicleModelId(vehicleId);
     }
 
-    public Page<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId, Pageable pageable){
+    public List<FuelEfficiencyDTO> findByVehicleModelId(Long vehicleId) {
+        List<FuelEfficiencyModel> records = fuelEfficiencyRepository.findByVehicleModelId(vehicleId);
+
+        if (records.isEmpty()) {
+            throw new EntityNotFoundException("No se encontraron registros para el vehículo con ID " + vehicleId);
+        }
+
+        return records.stream()
+                .map(FuelEfficiencyDTO::new)
+                .toList();
+    }
+
+    public Page<FuelEfficiencyModel> findByVehicleModelId2(Long vehicleId, Pageable pageable){
         return fuelEfficiencyRepository.findByVehicleModelId(vehicleId, pageable);
+    }
+
+    public Page<FuelEfficiencyDTO> findByVehicleModelId(Long vehicleId, Pageable pageable) {
+        Page<FuelEfficiencyModel> records = fuelEfficiencyRepository.findByVehicleModelId(vehicleId, pageable);
+
+        if (records.isEmpty()) {
+            throw new EntityNotFoundException("No se encontraron registros para el vehículo con ID " + vehicleId);
+        }
+
+        return records.map(FuelEfficiencyDTO::new); // Usar el método map de Page
     }
 
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel){
