@@ -27,15 +27,24 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
      * STATS
      */
     @Query(value = """
+            WITH RECURSIVE dates AS (
+                SELECT DATE_FORMAT(DATE(CONCAT(YEAR(CURDATE()), '-', :month, '-01')), '%Y-%m-%d') AS day
+                UNION ALL
+                SELECT DATE_ADD(day, INTERVAL 1 DAY)
+                FROM dates
+                WHERE day < LAST_DAY(CONCAT(YEAR(CURDATE()), '-', :month, '-01'))
+            )
             SELECT 
-                DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m-%d') AS day,
-                AVG(fe.fuel_efficiency) AS averageValue
-            FROM fuel_efficiency fe
-            WHERE MONTH(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :month
-              AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = YEAR(CURDATE())
-              AND fe.vehicle_id = :vehicleId
-            GROUP BY DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m-%d')
-            ORDER BY day
+                d.day AS day,
+                IFNULL(AVG(fe.fuel_efficiency), 0) AS averageValue
+            FROM dates d
+            LEFT JOIN fuel_efficiency fe 
+                ON DATE(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = d.day
+                AND MONTH(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :month
+                AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = YEAR(CURDATE())
+                AND fe.vehicle_id = :vehicleId
+            GROUP BY d.day
+            ORDER BY d.day
             """, nativeQuery = true)
     List<Map<String, Object>> findDailyAveragesForMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month);
 
