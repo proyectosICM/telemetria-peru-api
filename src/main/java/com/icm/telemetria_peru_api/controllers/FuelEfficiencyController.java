@@ -52,8 +52,8 @@ public class FuelEfficiencyController {
     /** STAST */
 
     @GetMapping("/monthly-averages/{vehicleId}")
-    public List<Map<String, Object>> getMonthlyAveragesForCurrentYear(@PathVariable Long vehicleId) {
-        return fuelEfficiencyService.getMonthlyAveragesForCurrentYear(vehicleId);
+    public List<Map<String, Object>> getMonthlyAveragesForCurrentYear(@PathVariable Long vehicleId, @RequestParam String status) {
+        return fuelEfficiencyService.getMonthlyAveragesForCurrentYear(vehicleId, status);
     }
     /** STAST */
 
