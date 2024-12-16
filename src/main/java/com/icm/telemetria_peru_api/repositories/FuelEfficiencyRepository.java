@@ -23,18 +23,34 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     List<FuelEfficiencyModel> findByFuelEfficiencyStatusNot(FuelEfficiencyStatus status);
 
 
-    /** STATS */
+    /**
+     * STATS
+     */
     @Query(value = """
-    SELECT 
-        DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
-        AVG(fe.fuel_efficiency) AS averageValue
-        
-    FROM fuel_efficiency fe
-    WHERE fe.vehicle_id = :vehicleId
-      AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = YEAR(CURDATE())
-      AND status = :status
-    GROUP BY DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m')
-    ORDER BY month
-    """, nativeQuery = true)
+            SELECT 
+                DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m-%d') AS day,
+                AVG(fe.value_data) AS averageValue
+            FROM fuel_efficiency fe
+            WHERE MONTH(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :month
+              AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = YEAR(CURDATE())
+              AND fe.vehicle_id = :vehicleId
+            GROUP BY DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m-%d')
+            ORDER BY day
+            """, nativeQuery = true)
+    List<Map<String, Object>> findDailyAveragesForMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month);
+
+
+    @Query(value = """
+            SELECT 
+                DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
+                AVG(fe.fuel_efficiency) AS averageValue
+                
+            FROM fuel_efficiency fe
+            WHERE fe.vehicle_id = :vehicleId
+              AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = YEAR(CURDATE())
+              AND status = :status
+            GROUP BY DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m')
+            ORDER BY month
+            """, nativeQuery = true)
     List<Map<String, Object>> findMonthlyAveragesForCurrentYear(@Param("vehicleId") Long vehicleId, @Param("status") String status);
 }

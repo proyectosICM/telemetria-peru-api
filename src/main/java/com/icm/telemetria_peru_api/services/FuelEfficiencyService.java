@@ -58,6 +58,11 @@ public class FuelEfficiencyService {
     }
 
     /** STAST */
+
+    public List<Map<String, Object>> getDailyAveragesForMonth(Long vehicleId, Integer month) {
+        return fuelEfficiencyRepository.findDailyAveragesForMonth(vehicleId, month);
+    }
+
     public List<Map<String, Object>> getMonthlyAveragesForCurrentYear(Long vehicleId, String status) {
         return fuelEfficiencyRepository.findMonthlyAveragesForCurrentYear(vehicleId, status);
     }
