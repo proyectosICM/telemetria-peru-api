@@ -57,6 +57,12 @@ public class FuelEfficiencyService {
         return records.map(FuelEfficiencyDTO::new); // Usar el método map de Page
     }
 
+    /** STAST */
+    public List<Map<String, Object>> getMonthlyAveragesForCurrentYear(Long vehicleId) {
+        return fuelEfficiencyRepository.findMonthlyAveragesForCurrentYear(vehicleId);
+    }
+    /** STAST */
+
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel){
 
         FuelEfficiencyModel savedData = fuelEfficiencyRepository.save(fuelEfficiencyModel);

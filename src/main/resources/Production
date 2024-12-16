@@ -22,17 +22,9 @@ server.port = 7070
 jwt.secret.key = 76397924423F4528482B4D6251655468576D5A7134743777217A25432A46294A
 
 # JWT expiration time in milliseconds (1 day)
-jwt.time.expiration = 136800000
-
-# JWT expiration time in milliseconds (1 hour)
-#jwt.time.expiration = 3600000
-
-# Uncomment for testing with quick expiration (1 minuto)
-#jwt.time.expiration = 60000
+jwt.time.expiration = 1368000000
 
 # MQTT server configuration
-
-# Produccion
 mqtt.serverUri = tcp://localhost:1883
 
 

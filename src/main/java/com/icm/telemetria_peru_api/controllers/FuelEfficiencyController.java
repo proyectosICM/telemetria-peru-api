@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -47,6 +48,14 @@ public class FuelEfficiencyController {
         Page<FuelEfficiencyModel> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId, pageable);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
+
+    /** STAST */
+
+    @GetMapping("/monthly-averages/{vehicleId}")
+    public List<Map<String, Object>> getMonthlyAveragesForCurrentYear(@PathVariable Long vehicleId) {
+        return fuelEfficiencyService.getMonthlyAveragesForCurrentYear(vehicleId);
+    }
+    /** STAST */
 
     @PostMapping
     public ResponseEntity<FuelEfficiencyModel> save(@RequestBody FuelEfficiencyModel fuelEfficiencyModel){

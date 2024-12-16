@@ -2,19 +2,18 @@ spring.application.name=telemetria-peru-api
 
 # Database configuration
 # Connection URL to the database; change to the production URL as needed
-spring.datasource.url = jdbc:mysql://localhost:3306/t222
+spring.datasource.url = jdbc:mysql://telemetriaperu.com:3306/telemetriadb
 
 # Database credentials
-spring.datasource.username = root
-spring.datasource.password = admin
+spring.datasource.username = icmdb
+spring.datasource.password = dakar*2024
 
 # Hibernate: automatically updates the database schema on application startup
 spring.jpa.hibernate.ddl-auto = update
 
 # Server configuration
 # Port running
-server.port = 7078
-
+server.port = 7070
 # Indicates whether to enable the logging of SQL statements, allowing them to be displayed in the console.
 # spring.jpa.show-sql=true
 
@@ -23,17 +22,9 @@ server.port = 7078
 jwt.secret.key = 76397924423F4528482B4D6251655468576D5A7134743777217A25432A46294A
 
 # JWT expiration time in milliseconds (1 day)
-jwt.time.expiration = 136800000
-
-# JWT expiration time in milliseconds (1 hour)
-#jwt.time.expiration = 3600000
-
-# Uncomment for testing with quick expiration (1 minuto)
-#jwt.time.expiration = 60000
+jwt.time.expiration = 1368000000
 
 # MQTT server configuration
-
-# Desarollo
 mqtt.serverUri = tcp://telemetriaperu.com:1883
 
 mqtt.topic = prueba
