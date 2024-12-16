@@ -32,7 +32,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
                 UNION ALL
                 SELECT DATE_ADD(day, INTERVAL 1 DAY)
                 FROM dates
-                WHERE day < LAST_DAY(CONCAT(YEAR(CURDATE()), '-', :month, '-01'))
+                WHERE day < CURDATE() -- Limitar solo hasta la fecha actual
             )
             SELECT 
                 d.day AS day,
