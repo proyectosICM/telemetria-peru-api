@@ -28,11 +28,13 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     SELECT 
         DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
         AVG(fe.fuel_efficiency) AS averageValue
+        
     FROM fuel_efficiency fe
     WHERE fe.vehicle_id = :vehicleId
       AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = YEAR(CURDATE())
+      AND status = status
     GROUP BY DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m')
     ORDER BY month
     """, nativeQuery = true)
-    List<Map<String, Object>> findMonthlyAveragesForCurrentYear(@Param("vehicleId") Long vehicleId);
+    List<Map<String, Object>> findMonthlyAveragesForCurrentYear(@Param("vehicleId") Long vehicleId, @Param("status") String status);
 }
