@@ -13,7 +13,7 @@ spring.jpa.hibernate.ddl-auto = update
 
 # Server configuration
 # Port running
-server.port = 7070
+server.port = 7074
 # Indicates whether to enable the logging of SQL statements, allowing them to be displayed in the console.
 # spring.jpa.show-sql=true
 
