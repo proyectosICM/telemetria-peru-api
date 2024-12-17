@@ -36,7 +36,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     )
     SELECT 
         d.day AS day,
-        IFNULL(AVG(fe.fuel_efficiency), 0) AS averageValue
+        IFNULL(AVG(fe.fuel_efficiency), 0) AS avgkm
     FROM dates d
     LEFT JOIN fuel_efficiency fe 
         ON DATE(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = d.day
@@ -52,7 +52,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     @Query(value = """
             SELECT 
                 DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
-                AVG(fe.fuel_efficiency) AS averageValue
+                AVG(fe.fuel_efficiency) AS avgkm
                 
             FROM fuel_efficiency fe
             WHERE fe.vehicle_id = :vehicleId
