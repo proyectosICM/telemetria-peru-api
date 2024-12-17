@@ -37,7 +37,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     SELECT 
         d.day AS day,
         IFNULL(AVG(fe.fuel_efficiency), 0) AS avgkm,
-        IFNULL(AVG(fe.fuel_consumption_per_hour), 0) AS avgh,
+        IFNULL(AVG(fe.fuel_consumption_per_hour), 0) AS avgh
     FROM dates d
     LEFT JOIN fuel_efficiency fe 
         ON DATE(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = d.day
