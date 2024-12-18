@@ -52,7 +52,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     @Query(value = """
                 SELECT 
                     DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
-                    AVG(fe.fuel_efficiency) AS avgkm,
+                    AVG(CASE WHEN fe.fuel_efficiency  > 0 THEN fe.fuel_efficiency ELSE NULL END) AS avgkm,
                     AVG(fe.fuel_consumption_per_hour) AS avgh
                 FROM fuel_efficiency fe
                 WHERE fe.vehicle_id = :vehicleId
