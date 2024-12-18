@@ -50,14 +50,6 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     List<Map<String, Object>> findDailyAveragesForMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month, @Param("year") Integer year);
 
     @Query(value = """
-                WITH RECURSIVE months AS (
-                    -- Genera todos los meses del año especificado
-                    SELECT CONCAT(:year, '-01') AS month
-                    UNION ALL
-                    SELECT DATE_ADD(month, INTERVAL 1 MONTH)
-                    FROM months
-                    WHERE month < CONCAT(:year, '-12')
-                )
                 SELECT 
                     m.month AS month,
                     IFNULL(AVG(fe.fuel_efficiency), 0) AS avgkm,  -- Si no hay datos, muestra 0
