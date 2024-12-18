@@ -57,7 +57,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
                 FROM fuel_efficiency fe
                 WHERE fe.vehicle_id = :vehicleId
                   AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :year  -- Usamos el parámetro :year
-                  AND status = :status
+                  AND fe.status = :status
                 GROUP BY DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m')
                 ORDER BY month
             """, nativeQuery = true)
