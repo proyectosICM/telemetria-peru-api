@@ -51,7 +51,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
 
     @Query(value = """
             SELECT 
-                months.month,
+                CONCAT(:year, '-', months.month) AS month,
                 IFNULL(AVG(CASE WHEN fe.fuel_efficiency > 0 THEN fe.fuel_efficiency ELSE NULL END), 0) AS avgkm,
                 IFNULL(AVG(CASE WHEN fe.fuel_consumption_per_hour > 0 THEN fe.fuel_consumption_per_hour ELSE NULL END), 0) AS avgh
             FROM (
