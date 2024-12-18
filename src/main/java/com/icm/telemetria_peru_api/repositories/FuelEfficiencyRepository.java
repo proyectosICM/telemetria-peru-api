@@ -27,45 +27,39 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
      * STATS
      */
     @Query(value = """
-                WITH RECURSIVE dates AS (
-                    SELECT DATE_FORMAT(DATE(CONCAT(:year, '-', :month, '-01')), '%Y-%m-%d') AS day
+                WITH RECURSIVE months AS (
+                    SELECT CAST(CONCAT(:year, '-01-01') AS DATE) AS month
                     UNION ALL
-                    SELECT DATE_ADD(day, INTERVAL 1 DAY)
-                    FROM dates
-                    WHERE day < LAST_DAY(CONCAT(:year, '-', :month, '-01'))
+                    SELECT DATE_ADD(month, INTERVAL 1 MONTH)
+                    FROM months
+                    WHERE month < DATE(CONCAT(:year, '-12-01'))
                 )
                 SELECT 
-                    d.day AS day,
+                    DATE_FORMAT(m.month, '%Y-%m') AS month,
                     IFNULL(AVG(CASE WHEN fe.fuel_efficiency > 0 THEN fe.fuel_efficiency ELSE NULL END), 0) AS avgkm,
                     IFNULL(AVG(CASE WHEN fe.fuel_consumption_per_hour > 0 THEN fe.fuel_consumption_per_hour ELSE NULL END), 0) AS avgh
-                FROM dates d
+                FROM months m
                 LEFT JOIN fuel_efficiency fe 
-                    ON DATE(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = d.day
-                    AND MONTH(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :month
-                    AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :year
+                    ON DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') = DATE_FORMAT(m.month, '%Y-%m')
                     AND fe.vehicle_id = :vehicleId
-                GROUP BY d.day
-                ORDER BY d.day
+                    AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :year
+                    AND fe.status = :status
+                GROUP BY m.month
+                ORDER BY m.month
             """, nativeQuery = true)
     List<Map<String, Object>> findDailyAveragesForMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month, @Param("year") Integer year);
 
     @Query(value = """
                 SELECT 
-                    m.month AS month,
-                    IFNULL(AVG(fe.fuel_efficiency), 0) AS avgkm,  -- Si no hay datos, muestra 0
-                    IFNULL(AVG(fe.fuel_consumption_per_hour), 0) AS avgh  -- Si no hay datos, muestra 0
-                FROM months m
-                LEFT JOIN fuel_efficiency fe 
-                    ON DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') = m.month
-                    AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :year
-                    AND fe.vehicle_id = :vehicleId
-                    AND fe.status = :status
-                GROUP BY m.month
-                ORDER BY m.month
+                    DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
+                    AVG(fe.fuel_efficiency) AS avgkm,
+                    AVG(fe.fuel_consumption_per_hour) AS avgh
+                FROM fuel_efficiency fe
+                WHERE fe.vehicle_id = :vehicleId
+                  AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :year  -- Usamos el parámetro :year
+                  AND fe.status = :status
+                GROUP BY DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m')
+                ORDER BY month
             """, nativeQuery = true)
-    List<Map<String, Object>> findMonthlyAveragesForYear(
-            @Param("vehicleId") Long vehicleId,
-            @Param("status") String status,
-            @Param("year") Integer year
-    );
+    List<Map<String, Object>> findMonthlyAveragesForYear(@Param("vehicleId") Long vehicleId, @Param("status") String status, @Param("year") Integer year);
 }
