@@ -55,7 +55,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
                     UNION ALL
                     SELECT DATE_ADD(month, INTERVAL 1 MONTH)
                     FROM months
-                    WHERE month < CONCAT(:year, '-12')
+                    WHERE month < CONCAT(:year, '-12-01')  -- Corregir la condición de recursividad para incluir diciembre
                 )
                 SELECT 
                     m.month AS month,
