@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,8 +53,14 @@ public class FuelEfficiencyController {
     /** STAST */
 
     @GetMapping("/daily-averages/{vehicleId}")
-    public List<Map<String, Object>> getDailyAveragesForMonth(@PathVariable Long vehicleId, @RequestParam Integer month) {
-        return fuelEfficiencyService.getDailyAveragesForMonth(vehicleId, month);
+    public List<Map<String, Object>> getDailyAveragesForMonth(@PathVariable Long vehicleId,
+                                                              @RequestParam Integer month,
+                                                              @RequestParam Integer year) {
+        // Si el parámetro year está vacío, asigna el año actual
+        if (year == null || year == 0) {
+            year = Calendar.getInstance().get(Calendar.YEAR);  // Obtener el año actual
+        }
+        return fuelEfficiencyService.getDailyAveragesForMonth(vehicleId, month, year);
     }
 
     @GetMapping("/monthly-averages/{vehicleId}")
