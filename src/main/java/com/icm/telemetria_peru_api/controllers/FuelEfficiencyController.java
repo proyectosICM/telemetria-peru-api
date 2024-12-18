@@ -64,8 +64,13 @@ public class FuelEfficiencyController {
     }
 
     @GetMapping("/monthly-averages/{vehicleId}")
-    public List<Map<String, Object>> getMonthlyAveragesForCurrentYear(@PathVariable Long vehicleId, @RequestParam String status) {
-        return fuelEfficiencyService.getMonthlyAveragesForCurrentYear(vehicleId, status);
+    public List<Map<String, Object>> getMonthlyAveragesForCurrentYear(@PathVariable Long vehicleId,
+                                                                      @RequestParam String status,
+                                                                      @RequestParam(defaultValue = "") Integer year) {
+        if (year == null || year == 0) {
+            year = Calendar.getInstance().get(Calendar.YEAR);  // Obtener el año actual
+        }
+        return fuelEfficiencyService.getMonthlyAveragesForCurrentYear(vehicleId, status, year);
     }
     /** STAST */
 
