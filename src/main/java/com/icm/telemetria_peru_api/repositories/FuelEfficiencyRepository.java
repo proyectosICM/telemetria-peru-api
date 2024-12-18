@@ -50,29 +50,16 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     List<Map<String, Object>> findDailyAveragesForMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month, @Param("year") Integer year);
 
     @Query(value = """
-                WITH RECURSIVE months AS (
-                    SELECT DATE_FORMAT(CONCAT(:year, '-', '01', '-01'), '%Y-%m') AS month
-                    UNION ALL
-                    SELECT DATE_ADD(month, INTERVAL 1 MONTH)
-                    FROM months
-                    WHERE month < CONCAT(:year, '-12-01')  -- Corregir la condición de recursividad para incluir diciembre
-                )
                 SELECT 
-                    m.month AS month,
-                    IFNULL(AVG(fe.fuel_efficiency), 0) AS avgkm,
-                    IFNULL(AVG(fe.fuel_consumption_per_hour), 0) AS avgh
-                FROM months m
-                LEFT JOIN fuel_efficiency fe 
-                    ON DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') = m.month
-                    AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :year
-                    AND fe.vehicle_id = :vehicleId
-                    AND fe.status = :status
-                GROUP BY m.month
-                ORDER BY m.month
+                    DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') AS month,
+                    AVG(fe.fuel_efficiency) AS avgkm,
+                    AVG(fe.fuel_consumption_per_hour) AS avgh
+                FROM fuel_efficiency fe
+                WHERE fe.vehicle_id = :vehicleId
+                  AND YEAR(CONVERT_TZ(fe.created_at, '+00:00', '-05:00')) = :year  -- Usamos el parámetro :year
+                  AND status = :status
+                GROUP BY DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m')
+                ORDER BY month
             """, nativeQuery = true)
-    List<Map<String, Object>> findMonthlyAveragesForYear(
-            @Param("vehicleId") Long vehicleId,
-            @Param("status") String status,
-            @Param("year") Integer year
-    );
+    List<Map<String, Object>> findMonthlyAveragesForYear(@Param("vehicleId") Long vehicleId, @Param("status") String status, @Param("year") Integer year);
 }
