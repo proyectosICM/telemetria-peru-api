@@ -55,7 +55,7 @@ public class FuelEfficiencyController {
     @GetMapping("/daily-averages/{vehicleId}")
     public List<Map<String, Object>> getDailyAveragesForMonth(@PathVariable Long vehicleId,
                                                               @RequestParam Integer month,
-                                                              @RequestParam Integer year) {
+                                                              @RequestParam(defaultValue = "") Integer year) {
         // Si el parámetro year está vacío, asigna el año actual
         if (year == null || year == 0) {
             year = Calendar.getInstance().get(Calendar.YEAR);  // Obtener el año actual
