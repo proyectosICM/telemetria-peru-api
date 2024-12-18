@@ -137,6 +137,8 @@ public class FuelEfficiencyHandler {
             if (fuelUsed > 0) {
                 double fuelEfficiency = distance / fuelUsed;
                 record.setFuelEfficiency(fuelEfficiency);
+            } else {
+                record.setFuelEfficiency(0.0);
             }
         }
     }
