@@ -74,7 +74,7 @@ public class FuelEfficiencyController {
         return fuelEfficiencyService.getMonthlyAveragesForYear(vehicleId, status, year);
     }
 
-    @GetMapping("/summary/vehicle/{vehicleId}")
+    @GetMapping("/summary/{vehicleId}")
     public ResponseEntity<List<FuelEfficiencySummary>> getFuelEfficiencyByVehicle(
             @PathVariable Long vehicleId,
             @RequestParam(required = false) Integer year,
