@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.dto.FuelEfficiencyDTO;
+import com.icm.telemetria_peru_api.dto.FuelEfficiencySummary;
 import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +67,18 @@ public class FuelEfficiencyService {
 
     public List<Map<String, Object>> getMonthlyAveragesForYear(Long vehicleId, String status, Integer year) {
         return fuelEfficiencyRepository.findMonthlyAveragesForYear(vehicleId, status, year);
+    }
+
+    public List<FuelEfficiencySummary> getFuelEfficiencySummary() {
+        List<Object[]> results = fuelEfficiencyRepository.getAggregatedFuelEfficiency();
+        return results.stream()
+                .map(row -> new FuelEfficiencySummary(
+                        (FuelEfficiencyStatus) row[0], // Estado
+                        (Double) row[1], // Total horas
+                        (Double) row[2], // Total combustible consumido
+                        (Double) row[3]  // Promedio eficiencia
+                ))
+                .collect(Collectors.toList());
     }
     /** STAST */
 

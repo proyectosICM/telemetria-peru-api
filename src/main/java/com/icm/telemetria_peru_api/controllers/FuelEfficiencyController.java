@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.dto.FuelEfficiencyDTO;
+import com.icm.telemetria_peru_api.dto.FuelEfficiencySummary;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.services.FuelEfficiencyService;
@@ -71,6 +72,12 @@ public class FuelEfficiencyController {
             year = Calendar.getInstance().get(Calendar.YEAR);  // Obtener el año actual
         }
         return fuelEfficiencyService.getMonthlyAveragesForYear(vehicleId, status, year);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<FuelEfficiencySummary>> getFuelEfficiencySummary() {
+        List<FuelEfficiencySummary> summary = fuelEfficiencyService.getFuelEfficiencySummary();
+        return ResponseEntity.ok(summary);
     }
     /** STAST */
 

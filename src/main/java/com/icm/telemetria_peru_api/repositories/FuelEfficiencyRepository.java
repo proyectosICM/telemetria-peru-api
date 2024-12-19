@@ -77,4 +77,14 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
         """, nativeQuery = true)
     List<Map<String, Object>> findMonthlyAveragesForYear(@Param("vehicleId") Long vehicleId, @Param("status") String status, @Param("year") Integer year);
 
+    @Query(value = """
+        SELECT 
+            fe.status AS status,
+            SUM(fe.accumulated_hours) AS totalHours,
+            SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
+            AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
+        FROM fuel_efficiency fe
+        GROUP BY fe.status
+        """, nativeQuery = true)
+    List<Object[]> getAggregatedFuelEfficiency();
 }
