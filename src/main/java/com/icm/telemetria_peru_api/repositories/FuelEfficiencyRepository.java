@@ -87,7 +87,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
                 WHERE fe.vehicle_id = :vehicleId
                 AND (
                     (:year IS NOT NULL AND YEAR(fe.start_time) = :year) OR
-                    (:month IS NOT NULL AND MONTH(fe.start_time) = :month AND YEAR(fe.start_time) = :year) OR
+                    (:month IS NOT NULL AND MONTH(fe.start_time) = :month) OR
                     (:day IS NOT NULL AND DAY(fe.start_time) = :day AND MONTH(fe.start_time) = :month AND YEAR(fe.start_time) = :year)
                 )
                 GROUP BY fe.status
