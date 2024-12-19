@@ -86,6 +86,36 @@ public class FuelEfficiencyService {
     }
     /** STAST */
 
+    public List<FuelEfficiencySummary> getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(Long vehicleId, Integer year, Integer month, Integer day) {
+        List<Object[]> results;
+
+        if (year != null && month == null && day == null) {
+            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByYear(vehicleId, year);
+        } else if (year != null && month != null && day == null) {
+            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByMonth(vehicleId, month, year);
+        } else if (year != null && month != null && day != null) {
+            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, day, month, year);
+        } else {
+            results = null;  // O manejar el caso en que no se pasan filtros
+        }
+
+        // Mapeo manual de Object[] a FuelEfficiencySummary
+        if (results != null) {
+            List<FuelEfficiencySummary> summaries = results.stream().map(result -> {
+                FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
+                Double totalHours = Double.valueOf(result[1].toString());
+                Double totalFuelConsumed = Double.valueOf(result[2].toString());
+                Double avgFuelEfficiency = Double.valueOf(result[3].toString());
+
+                return new FuelEfficiencySummary(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
+            }).collect(Collectors.toList());
+
+            return summaries;
+        } else {
+            return Collections.emptyList(); // O manejar el caso en que no haya resultados
+        }
+    }
+
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel){
 
         FuelEfficiencyModel savedData = fuelEfficiencyRepository.save(fuelEfficiencyModel);

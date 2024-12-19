@@ -81,7 +81,7 @@ public class FuelEfficiencyController {
             @RequestParam(required = false) Integer month,
             @RequestParam(required = false) Integer day) {
 
-        List<FuelEfficiencySummary> summary = fuelEfficiencyService.getFuelEfficiencyByVehicleAndTime(vehicleId, year, month, day);
+        List<FuelEfficiencySummary> summary = fuelEfficiencyService.getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(vehicleId, year, month, day);
         return ResponseEntity.ok(summary);
     }
     /** STAST */
