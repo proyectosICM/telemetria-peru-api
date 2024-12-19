@@ -84,7 +84,8 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
             SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
             AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
         FROM fuel_efficiency fe
+        WHERE fe.vehicle_id = :vehicleId
         GROUP BY fe.status
-        """, nativeQuery = true)
-    List<Object[]> getAggregatedFuelEfficiency();
+    """, nativeQuery = true)
+    List<Object[]> getAggregatedFuelEfficiencyByVehicleId(@Param("vehicleId") Long vehicleId);
 }

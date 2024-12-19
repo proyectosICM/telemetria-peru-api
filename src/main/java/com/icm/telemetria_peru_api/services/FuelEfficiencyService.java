@@ -12,10 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,16 +66,20 @@ public class FuelEfficiencyService {
         return fuelEfficiencyRepository.findMonthlyAveragesForYear(vehicleId, status, year);
     }
 
-    public List<FuelEfficiencySummary> getFuelEfficiencySummary() {
-        List<Object[]> results = fuelEfficiencyRepository.getAggregatedFuelEfficiency();
-        return results.stream()
-                .map(row -> new FuelEfficiencySummary(
-                        (FuelEfficiencyStatus) row[0], // Estado
-                        (Double) row[1], // Total horas
-                        (Double) row[2], // Total combustible consumido
-                        (Double) row[3]  // Promedio eficiencia
-                ))
-                .collect(Collectors.toList());
+    public List<FuelEfficiencySummary> getFuelEfficiencyByVehicle(Long vehicleId) {
+        List<Object[]> results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByVehicleId(vehicleId);
+        List<FuelEfficiencySummary> summaries = new ArrayList<>();
+
+        for (Object[] row : results) {
+            summaries.add(new FuelEfficiencySummary(
+                    FuelEfficiencyStatus.valueOf((String) row[0]), // status
+                    (Double) row[1], // totalHours
+                    (Double) row[2], // totalFuelConsumed
+                    (Double) row[3]  // avgFuelEfficiency
+            ));
+        }
+
+        return summaries;
     }
     /** STAST */
 
