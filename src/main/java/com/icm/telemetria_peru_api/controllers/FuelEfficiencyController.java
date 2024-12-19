@@ -74,10 +74,14 @@ public class FuelEfficiencyController {
         return fuelEfficiencyService.getMonthlyAveragesForYear(vehicleId, status, year);
     }
 
-    @GetMapping("/summary/{vehicleId}")
+    @GetMapping("/summary/vehicle/{vehicleId}")
     public ResponseEntity<List<FuelEfficiencySummary>> getFuelEfficiencyByVehicle(
-            @PathVariable Long vehicleId) {
-        List<FuelEfficiencySummary> summary = fuelEfficiencyService.getFuelEfficiencyByVehicle(vehicleId);
+            @PathVariable Long vehicleId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer day) {
+
+        List<FuelEfficiencySummary> summary = fuelEfficiencyService.getFuelEfficiencyByVehicleAndTime(vehicleId, year, month, day);
         return ResponseEntity.ok(summary);
     }
     /** STAST */

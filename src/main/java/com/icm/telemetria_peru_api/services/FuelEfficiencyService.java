@@ -66,8 +66,11 @@ public class FuelEfficiencyService {
         return fuelEfficiencyRepository.findMonthlyAveragesForYear(vehicleId, status, year);
     }
 
-    public List<FuelEfficiencySummary> getFuelEfficiencyByVehicle(Long vehicleId) {
-        List<Object[]> results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByVehicleId(vehicleId);
+
+    public List<FuelEfficiencySummary> getFuelEfficiencyByVehicleAndTime(
+            Long vehicleId, Integer year, Integer month, Integer day) {
+
+        List<Object[]> results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(vehicleId, year, month, day);
         List<FuelEfficiencySummary> summaries = new ArrayList<>();
 
         for (Object[] row : results) {

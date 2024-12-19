@@ -50,42 +50,52 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     List<Map<String, Object>> findDailyAveragesForMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month, @Param("year") Integer year);
 
     @Query(value = """
-            SELECT 
-                CONCAT(:year, '-', months.month) AS month,
-                IFNULL(AVG(CASE WHEN fe.fuel_efficiency > 0 THEN fe.fuel_efficiency ELSE NULL END), 0) AS avgkm,
-                IFNULL(AVG(CASE WHEN fe.fuel_consumption_per_hour > 0 THEN fe.fuel_consumption_per_hour ELSE NULL END), 0) AS avgh
-            FROM (
-                SELECT '01' AS month UNION ALL
-                SELECT '02' UNION ALL
-                SELECT '03' UNION ALL
-                SELECT '04' UNION ALL
-                SELECT '05' UNION ALL
-                SELECT '06' UNION ALL
-                SELECT '07' UNION ALL
-                SELECT '08' UNION ALL
-                SELECT '09' UNION ALL
-                SELECT '10' UNION ALL
-                SELECT '11' UNION ALL
-                SELECT '12'
-            ) AS months
-            LEFT JOIN fuel_efficiency fe
-                ON DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') = CONCAT(:year, '-', months.month)
-                AND fe.vehicle_id = :vehicleId
-                AND fe.status = :status
-            GROUP BY months.month
-            ORDER BY months.month
-        """, nativeQuery = true)
+                SELECT 
+                    CONCAT(:year, '-', months.month) AS month,
+                    IFNULL(AVG(CASE WHEN fe.fuel_efficiency > 0 THEN fe.fuel_efficiency ELSE NULL END), 0) AS avgkm,
+                    IFNULL(AVG(CASE WHEN fe.fuel_consumption_per_hour > 0 THEN fe.fuel_consumption_per_hour ELSE NULL END), 0) AS avgh
+                FROM (
+                    SELECT '01' AS month UNION ALL
+                    SELECT '02' UNION ALL
+                    SELECT '03' UNION ALL
+                    SELECT '04' UNION ALL
+                    SELECT '05' UNION ALL
+                    SELECT '06' UNION ALL
+                    SELECT '07' UNION ALL
+                    SELECT '08' UNION ALL
+                    SELECT '09' UNION ALL
+                    SELECT '10' UNION ALL
+                    SELECT '11' UNION ALL
+                    SELECT '12'
+                ) AS months
+                LEFT JOIN fuel_efficiency fe
+                    ON DATE_FORMAT(CONVERT_TZ(fe.created_at, '+00:00', '-05:00'), '%Y-%m') = CONCAT(:year, '-', months.month)
+                    AND fe.vehicle_id = :vehicleId
+                    AND fe.status = :status
+                GROUP BY months.month
+                ORDER BY months.month
+            """, nativeQuery = true)
     List<Map<String, Object>> findMonthlyAveragesForYear(@Param("vehicleId") Long vehicleId, @Param("status") String status, @Param("year") Integer year);
 
     @Query(value = """
-        SELECT 
-            fe.status AS status,
-            SUM(fe.accumulated_hours) AS totalHours,
-            SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
-            AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
-        FROM fuel_efficiency fe
-        WHERE fe.vehicle_id = :vehicleId
-        GROUP BY fe.status
-    """, nativeQuery = true)
-    List<Object[]> getAggregatedFuelEfficiencyByVehicleId(@Param("vehicleId") Long vehicleId);
+                SELECT 
+                    fe.status AS status,
+                    SUM(fe.accumulated_hours) AS totalHours,
+                    SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
+                    AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
+                FROM fuel_efficiency fe
+                WHERE fe.vehicle_id = :vehicleId
+                AND (
+                    (:year IS NOT NULL AND YEAR(fe.start_time) = :year) OR
+                    (:month IS NOT NULL AND MONTH(fe.start_time) = :month AND YEAR(fe.start_time) = :year) OR
+                    (:day IS NOT NULL AND DAY(fe.start_time) = :day AND MONTH(fe.start_time) = :month AND YEAR(fe.start_time) = :year)
+                )
+                GROUP BY fe.status
+            """, nativeQuery = true)
+    List<Object[]> getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(
+            @Param("vehicleId") Long vehicleId,
+            @Param("year") Integer year,
+            @Param("month") Integer month,
+            @Param("day") Integer day
+    );
 }
