@@ -86,35 +86,62 @@ public class FuelEfficiencyService {
     }
     /** STAST */
 
-    public List<FuelEfficiencySummary> getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(Long vehicleId, Integer year, Integer month, Integer day) {
-        List<Object[]> results;
+        public List<FuelEfficiencySummary> getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(Long vehicleId, Integer year, Integer month, Integer day) {
+            List<Object[]> results;
 
-        if (year != null && month == null && day == null) {
-            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByYear(vehicleId, year);
-        } else if (year != null && month != null && day == null) {
-            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByMonth(vehicleId, month, year);
-        } else if (year != null && month != null && day != null) {
-            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, day, month, year);
-        } else {
-            results = null;  // O manejar el caso en que no se pasan filtros
+            if (year != null && month == null && day == null) {
+                results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByYear(vehicleId, year);
+            } else if (year != null && month != null && day == null) {
+                results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByMonth(vehicleId, month, year);
+            } else if (year != null && month != null && day != null) {
+                results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, day, month, year);
+            } else {
+                results = null;  // O manejar el caso en que no se pasan filtros
+            }
+
+            // Mapeo manual de Object[] a FuelEfficiencySummary
+            if (results != null && !results.isEmpty()) {
+                List<FuelEfficiencySummary> summaries = results.stream().map(result -> {
+                    FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
+                    Double totalHours = Double.valueOf(result[1].toString());
+                    Double totalFuelConsumed = Double.valueOf(result[2].toString());
+                    Double avgFuelEfficiency = Double.valueOf(result[3].toString());
+
+                    return new FuelEfficiencySummary(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
+                }).collect(Collectors.toList());
+
+                return summaries;
+            }else {
+                    // Si no hay resultados, devolver los 3 estados con valores en 0.0
+                    List<FuelEfficiencySummary> defaultSummary = new ArrayList<>();
+
+                    // Estado ESTACIONADO
+                    defaultSummary.add(new FuelEfficiencySummary(
+                            FuelEfficiencyStatus.ESTACIONADO,  // Estado estacionado
+                            0.0,  // totalHours
+                            0.0,  // totalFuelConsumed
+                            0.0   // avgFuelEfficiency
+                    ));
+
+                    // Estado OPERACION
+                    defaultSummary.add(new FuelEfficiencySummary(
+                            FuelEfficiencyStatus.OPERACION,  // Estado operación
+                            0.0,  // totalHours
+                            0.0,  // totalFuelConsumed
+                            0.0   // avgFuelEfficiency
+                    ));
+
+                    // Estado RALENTI
+                    defaultSummary.add(new FuelEfficiencySummary(
+                            FuelEfficiencyStatus.RALENTI,  // Estado ralentí
+                            0.0,  // totalHours
+                            0.0,  // totalFuelConsumed
+                            0.0   // avgFuelEfficiency
+                    ));
+
+                    return defaultSummary;
+                }
         }
-
-        // Mapeo manual de Object[] a FuelEfficiencySummary
-        if (results != null) {
-            List<FuelEfficiencySummary> summaries = results.stream().map(result -> {
-                FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
-                Double totalHours = Double.valueOf(result[1].toString());
-                Double totalFuelConsumed = Double.valueOf(result[2].toString());
-                Double avgFuelEfficiency = Double.valueOf(result[3].toString());
-
-                return new FuelEfficiencySummary(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
-            }).collect(Collectors.toList());
-
-            return summaries;
-        } else {
-            return Collections.emptyList(); // O manejar el caso en que no haya resultados
-        }
-    }
 
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel){
 
