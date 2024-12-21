@@ -164,8 +164,9 @@ public class FuelEfficiencyService {
         Optional<FuelEfficiencyModel> existing = fuelEfficiencyRepository.findById(id);
         if (existing.isPresent()) {
             FuelEfficiencyModel fuelEfficiencyModel = existing.get();
-            fuelEfficiencyModel.setFuelEfficiency(0.00);
-            fuelEfficiencyModel.setFuelConsumptionPerHour(0.00);
+            //fuelEfficiencyModel.setFuelEfficiency(0.00);
+            //fuelEfficiencyModel.setFuelConsumptionPerHour(0.00);
+            //fuelEfficiencyModel.setAccumulatedHours();
             return fuelEfficiencyRepository.save(fuelEfficiencyModel);
         } else {
             throw new EntityNotFoundException("Registro con ID " + id + " no encontrado.");

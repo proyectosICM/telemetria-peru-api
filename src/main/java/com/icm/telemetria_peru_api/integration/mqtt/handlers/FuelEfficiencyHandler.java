@@ -117,7 +117,7 @@ public class FuelEfficiencyHandler {
             long elapsedMillis = java.time.Duration.between(startTime, endTime).toMillis();
             return elapsedMillis / 3600000.0;  // Convertir milisegundos a horas
         }
-        return 0.0;
+        return 0.0; 
     }
 
     private void calculateDistanceAndEfficiency(FuelEfficiencyModel record, double hours, double finalFuel) {
