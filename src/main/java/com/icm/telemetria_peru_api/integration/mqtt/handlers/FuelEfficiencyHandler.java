@@ -46,7 +46,7 @@ public class FuelEfficiencyHandler {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-        if (!currentRecordDate.equals(lastRecordDate)) {
+        if (currentRecordDate.getDayOfMonth() != lastRecordDate.getDayOfMonth()) {
             closeLastRecord(lastRecord, jsonNode); // Cierra el registro actual
             createNewFuelEfficiencyRecord(vehicleModel, jsonNode, determinate); // Crea un nuevo registro
             return;
