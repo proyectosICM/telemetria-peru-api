@@ -8,6 +8,9 @@ import com.icm.telemetria_peru_api.repositories.FuelEfficiencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,22 @@ public class FuelEfficiencyHandler {
 
         if (lastRecord == null) {
             createNewFuelEfficiencyRecord(vehicleModel, jsonNode, determinate);
+            return;
+        }
+
+        // Convertir el timestamp de jsonNode a LocalDate
+        LocalDate currentRecordDate = Instant.ofEpochMilli(Long.parseLong(jsonNode.getTimestamp()))
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        // Convertir la fecha del último registro a LocalDate
+        LocalDate lastRecordDate = lastRecord.getCreatedAt().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        if (!currentRecordDate.equals(lastRecordDate)) {
+            closeLastRecord(lastRecord, jsonNode); // Cierra el registro actual
+            createNewFuelEfficiencyRecord(vehicleModel, jsonNode, determinate); // Crea un nuevo registro
             return;
         }
 
