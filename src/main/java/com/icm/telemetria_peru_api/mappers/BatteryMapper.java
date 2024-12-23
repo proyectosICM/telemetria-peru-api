@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BatteryMapper {
-    /** Maps the BatteryModel data to BatteryDTO. **/
+    /**
+     * Maps the BatteryModel data to BatteryDTO.
+     **/
     public BatteryDTO mapToDTO(BatteryModel batteryModel) {
         Long vehicleId = batteryModel.getVehicleModel().getId();
         String licensePlate = batteryModel.getVehicleModel().getLicensePlate();
