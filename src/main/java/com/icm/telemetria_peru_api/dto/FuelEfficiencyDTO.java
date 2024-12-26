@@ -19,7 +19,7 @@ public class FuelEfficiencyDTO {
     private FuelType fuelType;
     private Double fuelEfficiency;
     private Double fuelConsumptionPerHour;
-
+    private String coordinates;
 
     // Constructor
     public FuelEfficiencyDTO(FuelEfficiencyModel model) {
@@ -34,6 +34,7 @@ public class FuelEfficiencyDTO {
         this.fuelType = model.getVehicleModel().getFuelType();
         this.fuelEfficiency = model.getFuelEfficiency();
         this.fuelConsumptionPerHour = model.getFuelConsumptionPerHour();
+        this.coordinates = model.getCoordinates();
 
         if (this.fuelType.equals(FuelType.DIESEL)) {
             this.initialFuel = this.initialFuel != null ? this.initialFuel * 0.264172 : null;
