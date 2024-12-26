@@ -10,7 +10,6 @@ import java.time.ZonedDateTime;
 public class FuelEfficiencyDTO {
     private Long id;
     private ZonedDateTime startTime;
-    private ZonedDateTime endTime;
     private Double accumulatedHours;
     private String licensePlate;
     private String fuelEfficiencyStatus;

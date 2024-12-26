@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.FuelRecordDTOs.HourlyAverageDTO;
 import com.icm.telemetria_peru_api.models.FuelRecordModel;
 import com.icm.telemetria_peru_api.services.FuelRecordService;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,7 +26,7 @@ public class FuelRecordController {
 
 
     @GetMapping("/hourly-averages/{vehicleId}")
-    public List<Map<String, Object>> getHourlyAverages(@RequestParam(required = false) String date, @PathVariable Long vehicleId) {
+    public List<HourlyAverageDTO> getHourlyAverages(@RequestParam(required = false) String date, @PathVariable Long vehicleId) {
         LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
         return fuelRecordService.getHourlyAveragesByDate(localDate, vehicleId);
     }
