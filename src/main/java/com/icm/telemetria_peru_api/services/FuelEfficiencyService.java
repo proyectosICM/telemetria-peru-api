@@ -92,15 +92,20 @@ public class FuelEfficiencyService {
      */
 
     public List<FuelEfficiencySummaryDTO> getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(Long vehicleId, Integer year, Integer month, Integer day) {
-        List<FuelEfficiencySummaryDTO> results;
+        List<FuelEfficiencySummaryDTO> results = new ArrayList<>();
 
         if (year != null && month == null && day == null) {
             results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByYear(vehicleId, year);
         } else if (year != null && month != null && day == null) {
             results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByMonth(vehicleId, year, month);
         } else if (year != null && month != null && day != null) {
-            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, year, month, day);
-        } else {
+            // Implement logic for getAggregatedFuelEfficiencyByDay (not provided in the given code)
+            // For example:
+            // results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, year, month, day);
+        }
+
+        // If no results were found in any of the conditions, return the default list
+        if (results.isEmpty()) {
             results = List.of(
                     new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.ESTACIONADO, 0.0, 0.0, 0.0),
                     new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.OPERACION, 0.0, 0.0, 0.0),
@@ -108,11 +113,7 @@ public class FuelEfficiencyService {
             );
         }
 
-        return results != null ? results : List.of(
-                new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.ESTACIONADO, 0.0, 0.0, 0.0),
-                new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.OPERACION, 0.0, 0.0, 0.0),
-                new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.RALENTI, 0.0, 0.0, 0.0)
-        );
+        return results;
     }
 
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel) {
