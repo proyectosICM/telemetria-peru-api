@@ -110,9 +110,6 @@ public class FuelEfficiencyService {
 
         Optional<VehicleModel> vehicleModel = vehicleRepository.findById(vehicleId);
 
-        // vehicleModel.fuelType
-
-        // Mapeo manual de Object[] a FuelEfficiencySummary
         if (results != null && !results.isEmpty()) {
             List<FuelEfficiencySummaryDTO> summaries = results.stream().map(result -> {
                 FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
@@ -120,6 +117,14 @@ public class FuelEfficiencyService {
                 Double totalFuelConsumed = Math.max(0.0, Double.valueOf(result[2].toString()));
                 Double avgFuelEfficiency = Math.max(0.0, Double.valueOf(result[3].toString()));
 
+                if (vehicleModel.isPresent()) {
+                    switch (vehicleModel.get().getFuelType()) {
+                        case DIESEL:
+                            totalFuelConsumed *= 0.264172;
+                            avgFuelEfficiency *= 0.264172;
+                            break;
+                    }
+                }
 
                 return new FuelEfficiencySummaryDTO(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
             }).collect(Collectors.toList());
