@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.FuelEfficiencyDTO;
 import com.icm.telemetria_peru_api.dto.FuelEfficiencySummaryDTO;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
@@ -41,12 +42,12 @@ public class FuelEfficiencyController {
     }
 
     @GetMapping("/findByVehicle-paged/{vehicleModelId}")
-    public ResponseEntity<Page<FuelEfficiencyModel>> findByVehicleModelId(
+    public ResponseEntity<Page<FuelEfficiencyDTO>> findByVehicleModelId(
             @PathVariable Long vehicleModelId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<FuelEfficiencyModel> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId, pageable);
+        Page<FuelEfficiencyDTO> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId, pageable);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 

@@ -45,12 +45,13 @@ public class FuelEfficiencyService {
                 .map(FuelEfficiencyDTO::new)
                 .toList();
     }
-
+/*
     public Page<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId, Pageable pageable) {
         return fuelEfficiencyRepository.findByVehicleModelId(vehicleId, pageable);
     }
+    */
 
-    public Page<FuelEfficiencyDTO> findByVehicleModelId2(Long vehicleId, Pageable pageable) {
+    public Page<FuelEfficiencyDTO> findByVehicleModelId(Long vehicleId, Pageable pageable) {
         Page<FuelEfficiencyModel> records = fuelEfficiencyRepository.findByVehicleModelId(vehicleId, pageable);
 
         if (records.isEmpty()) {
