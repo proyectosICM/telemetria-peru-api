@@ -64,7 +64,7 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
             """, nativeQuery = true)
     List<Map<String, Object>> findMonthlyAveragesForCurrentYear(@Param("vehicleId") Long vehicleId);
 
-    List<FuelRecordModel> findByVehicleModelId(Long vehicleId);
+    List<FuelRecordModel> findByVehicleModelId(Long  vehicleId);
 
     Page<FuelRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 }

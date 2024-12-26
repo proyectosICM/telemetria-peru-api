@@ -1,7 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.dto.FuelEfficiencyDTO;
-import com.icm.telemetria_peru_api.dto.FuelEfficiencySummary;
+import com.icm.telemetria_peru_api.dto.FuelEfficiencySummaryDTO;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.services.FuelEfficiencyService;
@@ -57,9 +56,8 @@ public class FuelEfficiencyController {
     public List<Map<String, Object>> getDailyAveragesForMonth(@PathVariable Long vehicleId,
                                                               @RequestParam Integer month,
                                                               @RequestParam(defaultValue = "") Integer year) {
-        // Si el parámetro year está vacío, asigna el año actual
         if (year == null || year == 0) {
-            year = Calendar.getInstance().get(Calendar.YEAR);  // Obtener el año actual
+            year = Calendar.getInstance().get(Calendar.YEAR);
         }
         return fuelEfficiencyService.getDailyAveragesForMonth(vehicleId, month, year);
     }
@@ -75,13 +73,13 @@ public class FuelEfficiencyController {
     }
 
     @GetMapping("/summary/{vehicleId}")
-    public ResponseEntity<List<FuelEfficiencySummary>> getFuelEfficiencyByVehicle(
+    public ResponseEntity<List<FuelEfficiencySummaryDTO>> getFuelEfficiencyByVehicle(
             @PathVariable Long vehicleId,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month,
             @RequestParam(required = false) Integer day) {
 
-        List<FuelEfficiencySummary> summary = fuelEfficiencyService.getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(vehicleId, year, month, day);
+        List<FuelEfficiencySummaryDTO> summary = fuelEfficiencyService.getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(vehicleId, year, month, day);
         return ResponseEntity.ok(summary);
     }
     /** STAST */

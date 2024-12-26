@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.models.FuelRecordModel;
 import com.icm.telemetria_peru_api.services.FuelRecordService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,12 +19,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/fuel-records")
+@RequiredArgsConstructor
 public class FuelRecordController {
     private final FuelRecordService fuelRecordService;
 
-    public FuelRecordController(FuelRecordService fuelRecordService) {
-        this.fuelRecordService = fuelRecordService;
-    }
 
     @GetMapping("/hourly-averages/{vehicleId}")
     public List<Map<String, Object>> getHourlyAverages(@RequestParam(required = false) String date, @PathVariable Long vehicleId) {
@@ -48,7 +47,6 @@ public class FuelRecordController {
         //LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
         return fuelRecordService.findMonthlyAveragesForCurrentYear(vehicleId);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<FuelRecordModel> findById(@PathVariable @NotNull Long id) {
