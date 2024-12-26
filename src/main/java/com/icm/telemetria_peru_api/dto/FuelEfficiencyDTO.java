@@ -13,8 +13,6 @@ public class FuelEfficiencyDTO {
     private Double finalFuel;
     private Double fuelConsumptionPerHour;
     private FuelType fuelType;
-    private Double formattedInitialFuel;
-    private Double formattedFinalFuel;
 
     // Constructor
     public FuelEfficiencyDTO(FuelEfficiencyModel model) {
@@ -27,11 +25,11 @@ public class FuelEfficiencyDTO {
         this.fuelType = model.getVehicleModel().getFuelType();
 
         if (this.fuelType.equals(FuelType.DIESEL)) {
-            this.formattedInitialFuel = this.initialFuel != null ? this.initialFuel * 0.264172 : null;
-            this.formattedFinalFuel = this.finalFuel != null ? this.finalFuel * 0.264172 : null;
+            this.initialFuel = this.initialFuel != null ? this.initialFuel * 0.264172 : null;
+            this.finalFuel = this.finalFuel != null ? this.finalFuel * 0.264172 : null;
         } else {
-            this.formattedInitialFuel = this.initialFuel;
-            this.formattedFinalFuel = this.finalFuel;
+            this.initialFuel = this.initialFuel;
+            this.finalFuel = this.finalFuel;
         }
     }
 }
