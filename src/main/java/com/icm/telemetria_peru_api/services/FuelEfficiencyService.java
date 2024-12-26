@@ -101,7 +101,7 @@ public class FuelEfficiencyService {
         } else if (year != null && month != null && day != null) {
             results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, day, month, year);
         } else {
-            results = null;  // O manejar el caso en que no se pasan filtros
+            results = null;
         }
 
         // Mapeo manual de Object[] a FuelEfficiencySummary
@@ -118,36 +118,20 @@ public class FuelEfficiencyService {
 
             return summaries;
         } else {
-            // Si no hay resultados, devolver los 3 estados con valores en 0.0
-            List<FuelEfficiencySummaryDTO> defaultSummary = new ArrayList<>();
-
-            // Estado ESTACIONADO
-            defaultSummary.add(new FuelEfficiencySummaryDTO(
-                    FuelEfficiencyStatus.ESTACIONADO,  // Estado estacionado
-                    0.0,  // totalHours
-                    0.0,  // totalFuelConsumed
-                    0.0   // avgFuelEfficiency
-            ));
-
-            // Estado OPERACION
-            defaultSummary.add(new FuelEfficiencySummaryDTO(
-                    FuelEfficiencyStatus.OPERACION,  // Estado operación
-                    0.0,  // totalHours
-                    0.0,  // totalFuelConsumed
-                    0.0   // avgFuelEfficiency
-            ));
-
-            // Estado RALENTI
-            defaultSummary.add(new FuelEfficiencySummaryDTO(
-                    FuelEfficiencyStatus.RALENTI,  // Estado ralentí
-                    0.0,  // totalHours
-                    0.0,  // totalFuelConsumed
-                    0.0   // avgFuelEfficiency
-            ));
-
-            return defaultSummary;
+            return getDefaultSummary();
         }
     }
+
+    private static final List<FuelEfficiencySummaryDTO> defaultSummaries = Arrays.asList(
+            new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.ESTACIONADO, 0.0, 0.0, 0.0),
+            new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.OPERACION, 0.0, 0.0, 0.0),
+            new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.RALENTI, 0.0, 0.0, 0.0)
+    );
+
+    public List<FuelEfficiencySummaryDTO> getDefaultSummary() {
+        return defaultSummaries;
+    }
+
 
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel) {
 
