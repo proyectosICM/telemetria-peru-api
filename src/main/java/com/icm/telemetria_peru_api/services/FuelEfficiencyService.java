@@ -5,13 +5,16 @@ import com.icm.telemetria_peru_api.dto.FuelEfficiencySummaryDTO;
 import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
+import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.FuelEfficiencyRepository;
+import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ public class FuelEfficiencyService {
 
     private final FuelEfficiencyRepository fuelEfficiencyRepository;
     private final MqttMessagePublisher mqttMessagePublisher;
+    private final VehicleRepository vehicleRepository;
 
     public Optional<FuelEfficiencyModel> findById(Long id) {
         return fuelEfficiencyRepository.findById(id);
@@ -53,7 +57,7 @@ public class FuelEfficiencyService {
             throw new EntityNotFoundException("No se encontraron registros para el vehículo con ID " + vehicleId);
         }
 
-        return records.map(FuelEfficiencyDTO::new); // Usar el método map de Page
+        return records.map(FuelEfficiencyDTO::new);
     }
 
     /**
@@ -104,14 +108,19 @@ public class FuelEfficiencyService {
             results = null;
         }
 
-        // Mapeo manual de Object[] a FuelEfficiencySummary
+        Optional<VehicleModel> vehicleModel = vehicleRepository.findById(vehicleId);
+
         if (results != null && !results.isEmpty()) {
             List<FuelEfficiencySummaryDTO> summaries = results.stream().map(result -> {
                 FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
-                Double totalHours = Math.max(0.0, Double.valueOf(result[1].toString()));  // Asegurarse de que no sea negativo
-                Double totalFuelConsumed = Math.max(0.0, Double.valueOf(result[2].toString()));  // Asegurarse de que no sea negativo
-                Double avgFuelEfficiency = Math.max(0.0, Double.valueOf(result[3].toString()));  // Asegurarse de que no sea negativo
+                Double totalHours = Math.max(0.0, Double.valueOf(result[1].toString()));
+                Double totalFuelConsumed = Math.max(0.0, Double.valueOf(result[2].toString()));
+                Double avgFuelEfficiency = Math.max(0.0, Double.valueOf(result[3].toString()));
 
+                if (vehicleModel.isPresent() && "DIESEL".equalsIgnoreCase(vehicleModel.get().getFuelType().name())) {
+                    totalFuelConsumed *= 0.264172;
+                    avgFuelEfficiency *= 0.264172;
+                }
 
                 return new FuelEfficiencySummaryDTO(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
             }).collect(Collectors.toList());
@@ -142,37 +151,6 @@ public class FuelEfficiencyService {
             System.err.println("VehicleModel es nulo, no se puede enviar el mensaje MQTT.");
         }
         return savedData;
-    }
-
-    public FuelEfficiencyModel editEfficiency(Long id) {
-        Optional<FuelEfficiencyModel> existing = fuelEfficiencyRepository.findById(id);
-        if (existing.isPresent()) {
-            FuelEfficiencyModel fuelEfficiencyModel = existing.get();
-            //fuelEfficiencyModel.setFuelEfficiency(0.00);
-            //fuelEfficiencyModel.setFuelConsumptionPerHour(0.00);
-            //fuelEfficiencyModel.setAccumulatedHours();
-            return fuelEfficiencyRepository.save(fuelEfficiencyModel);
-        } else {
-            throw new EntityNotFoundException("Registro con ID " + id + " no encontrado.");
-        }
-    }
-
-    public List<FuelEfficiencyModel> resetNonOperationalEfficiencies() {
-        // Obtener todos los registros cuyo estado no sea OPERACION
-        List<FuelEfficiencyModel> nonOperationalRecords = fuelEfficiencyRepository.findByFuelEfficiencyStatusNot(FuelEfficiencyStatus.OPERACION);
-
-        if (nonOperationalRecords.isEmpty()) {
-            throw new EntityNotFoundException("No se encontraron registros con estados diferentes a OPERACION.");
-        }
-
-        // Actualizar cada registro
-        nonOperationalRecords.forEach(record -> {
-            record.setFuelEfficiency(0.00);
-            record.setFuelConsumptionPerHour(0.00);
-        });
-
-        // Guardar los cambios en la base de datos
-        return fuelEfficiencyRepository.saveAll(nonOperationalRecords);
     }
 
     public void deleteById(Long id) {

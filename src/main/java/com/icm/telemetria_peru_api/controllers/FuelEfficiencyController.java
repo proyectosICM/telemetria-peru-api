@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;   
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Calendar;
 import java.util.List;
@@ -67,7 +67,7 @@ public class FuelEfficiencyController {
                                                                       @RequestParam String status,
                                                                       @RequestParam(defaultValue = "") Integer year) {
         if (year == null || year == 0) {
-            year = Calendar.getInstance().get(Calendar.YEAR);  // Obtener el año actual
+            year = Calendar.getInstance().get(Calendar.YEAR);
         }
         return fuelEfficiencyService.getMonthlyAveragesForYear(vehicleId, status, year);
     }
@@ -83,27 +83,10 @@ public class FuelEfficiencyController {
         return ResponseEntity.ok(summary);
     }
     /** STAST */
-
     @PostMapping
     public ResponseEntity<FuelEfficiencyModel> save(@RequestBody FuelEfficiencyModel fuelEfficiencyModel){
         FuelEfficiencyModel saveData = fuelEfficiencyService.save(fuelEfficiencyModel);
         return new ResponseEntity<>(saveData, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<FuelEfficiencyModel> editEffi(@PathVariable Long id){
-        FuelEfficiencyModel data = fuelEfficiencyService.editEfficiency(id);
-        return new ResponseEntity<>(data, HttpStatus.OK);
-    }
-
-    @PutMapping("/reset-non-operational")
-    public ResponseEntity<List<FuelEfficiencyModel>> resetNonOperationalEfficiencies() {
-        try {
-            List<FuelEfficiencyModel> updatedRecords = fuelEfficiencyService.resetNonOperationalEfficiencies();
-            return ResponseEntity.ok(updatedRecords);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
     }
 
     @DeleteMapping("/{id}")
