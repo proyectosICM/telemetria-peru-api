@@ -26,6 +26,7 @@ public class FuelEfficiencyDTO {
         this.fuelConsumptionPerHour = model.getFuelConsumptionPerHour();
         this.fuelType = model.getVehicleModel().getFuelType();
 
+        System.out.println("c" + this.fuelType);
         if (FuelType.DIESEL.equals(this.fuelType)) {
             this.formattedInitialFuel = this.initialFuel != null ? this.initialFuel * 0.264172 : null;
             this.formattedFinalFuel = this.finalFuel != null ? this.finalFuel * 0.264172 : null;
