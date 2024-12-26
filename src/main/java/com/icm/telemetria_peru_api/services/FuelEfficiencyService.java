@@ -117,9 +117,13 @@ public class FuelEfficiencyService {
                 Double totalFuelConsumed = Math.max(0.0, Double.valueOf(result[2].toString()));
                 Double avgFuelEfficiency = Math.max(0.0, Double.valueOf(result[3].toString()));
 
-                if (vehicleModel.isPresent() && "DIESEL".equalsIgnoreCase(vehicleModel.get().getFuelType().name())) {
-                    totalFuelConsumed *= 0.264172;
-                    avgFuelEfficiency *= 0.264172;
+                if (vehicleModel.isPresent()) {
+                    switch (vehicleModel.get().getFuelType()) {
+                        case DIESEL:
+                            totalFuelConsumed *= 0.264172;
+                            avgFuelEfficiency *= 0.264172;
+                            break;
+                    }
                 }
 
                 return new FuelEfficiencySummaryDTO(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
