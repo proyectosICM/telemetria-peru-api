@@ -1,6 +1,5 @@
 package com.icm.telemetria_peru_api.repositories;
 
-import com.icm.telemetria_peru_api.dto.FuelEfficiencySummaryDTO;
 import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import org.springframework.data.domain.Page;
@@ -107,7 +106,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
                 AND YEAR(fe.start_time) = :year
                 GROUP BY fe.status
             """, nativeQuery = true)
-    List<FuelEfficiencySummaryDTO> getAggregatedFuelEfficiencyByYear(@Param("vehicleId") Long vehicleId, @Param("year") Integer year);
+    List<Object[]> getAggregatedFuelEfficiencyByYear(@Param("vehicleId") Long vehicleId, @Param("year") Integer year);
 
     @Query(value = """
                 SELECT 
@@ -121,7 +120,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
                 AND YEAR(fe.start_time) = :year
                 GROUP BY fe.status
             """, nativeQuery = true)
-    List<FuelEfficiencySummaryDTO> getAggregatedFuelEfficiencyByMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month, @Param("year") Integer year);
+    List<Object[]> getAggregatedFuelEfficiencyByMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month, @Param("year") Integer year);
 
     /*
         @Query(value = """
@@ -153,5 +152,5 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
             AND (fe.initial_fuel >= fe.final_fuel) -- Asegúrate de que no haya valores de combustible erróneos
             GROUP BY fe.status;
             """, nativeQuery = true)
-    List<FuelEfficiencySummaryDTO> getAggregatedFuelEfficiencyByDay(@Param("vehicleId") Long vehicleId, @Param("day") Integer day, @Param("month") Integer month, @Param("year") Integer year);
+    List<Object[]> getAggregatedFuelEfficiencyByDay(@Param("vehicleId") Long vehicleId, @Param("day") Integer day, @Param("month") Integer month, @Param("year") Integer year);
 }

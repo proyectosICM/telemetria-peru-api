@@ -92,28 +92,61 @@ public class FuelEfficiencyService {
      */
 
     public List<FuelEfficiencySummaryDTO> getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(Long vehicleId, Integer year, Integer month, Integer day) {
-        List<FuelEfficiencySummaryDTO> results = new ArrayList<>();
+        List<Object[]> results;
 
         if (year != null && month == null && day == null) {
             results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByYear(vehicleId, year);
         } else if (year != null && month != null && day == null) {
-            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByMonth(vehicleId, year, month);
+            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByMonth(vehicleId, month, year);
         } else if (year != null && month != null && day != null) {
-            // Implement logic for getAggregatedFuelEfficiencyByDay (not provided in the given code)
-            // For example:
-            // results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, year, month, day);
+            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, day, month, year);
+        } else {
+            results = null;  // O manejar el caso en que no se pasan filtros
         }
 
-        // If no results were found in any of the conditions, return the default list
-        if (results.isEmpty()) {
-            results = List.of(
-                    new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.ESTACIONADO, 0.0, 0.0, 0.0),
-                    new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.OPERACION, 0.0, 0.0, 0.0),
-                    new FuelEfficiencySummaryDTO(FuelEfficiencyStatus.RALENTI, 0.0, 0.0, 0.0)
-            );
-        }
+        // Mapeo manual de Object[] a FuelEfficiencySummary
+        if (results != null && !results.isEmpty()) {
+            List<FuelEfficiencySummaryDTO> summaries = results.stream().map(result -> {
+                FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
+                Double totalHours = Math.max(0.0, Double.valueOf(result[1].toString()));  // Asegurarse de que no sea negativo
+                Double totalFuelConsumed = Math.max(0.0, Double.valueOf(result[2].toString()));  // Asegurarse de que no sea negativo
+                Double avgFuelEfficiency = Math.max(0.0, Double.valueOf(result[3].toString()));  // Asegurarse de que no sea negativo
 
-        return results;
+
+                return new FuelEfficiencySummaryDTO(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
+            }).collect(Collectors.toList());
+
+            return summaries;
+        } else {
+            // Si no hay resultados, devolver los 3 estados con valores en 0.0
+            List<FuelEfficiencySummaryDTO> defaultSummary = new ArrayList<>();
+
+            // Estado ESTACIONADO
+            defaultSummary.add(new FuelEfficiencySummaryDTO(
+                    FuelEfficiencyStatus.ESTACIONADO,  // Estado estacionado
+                    0.0,  // totalHours
+                    0.0,  // totalFuelConsumed
+                    0.0   // avgFuelEfficiency
+            ));
+
+            // Estado OPERACION
+            defaultSummary.add(new FuelEfficiencySummaryDTO(
+                    FuelEfficiencyStatus.OPERACION,  // Estado operación
+                    0.0,  // totalHours
+                    0.0,  // totalFuelConsumed
+                    0.0   // avgFuelEfficiency
+            ));
+
+            // Estado RALENTI
+            defaultSummary.add(new FuelEfficiencySummaryDTO(
+                    FuelEfficiencyStatus.RALENTI,  // Estado ralentí
+                    0.0,  // totalHours
+                    0.0,  // totalFuelConsumed
+                    0.0   // avgFuelEfficiency
+            ));
+
+            return defaultSummary;
+        }
     }
 
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel) {
