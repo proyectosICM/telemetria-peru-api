@@ -1,6 +1,5 @@
 package com.icm.telemetria_peru_api.services;
 
-import com.icm.telemetria_peru_api.dto.FuelRecordDTOs.HourlyAverageDTO;
 import com.icm.telemetria_peru_api.models.FuelRecordModel;
 import com.icm.telemetria_peru_api.repositories.FuelRecordRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,22 +11,16 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FuelRecordService {
     private final FuelRecordRepository fuelRecordRepository;
 
-    public List<HourlyAverageDTO> getHourlyAveragesByDate(LocalDate date, Long vehicleId) {
-        List<Map<String, Object>> results = fuelRecordRepository.findHourlyAverageByDate(date, vehicleId);
-        return results.stream()
-                .map(record -> new HourlyAverageDTO(
-                        (String) record.get("hour"),
-                        (Double) record.get("averageValue")
-                ))
-                .collect(Collectors.toList());
+    public List<Map<String, Object>> getHourlyAveragesByDate(LocalDate date, Long vehicleId) {
+        return fuelRecordRepository.findHourlyAverageByDate(date, vehicleId);
     }
+
     public List<Map<String, Object>> findDailyAveragesForLast7Days(Long vehicleId) {
         return fuelRecordRepository.findDailyAveragesForLast7Days(vehicleId);
     }
