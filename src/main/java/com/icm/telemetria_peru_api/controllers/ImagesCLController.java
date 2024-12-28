@@ -111,7 +111,7 @@ public class ImagesCLController {
         try {
             ImagesCLModel data = imagesCLService.save(file, clId);
             return new ResponseEntity<>(data, HttpStatus.CREATED);
-        } catch (IOException e) {
+        } catch (IOException e) {   
             return new ResponseEntity<>(e,HttpStatus.NOT_FOUND);
         }
     }
