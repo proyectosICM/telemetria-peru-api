@@ -27,7 +27,7 @@ public class MqttMessagePublisher {
             MqttMessage mqttMessage = new MqttMessage(payload);
             mqttMessage.setQos(1);
             mqttMessage.setRetained(true);
-            String topic = "telData/" + vehicleId;
+            String topic = "impact/" + vehicleId;
             mqttClient.publish(topic, mqttMessage);
         } catch (Exception e) {
             e.printStackTrace();
