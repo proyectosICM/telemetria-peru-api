@@ -17,6 +17,10 @@ server.port = 7070
 # Indicates whether to enable the logging of SQL statements, allowing them to be displayed in the console.
 # spring.jpa.show-sql=true
 
+# Email configuration
+email.sender = ing.cm.sac@gmail.com
+email.password = vknkmeihjwlbmpet
+
 # JWT (JSON Web Token) configuration for authentication
 # Secret key to generate and verify JWTs
 jwt.secret.key = 76397924423F4528482B4D6251655468576D5A7134743777217A25432A46294A

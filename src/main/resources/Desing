@@ -24,6 +24,10 @@ jwt.secret.key = 76397924423F4528482B4D6251655468576D5A7134743777217A25432A46294
 # JWT expiration time in milliseconds (1 day)
 jwt.time.expiration = 1368000000
 
+# Email configuration
+email.sender = ing.cm.sac@gmail.com
+email.password = vknkmeihjwlbmpet
+
 # MQTT server configuration
 mqtt.serverUri = tcp://telemetriaperu.com:1883
 
