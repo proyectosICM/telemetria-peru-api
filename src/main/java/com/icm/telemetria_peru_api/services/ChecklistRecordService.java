@@ -76,7 +76,7 @@ public class ChecklistRecordService {
         String fileName = "CL/" + savedChecklistRecordModel.getId() + ".json";
         try (FileWriter file = new FileWriter(fileName)) {
             objectMapper.writeValue(file, jsonData);
-            System.out.println("Archivo JSON guardado en: " + fileName);
+            //System.out.println("Archivo JSON guardado en: " + fileName);
         } catch (IOException e) {
             System.out.println("Error al guardar el archivo JSON: " + e.getMessage());
             throw e;

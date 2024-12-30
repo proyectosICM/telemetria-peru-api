@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.models.ImpactIncidentLoggingModel;
 import com.icm.telemetria_peru_api.services.ImpactIncidentLoggingService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,9 +18,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/impact_incident_logging")
+@RequiredArgsConstructor
 public class ImpactIncidentLoggingController {
     @Autowired
-    private ImpactIncidentLoggingService impactIncidentLoggingService;
+    private final ImpactIncidentLoggingService impactIncidentLoggingService;
 
     @GetMapping
     public List<ImpactIncidentLoggingModel> findAll(){
@@ -35,8 +37,8 @@ public class ImpactIncidentLoggingController {
     @GetMapping("/{id}")
     public ResponseEntity<ImpactIncidentLoggingModel> findById(@PathVariable @NotNull Long id) {
         try {
-            ImpactIncidentLoggingModel gasRecord = impactIncidentLoggingService.findById(id);
-            return new ResponseEntity<>(gasRecord, HttpStatus.OK);
+            ImpactIncidentLoggingModel data = impactIncidentLoggingService.findById(id);
+            return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -47,7 +49,7 @@ public class ImpactIncidentLoggingController {
         try {
             List<ImpactIncidentLoggingModel> data = impactIncidentLoggingService.findByVehicleId(vehicleId);
             if (data.isEmpty()) {
-                return new ResponseEntity<>("No gas records found for vehicle with id " + vehicleId, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("No records found for vehicle with id " + vehicleId, HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {

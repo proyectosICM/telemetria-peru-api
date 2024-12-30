@@ -21,6 +21,20 @@ public class MqttMessagePublisher {
         this.mqttClient = mqttClient;
     }
 
+    public void ImpactIncident(Long vehicleId){
+        try{
+            byte[] payload = "Incidente de impacto".getBytes();
+            MqttMessage mqttMessage = new MqttMessage(payload);
+            mqttMessage.setQos(1);
+            mqttMessage.setRetained(true);
+            String topic = "telData/" + vehicleId;
+            mqttClient.publish(topic, mqttMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al enviar el mensaje ImpactIncident: " + e.getMessage());
+        }
+    }
+
     public void telData(Long vehicleId, JsonNode originalJson) {
         try {
             // Agregar el ID del vehículo al JSON original
