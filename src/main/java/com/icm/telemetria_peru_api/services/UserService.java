@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.services;
 import com.icm.telemetria_peru_api.models.UserModel;
 import com.icm.telemetria_peru_api.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,23 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    /*********************************/
-    /** Starting point for find methods **/
-    /*********************************/
-    private UserModel getUserById(Long userId){
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
-    }
 
     /** Validates the given UserModel to ensure that the email and username are unique. */
     private void validateUser(UserModel userModel) {
@@ -39,6 +28,14 @@ public class UserService {
         if (userRepository.existsByUsername(userModel.getUsername())) {
             throw new IllegalArgumentException("Username already exists");
         }
+    }
+
+    /*********************************/
+    /** Starting point for find methods **/
+    /*********************************/
+    private UserModel getUserById(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
     }
 
     public Optional<UserModel> findById(Long userId){
@@ -101,11 +98,7 @@ public class UserService {
         boolean emailChanged = !existing.getEmail().equals(userModel.getEmail());
         boolean usernameChanged = !existing.getUsername().equals(userModel.getUsername());
 
-        if (emailChanged) {
-            validateUser(userModel);
-        }
-
-        if (usernameChanged ) {
+        if (emailChanged || usernameChanged) {
             validateUser(userModel);
         }
 
@@ -121,7 +114,7 @@ public class UserService {
     /** Update password */
     public UserModel updatePassword(Long userId, UserModel userModel){
         UserModel existing = getUserById(userId);
-        existing.setPassword(passwordEncoder.encode(userModel.getPassword()));  // Encriptar la nueva contraseña
+        existing.setPassword(passwordEncoder.encode(userModel.getPassword()));
         return userRepository.save(existing);
     }
 

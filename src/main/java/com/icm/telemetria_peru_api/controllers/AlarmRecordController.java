@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.dto.BatteryDTO;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.repositories.AlarmRecordRepository;
 import com.icm.telemetria_peru_api.services.AlarmRecordService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,13 +20,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/alarm-record")
+@RequiredArgsConstructor
 public class AlarmRecordController {
     private final AlarmRecordService alarmRecordService;
-
-    @Autowired
-    public AlarmRecordController(AlarmRecordService alarmRecordService) {
-        this.alarmRecordService = alarmRecordService;
-    }
 
     @GetMapping
     public List<AlarmRecordModel> findAll(){
