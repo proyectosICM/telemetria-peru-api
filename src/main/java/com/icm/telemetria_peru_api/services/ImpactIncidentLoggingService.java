@@ -28,6 +28,7 @@ public class ImpactIncidentLoggingService {
     private final MqttMessagePublisher mqttMessagePublisher;
     private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;
+    private final EmailServiceImpl emailService;
 
     public List<ImpactIncidentLoggingModel> findAll(){
         return impactIncidentLoggingRepository.findAll();
@@ -57,6 +58,7 @@ public class ImpactIncidentLoggingService {
         return impactIncidentLoggingRepository.save(impactIncidentLoggingModel);
     }
 
+
     public void sendEmailInfo(Long vehicleId) {
         Optional<VehicleModel> vehicleModelOptional = vehicleRepository.findById(vehicleId);
 
@@ -65,11 +67,24 @@ public class ImpactIncidentLoggingService {
 
             CompanyModel companyModel = vehicleModel.getCompanyModel();
             List<UserModel> userModels = userRepository.findByCompanyModelId(companyModel.getId());
+
             String[] emails = userModels.stream()
                     .map(UserModel::getEmail)
                     .toArray(String[]::new);
 
-            System.out.println("Correos electrónicos: " + Arrays.toString(emails));
+            if (emails.length > 0) {
+                String subject = "Incidente de impacto";
+                String message = "El vehículo con ID " + vehicleId + " A sufrido un incidente de impacto. Por favor, verifique el estado del vehículo.";
+
+                try {
+                    emailService.sendEmail(emails, subject, message);
+                    System.out.println("Correo enviado a: " + Arrays.toString(emails));
+                } catch (Exception e) {
+                    System.err.println("Error al enviar el correo: " + e.getMessage());
+                }
+            } else {
+                System.out.println("No se encontraron usuarios asociados a la compañía del vehículo.");
+            }
         } else {
             System.out.println("No se encontró un vehículo con el ID proporcionado.");
         }
