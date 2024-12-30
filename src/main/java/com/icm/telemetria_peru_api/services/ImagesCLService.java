@@ -2,8 +2,11 @@ package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.models.ChecklistRecordModel;
 import com.icm.telemetria_peru_api.models.ImagesCLModel;
+import com.icm.telemetria_peru_api.repositories.ChecklistRecordRepository;
+import com.icm.telemetria_peru_api.repositories.ChecklistTypeRepository;
 import com.icm.telemetria_peru_api.repositories.ImagesCLRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -17,17 +20,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ImagesCLService {
 
     private final ImagesCLRepository imagesCLRepository;
-
-    @Autowired
-    public ImagesCLService(ImagesCLRepository imagesCLRepository) {
-        this.imagesCLRepository = imagesCLRepository;
-    }
+    private final ChecklistRecordRepository checklistRecordRepository;
 
     @Value("${file.image}")
     private String fileImagen;
@@ -99,11 +100,11 @@ public class ImagesCLService {
         // Crear una instancia del modelo relacionado con la imagen (ImagesCLModel)
         ImagesCLModel imagesCLModel = new ImagesCLModel();
         ChecklistRecordModel cl = new ChecklistRecordModel();
-        cl.setId(clId); // Asociar el ID del checklist
+        Optional<ChecklistRecordModel> cl2 = checklistRecordRepository.findById(clId);
 
         // Establecer el nombre del archivo en el modelo (sin la ruta completa, solo el nombre y extensión)
         imagesCLModel.setUrlImage(randomFileName + fileExtension);
-        imagesCLModel.setChecklistRecordModel(cl); // Asociar la imagen al checklist
+        imagesCLModel.setChecklistRecordModel(cl2.get()); // Asociar la imagen al checklist
 
 
         return imagesCLRepository.save(imagesCLModel);
