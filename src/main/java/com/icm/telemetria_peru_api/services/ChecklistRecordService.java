@@ -1,8 +1,10 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.ChecklistRecordModel;
 import com.icm.telemetria_peru_api.repositories.ChecklistRecordRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,9 +23,10 @@ import java.nio.file.Paths;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
+@RequiredArgsConstructor
 public class ChecklistRecordService {
-    @Autowired
-    private ChecklistRecordRepository checklistRecordRepository;
+    private final ChecklistRecordRepository checklistRecordRepository;
+    private final MqttMessagePublisher mqttMessagePublisher;
 
     // Objeto para convertir el Map en un archivo JSON
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -61,6 +66,24 @@ public class ChecklistRecordService {
 
     public Page<ChecklistRecordModel> findByCompanyModelId(Long companyId, Pageable pageable){
         return checklistRecordRepository.findByCompanyModelId(companyId, pageable);
+    }
+
+    public ChecklistRecordModel getLatestChecklistForVehicle(Long vehicleId) {
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime startOfDay = now.toLocalDate().atStartOfDay(ZoneId.systemDefault());
+        ZonedDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        Optional<ChecklistRecordModel> optionalChecklist = checklistRecordRepository.findLatestByVehicleIdAndDay(vehicleId, startOfDay, endOfDay);
+
+        if (optionalChecklist.isEmpty()) {
+            String mqttTopic = "vehicles/" + vehicleId + "/checklist/status";
+            String mqttMessage = "No checklist record found for today for vehicle ID: " + vehicleId;
+            mqttMessagePublisher.CheckListShutDown(vehicleId);
+
+            throw new RuntimeException("No checklist record found for today for vehicle ID: " + vehicleId);
+        }
+
+        return optionalChecklist.get();
     }
 
 

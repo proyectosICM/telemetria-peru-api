@@ -21,6 +21,21 @@ public class MqttMessagePublisher {
         this.mqttClient = mqttClient;
     }
 
+
+    public void CheckListShutDown(Long vehicleId){
+        try{
+            byte[] payload = "Apagado por checklist del dia inexistente".getBytes();
+            MqttMessage mqttMessage = new MqttMessage(payload);
+            mqttMessage.setQos(1);
+            mqttMessage.setRetained(true);
+            String topic = "checklist/" + vehicleId;
+            mqttClient.publish(topic, mqttMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al enviar el mensaje CheckListShutDown: " + e.getMessage());
+        }
+    }
+
     public void ImpactIncident(Long vehicleId){
         try{
             byte[] payload = "Incidente de impacto".getBytes();

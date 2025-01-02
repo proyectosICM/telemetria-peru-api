@@ -105,6 +105,17 @@ public class ChecklistRecordController {
         }
     }
 
+    @GetMapping("/latest/{vehicleId}")
+    public ResponseEntity<?> getLatestChecklistForVehicle(@PathVariable Long vehicleId) {
+        try {
+            ChecklistRecordModel checklistRecord = checklistRecordService.getLatestChecklistForVehicle(vehicleId);
+            return ResponseEntity.ok(checklistRecord);
+        } catch (RuntimeException e) {
+            // Retorna un mensaje de error con código 404 si no se encuentra el registro
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> save(@RequestBody ChecklistRecordDTO checklistRecordDTO) {
         try {

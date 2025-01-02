@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.dto.BatteryDTO;
 import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.services.BatteryService;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,12 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/batteries")
+@RequiredArgsConstructor
 public class BatteryController {
-        private final BatteryService batteryService;
-    @Autowired
-    public BatteryController(BatteryService batteryService) {
-        this.batteryService = batteryService;
-    }
+    private final BatteryService batteryService;
 
     @GetMapping("/{id}")
     public ResponseEntity<BatteryDTO> findById(@PathVariable @NotNull Long id) {
