@@ -10,7 +10,6 @@ import com.icm.telemetria_peru_api.repositories.UserRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

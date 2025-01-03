@@ -1,12 +1,8 @@
 package com.icm.telemetria_peru_api.services;
 
-import com.icm.telemetria_peru_api.dto.BatteryRecordDTO;
-import com.icm.telemetria_peru_api.mappers.BatteryRecordMapper;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
-import com.icm.telemetria_peru_api.models.BatteryRecordModel;
 import com.icm.telemetria_peru_api.repositories.AlarmRecordRepository;
-import com.icm.telemetria_peru_api.repositories.BatteryRecordRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,13 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class AlarmRecordService {
     private final AlarmRecordRepository alarmRecordRepository;
-
-    @Autowired
-    public AlarmRecordService(AlarmRecordRepository alarmRecordRepository) {
-        this.alarmRecordRepository = alarmRecordRepository;
-    }
 
     public List<AlarmRecordModel> findAll(){
         return alarmRecordRepository.findAll();
@@ -44,6 +36,7 @@ public class AlarmRecordService {
         return alarmRecordRepository.save(alarmRecordModel);
     }
 
+    /* Stats */
     public List<Map<String, Object>> getHourlyAveragesByDate(LocalDate date) {
         return alarmRecordRepository.findHourlyAverageByDate(date);
     }

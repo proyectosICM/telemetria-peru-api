@@ -16,7 +16,6 @@ import java.util.Optional;
 public interface ChecklistRecordRepository extends JpaRepository<ChecklistRecordModel, Long> {
     List<ChecklistRecordModel> findByVehicleModelId(Long vehicleId);
     Page<ChecklistRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
-
     List<ChecklistRecordModel> findByCompanyModelId(Long companyId);
     Page<ChecklistRecordModel> findByCompanyModelId(Long companyId, Pageable pageable);
 

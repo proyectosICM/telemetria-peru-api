@@ -49,6 +49,7 @@ public class AlarmRecordController {
         return alarmRecordService.findByVehicleModelId(vehicleId, pageable);
     }
 
+    /* Stats */
     @GetMapping("/hourly-averages")
     public List<Map<String, Object>> getHourlyAverages(@RequestParam(required = false) String date) {
         LocalDate localDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : LocalDate.now();
