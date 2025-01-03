@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.dto.IgnitionDuration;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleIgnitionModel;
 import com.icm.telemetria_peru_api.services.VehicleIgnitionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,12 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/vehicle-ignition")
+@RequiredArgsConstructor
 public class VehicleIgnitionController {
     private final VehicleIgnitionService vehicleIgnitionService;
-    @Autowired
-    public VehicleIgnitionController(VehicleIgnitionService vehicleIgnitionService) {
-        this.vehicleIgnitionService = vehicleIgnitionService;
-    }
 
     @GetMapping("/active-durations/{vehicleId}")
     public List<IgnitionDuration> getActiveDurations(@PathVariable Long vehicleId) {

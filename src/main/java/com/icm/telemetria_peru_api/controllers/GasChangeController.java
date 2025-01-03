@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.services.GasChangeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,13 +18,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/gas-changes")
+@RequiredArgsConstructor
 public class GasChangeController {
     private final GasChangeService gasChangeService;
-
-    @Autowired
-    public GasChangeController(GasChangeService gasChangeService) {
-        this.gasChangeService = gasChangeService;
-    }
 
     @GetMapping("/{gasChangeId}")
     public ResponseEntity<GasChangeModel> findById(@PathVariable @NotNull Long gasChangeId) {

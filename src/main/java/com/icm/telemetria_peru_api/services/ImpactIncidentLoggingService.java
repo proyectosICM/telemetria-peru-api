@@ -22,7 +22,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ImpactIncidentLoggingService {
-    @Autowired
     private final ImpactIncidentLoggingRepository impactIncidentLoggingRepository;
     private final MqttMessagePublisher mqttMessagePublisher;
     private final VehicleRepository vehicleRepository;
@@ -77,15 +76,15 @@ public class ImpactIncidentLoggingService {
 
                 try {
                     //emailService.sendEmail(emails, subject, message);
-                    System.out.println("Correo enviado a: " + Arrays.toString(emails));
+                    System.out.println("Mail sent to: " + Arrays.toString(emails));
                 } catch (Exception e) {
-                    System.err.println("Error al enviar el correo: " + e.getMessage());
+                    System.err.println("Error sending email: " + e.getMessage());
                 }
             } else {
-                System.out.println("No se encontraron usuarios asociados a la compañía del vehículo.");
+                System.out.println("No users associated with the vehicle company were found.");
             }
         } else {
-            System.out.println("No se encontró un vehículo con el ID proporcionado.");
+            System.out.println("A vehicle with the provided ID was not found.");
         }
     }
 

@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.services.CompanyService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,13 +18,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/companies")
+@RequiredArgsConstructor
 public class CompanyController {
     private final CompanyService companyService;
-
-    @Autowired
-    public CompanyController(CompanyService companyService) {
-        this.companyService = companyService;
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CompanyModel> findById(@PathVariable @NotNull Long id) {

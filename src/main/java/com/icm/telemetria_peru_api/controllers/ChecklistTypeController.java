@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.controllers;
 import com.icm.telemetria_peru_api.models.ChecklistTypeModel;
 import com.icm.telemetria_peru_api.services.ChecklistTypeService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,9 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/checklist-types")
+@RequiredArgsConstructor
 public class ChecklistTypeController {
-    @Autowired
-    private ChecklistTypeService checklistTypeService;
+    private final ChecklistTypeService checklistTypeService;
 
     @GetMapping
     public List<ChecklistTypeModel> findAll(){

@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.models.ImpactIncidentLoggingModel;
 import com.icm.telemetria_peru_api.models.RoleModel;
 import com.icm.telemetria_peru_api.models.TireSensorModel;
 import com.icm.telemetria_peru_api.services.TireSensorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,9 +19,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/tire-sensor")
+@RequiredArgsConstructor
 public class TireSensorController {
-    @Autowired
-    private TireSensorService tireSensorService;
+    private final TireSensorService tireSensorService;
 
     @GetMapping
     public List<TireSensorModel> findAll(){

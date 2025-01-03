@@ -6,6 +6,7 @@ import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
 import com.icm.telemetria_peru_api.services.SpeedExcessLoggerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,12 +19,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/speed_excess_logger")
+@RequiredArgsConstructor
 public class SpeedExcessLoggerController {
     private final SpeedExcessLoggerService speedExcessLoggerService;
 
-    public SpeedExcessLoggerController(SpeedExcessLoggerService speedExcessLoggerService){
-        this.speedExcessLoggerService = speedExcessLoggerService;
-    }
     @GetMapping
     public List<SpeedExcessLoggerModel> findAll(){
         return speedExcessLoggerService.findAll();

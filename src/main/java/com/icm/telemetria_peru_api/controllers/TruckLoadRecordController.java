@@ -9,6 +9,7 @@ import com.icm.telemetria_peru_api.services.TruckLoadRecordService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +26,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/truck-loads")
+@RequiredArgsConstructor
 public class TruckLoadRecordController {
     private final TruckLoadRecordService truckLoadRecordService;
-
-    public TruckLoadRecordController(TruckLoadRecordService truckLoadRecordService) {
-        this.truckLoadRecordService = truckLoadRecordService;
-    }
 
     @GetMapping("/count-day/{vehicleId}")
     public long countRecordsByVehicleAndToday(@PathVariable Long vehicleId) {

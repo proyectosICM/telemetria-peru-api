@@ -1,8 +1,8 @@
 package com.icm.telemetria_peru_api.services;
 
-import com.icm.telemetria_peru_api.dto.DailyLoadCountDTO;
 import com.icm.telemetria_peru_api.models.TruckLoadRecordModel;
 import com.icm.telemetria_peru_api.repositories.TruckLoadRecordRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,12 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TruckLoadRecordService {
     private final TruckLoadRecordRepository truckLoadRecordRepository;
-
-    public TruckLoadRecordService(TruckLoadRecordRepository truckLoadRecordRepository){
-        this.truckLoadRecordRepository = truckLoadRecordRepository;
-    }
 
     public long countRecordsByVehicleAndDate(Long vehicleId, LocalDate date) {
         return truckLoadRecordRepository.countByVehicleModelIdAndDate(vehicleId, date);

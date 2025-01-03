@@ -3,7 +3,7 @@ package com.icm.telemetria_peru_api.services;
 import com.icm.telemetria_peru_api.models.TireSensorModel;
 import com.icm.telemetria_peru_api.repositories.TireSensorRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TireSensorService {
-    @Autowired
-    private TireSensorRepository tireSensorRepository;
+    private final TireSensorRepository tireSensorRepository;
     public List<TireSensorModel> findAll() {
         return tireSensorRepository.findAll();
     }

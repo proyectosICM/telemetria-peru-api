@@ -6,6 +6,7 @@ import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.repositories.BatteryRecordRepository;
 import com.icm.telemetria_peru_api.repositories.BatteryRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,16 +15,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BatteryService {
     private final BatteryMapper batteryMapper;
     private final BatteryRepository batteryRepository;
     private final BatteryRecordRepository batteryRecordRepository;
-
-    public BatteryService(BatteryMapper batteryMapper, BatteryRepository batteryRepository, BatteryRecordRepository batteryRecordRepository) {
-        this.batteryMapper = batteryMapper;
-        this.batteryRepository = batteryRepository;
-        this.batteryRecordRepository = batteryRecordRepository;
-    }
 
     /*********************************/
     /** Starting point for find methods **/

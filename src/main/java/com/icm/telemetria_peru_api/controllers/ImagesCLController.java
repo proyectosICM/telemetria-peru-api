@@ -7,6 +7,7 @@ import com.icm.telemetria_peru_api.services.ImagesCLService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
@@ -26,7 +27,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-    @RequestMapping("api/images-cl")
+@RequestMapping("api/images-cl")
+@RequiredArgsConstructor
 public class ImagesCLController {
 
     @Value("${file.image}")
@@ -34,10 +36,6 @@ public class ImagesCLController {
 
     private final ImagesCLService imagesCLService;
 
-    @Autowired
-    public ImagesCLController(ImagesCLService imagesCLService) {
-        this.imagesCLService = imagesCLService;
-    }
 
     @GetMapping("/images")
     public ResponseEntity<Resource> serveImage(@RequestParam String filename) {

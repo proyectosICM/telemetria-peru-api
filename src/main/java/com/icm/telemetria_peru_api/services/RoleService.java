@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.models.RoleModel;
 import com.icm.telemetria_peru_api.repositories.RoleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class RoleService {
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
     public Optional<RoleModel> getById(Long id) {
         return roleRepository.findById(id);
     }

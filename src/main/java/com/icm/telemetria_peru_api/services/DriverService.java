@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.models.DriverModel;
 import com.icm.telemetria_peru_api.repositories.DriverRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class DriverService {
-    @Autowired
-    private DriverRepository driverRepository;
+    private final DriverRepository driverRepository;
 
     private DriverModel getDriverById(Long driverId){
         return driverRepository.findById(driverId)

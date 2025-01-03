@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.services.VehicleTypeService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,14 +19,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/vehicle-type")
+@RequiredArgsConstructor
 public class VehicleTypeController {
 
     private final VehicleTypeService vehicleTypeService;
-
-    @Autowired
-    public VehicleTypeController(VehicleTypeService vehicleTypeService) {
-        this.vehicleTypeService = vehicleTypeService;
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<VehicleTypeModel> getVehicletypeById(@PathVariable @NotNull Long id) {

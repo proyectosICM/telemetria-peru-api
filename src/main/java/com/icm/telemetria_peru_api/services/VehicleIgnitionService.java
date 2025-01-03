@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleIgnitionModel;
 import com.icm.telemetria_peru_api.repositories.AlarmRecordRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleIgnitionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,13 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class VehicleIgnitionService {
     private final VehicleIgnitionRepository vehicleIgnitionRepository;
-
-    @Autowired
-    public VehicleIgnitionService(VehicleIgnitionRepository vehicleIgnitionRepository) {
-        this.vehicleIgnitionRepository = vehicleIgnitionRepository;
-    }
 
     public List<VehicleIgnitionModel> findAll(){
         return vehicleIgnitionRepository.findAll();

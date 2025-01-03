@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.services;
 import com.icm.telemetria_peru_api.models.PositioningModel;
 import com.icm.telemetria_peru_api.repositories.PositioningRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PositioningService {
-    @Autowired
-    private PositioningRepository positioningRepository;
+    private final PositioningRepository positioningRepository;
 
     public List<PositioningModel> findAll() {
         return positioningRepository.findAll();

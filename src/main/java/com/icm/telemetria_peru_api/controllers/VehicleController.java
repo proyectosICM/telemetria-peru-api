@@ -6,6 +6,7 @@ import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.services.VehicleService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +20,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/vehicles")
+@RequiredArgsConstructor
 public class VehicleController {
-    @Autowired
-    private VehicleService vehicleService;
+    private final VehicleService vehicleService;
 
     @GetMapping("/{vehicleId}")
     public ResponseEntity<VehicleDTO> findById(@PathVariable @NotNull Long vehicleId) {

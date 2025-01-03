@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("api/impact_incident_logging")
 @RequiredArgsConstructor
 public class ImpactIncidentLoggingController {
-    @Autowired
     private final ImpactIncidentLoggingService impactIncidentLoggingService;
 
     @GetMapping

@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.models.BatteryRecordModel;
 import com.icm.telemetria_peru_api.services.BatteryRecordService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,13 +18,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/batteries-records")
+@RequiredArgsConstructor
 public class BatteryRecordController {
     private final BatteryRecordService batteryRecordService;
-    @Autowired
-    public BatteryRecordController(BatteryRecordService batteryRecordService){
-        this.batteryRecordService = batteryRecordService;
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<BatteryRecordDTO> findById(@PathVariable @NotNull Long id) {
         try {
@@ -45,8 +42,6 @@ public class BatteryRecordController {
         Pageable pageable = PageRequest.of(page, size);
         return batteryRecordService.findAll(pageable);
     }
-
-
 
     @GetMapping("/findByBatteryId/{batteryId}")
     public ResponseEntity<List<BatteryRecordDTO>> findByVehicleId(@PathVariable Long batteryId){
