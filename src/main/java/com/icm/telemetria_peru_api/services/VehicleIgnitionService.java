@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.dto.IgnitionCountByDate;
 import com.icm.telemetria_peru_api.dto.IgnitionDuration;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleIgnitionModel;
@@ -67,28 +68,9 @@ public class VehicleIgnitionService {
         return durations;
     }
 
-    public Map<String, Long> countIgnitionsByPeriod(Long vehicleId) {
-        // Obtener los registros de ignición para el vehículo
-        List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdOrderByCreatedAt(vehicleId);
 
-        // Obtener la fecha actual
-        LocalDate today = LocalDate.now();
-
-        // Convertir las fechas de inicio de los períodos a ZonedDateTime con la zona horaria predeterminada
-        ZonedDateTime startOfToday = today.atStartOfDay(ZoneId.systemDefault());
-        ZonedDateTime startOfWeek = today.minusWeeks(1).atStartOfDay(ZoneId.systemDefault());
-        ZonedDateTime startOfMonth = today.minusMonths(1).atStartOfDay(ZoneId.systemDefault());
-        ZonedDateTime startOfYear = today.minusYears(1).atStartOfDay(ZoneId.systemDefault());
-
-        // Contar los encendidos para cada periodo
-        Map<String, Long> countByPeriod = Map.of(
-                "Today", records.stream().filter(record -> record.getStatus() && record.getCreatedAt().isAfter(startOfToday)).count(),
-                "Week", records.stream().filter(record -> record.getStatus() && record.getCreatedAt().isAfter(startOfWeek)).count(),
-                "Month", records.stream().filter(record -> record.getStatus() && record.getCreatedAt().isAfter(startOfMonth)).count(),
-                "Year", records.stream().filter(record -> record.getStatus() && record.getCreatedAt().isAfter(startOfYear)).count()
-        );
-
-        return countByPeriod;
+    public List<IgnitionCountByDate> countIgnitionsByWeek(Long vehicleId) {
+        return vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
     }
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){

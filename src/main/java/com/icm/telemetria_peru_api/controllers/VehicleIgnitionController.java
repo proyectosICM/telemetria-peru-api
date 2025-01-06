@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.IgnitionCountByDate;
 import com.icm.telemetria_peru_api.dto.IgnitionDuration;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleIgnitionModel;
@@ -52,12 +53,10 @@ public class VehicleIgnitionController {
         return vehicleIgnitionService.calculateActiveDurations(vehicleId);
     }
 
-    @GetMapping("/count-ignitions/{vehicleId}")
-    public ResponseEntity<Map<String, Long>> countIgnitionsByPeriod(@PathVariable Long vehicleId) {
-        // Llamar al servicio para obtener el conteo de encendidos por período
-        Map<String, Long> count = vehicleIgnitionService.countIgnitionsByPeriod(vehicleId);
 
-        return ResponseEntity.ok(count);
+    @GetMapping("/vehicle/{vehicleId}/ignitions/count/weekly")
+    public List<IgnitionCountByDate> countWeeklyIgnitions(@PathVariable Long vehicleId) {
+        return vehicleIgnitionService.countIgnitionsByWeek(vehicleId);
     }
 
     @PostMapping
