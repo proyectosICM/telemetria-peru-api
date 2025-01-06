@@ -1,6 +1,5 @@
 package com.icm.telemetria_peru_api.repositories;
 
-import com.icm.telemetria_peru_api.dto.IgnitionCountByDate;
 import com.icm.telemetria_peru_api.models.VehicleIgnitionModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import org.springframework.data.domain.Page;
