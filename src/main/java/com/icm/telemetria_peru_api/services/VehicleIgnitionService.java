@@ -11,10 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,10 +73,12 @@ public class VehicleIgnitionService {
 
         // Obtener la fecha actual
         LocalDate today = LocalDate.now();
-        LocalDateTime startOfToday = today.atStartOfDay();
-        LocalDateTime startOfWeek = today.minusWeeks(1).atStartOfDay();
-        LocalDateTime startOfMonth = today.minusMonths(1).atStartOfDay();
-        LocalDateTime startOfYear = today.minusYears(1).atStartOfDay();
+
+        // Convertir las fechas de inicio de los períodos a ZonedDateTime con la zona horaria predeterminada
+        ZonedDateTime startOfToday = today.atStartOfDay(ZoneId.systemDefault());
+        ZonedDateTime startOfWeek = today.minusWeeks(1).atStartOfDay(ZoneId.systemDefault());
+        ZonedDateTime startOfMonth = today.minusMonths(1).atStartOfDay(ZoneId.systemDefault());
+        ZonedDateTime startOfYear = today.minusYears(1).atStartOfDay(ZoneId.systemDefault());
 
         // Contar los encendidos para cada periodo
         Map<String, Long> countByPeriod = Map.of(
@@ -91,7 +90,6 @@ public class VehicleIgnitionService {
 
         return countByPeriod;
     }
-
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
         return vehicleIgnitionRepository.save(vehicleIgnitionModel);
