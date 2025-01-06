@@ -54,7 +54,7 @@ public class VehicleIgnitionController {
     }
 
 
-    @GetMapping("/vehicle/{vehicleId}/ignitions/count/weekly")
+    @GetMapping("/count-weekly/{vehicleId}")
     public List<IgnitionCountByDate> countWeeklyIgnitions(@PathVariable Long vehicleId) {
         return vehicleIgnitionService.countIgnitionsByWeek(vehicleId);
     }
