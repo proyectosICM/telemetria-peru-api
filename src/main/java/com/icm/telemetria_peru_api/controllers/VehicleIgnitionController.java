@@ -64,6 +64,19 @@ public class VehicleIgnitionController {
         return ResponseEntity.ok(todayRecords);  // Devolver los registros encontrados
     }
 
+    @GetMapping("/last-7-days/{vehicleId}")
+    public ResponseEntity<List<VehicleIgnitionModel>> getLast7DaysIgnitionRecords(@PathVariable Long vehicleId) {
+        // Llamar al servicio para obtener los registros de ignición de los últimos 7 días
+        List<VehicleIgnitionModel> last7DaysRecords = vehicleIgnitionService.findLast7DaysIgnitionRecords(vehicleId);
+
+        // Verificar si se encontraron registros
+        if (last7DaysRecords.isEmpty()) {
+            return ResponseEntity.noContent().build();  // No hay registros en los últimos 7 días
+        }
+
+        return ResponseEntity.ok(last7DaysRecords);  // Devolver los registros encontrados
+    }
+
     @PostMapping
     public VehicleIgnitionModel save(@RequestBody VehicleIgnitionModel vehicleIgnitionModel){
         return vehicleIgnitionService.save(vehicleIgnitionModel);

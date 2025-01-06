@@ -82,6 +82,25 @@ public class VehicleIgnitionService {
                 .collect(Collectors.toList());
     }
 
+    public List<VehicleIgnitionModel> findLast7DaysIgnitionRecords(Long vehicleId) {
+        // Obtener la fecha actual en formato LocalDate
+        LocalDate today = LocalDate.now();
+
+        // Obtener la fecha de hace 7 días
+        LocalDate sevenDaysAgo = today.minusDays(7);
+
+        // Obtener los registros de ignición para el vehículo
+        List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdOrderByCreatedAt(vehicleId);
+
+        // Filtrar los registros que correspondan a los últimos 7 días
+        return records.stream()
+                .filter(record -> {
+                    LocalDate recordDate = record.getCreatedAt().toLocalDate();
+                    return !recordDate.isBefore(sevenDaysAgo) && !recordDate.isAfter(today);
+                })
+                .collect(Collectors.toList());
+    }
+
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
         return vehicleIgnitionRepository.save(vehicleIgnitionModel);
     }
