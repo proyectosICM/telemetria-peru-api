@@ -11,5 +11,5 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class IgnitionCountByDate {
     private LocalDate date;
-    private long ignitions;
+    private Long count;
 }
