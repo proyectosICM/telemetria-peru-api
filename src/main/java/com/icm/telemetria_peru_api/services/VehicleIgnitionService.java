@@ -12,9 +12,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +66,20 @@ public class VehicleIgnitionService {
             }
         }
         return durations;
+    }
+
+
+    public List<VehicleIgnitionModel> findTodayIgnitionRecords(Long vehicleId) {
+        // Obtener la fecha actual en formato LocalDate
+        LocalDate today = LocalDate.now();
+
+        // Obtener los registros de ignición para el vehículo
+        List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdOrderByCreatedAt(vehicleId);
+
+        // Filtrar los registros que correspondan al día actual
+        return records.stream()
+                .filter(record -> record.getCreatedAt().toLocalDate().equals(today))
+                .collect(Collectors.toList());
     }
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){

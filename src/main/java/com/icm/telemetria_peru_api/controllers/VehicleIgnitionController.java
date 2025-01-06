@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +21,6 @@ import java.util.List;
 public class VehicleIgnitionController {
     private final VehicleIgnitionService vehicleIgnitionService;
 
-    @GetMapping("/active-durations/{vehicleId}")
-    public List<IgnitionDuration> getActiveDurations(@PathVariable Long vehicleId) {
-        return vehicleIgnitionService.calculateActiveDurations(vehicleId);
-    }
-
     @GetMapping
     public List<VehicleIgnitionModel> findAll(){
         return vehicleIgnitionService.findAll();
@@ -32,8 +28,8 @@ public class VehicleIgnitionController {
 
     @GetMapping("/paged")
     public Page<VehicleIgnitionModel> findAll(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
+                                              @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return vehicleIgnitionService.findAll(pageable);
     }
 
@@ -44,10 +40,28 @@ public class VehicleIgnitionController {
 
     @GetMapping("/findByVehicle-paged/{vehicleId}")
     public Page<VehicleIgnitionModel> findByVehicleModelId(@PathVariable Long vehicleId,
-                                                       @RequestParam(defaultValue = "0") int page,
-                                                       @RequestParam(defaultValue = "8") int size){
+                                                           @RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "8") int size){
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return vehicleIgnitionService.findByVehicleModelId(vehicleId, pageable);
+    }
+
+    @GetMapping("/active-durations/{vehicleId}")
+    public List<IgnitionDuration> getActiveDurations(@PathVariable Long vehicleId) {
+        return vehicleIgnitionService.calculateActiveDurations(vehicleId);
+    }
+
+    @GetMapping("/today/{vehicleId}")
+    public ResponseEntity<List<VehicleIgnitionModel>> getTodayIgnitionRecords(@PathVariable Long vehicleId) {
+        // Llamar al servicio para obtener los registros de ignición del día actual
+        List<VehicleIgnitionModel> todayRecords = vehicleIgnitionService.findTodayIgnitionRecords(vehicleId);
+
+        // Verificar si se encontraron registros
+        if (todayRecords.isEmpty()) {
+            return ResponseEntity.noContent().build();  // No hay registros para hoy
+        }
+
+        return ResponseEntity.ok(todayRecords);  // Devolver los registros encontrados
     }
 
     @PostMapping
