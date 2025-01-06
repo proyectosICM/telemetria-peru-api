@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnitionModel, Long> {
@@ -19,15 +20,6 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
 
     VehicleIgnitionModel findTopByVehicleModelOrderByCreatedAtDesc(VehicleModel  vehicleModel);
     List<VehicleIgnitionModel> findByVehicleModelIdOrderByCreatedAt(Long vehicleId);
-
-    @Query("SELECT new com.icm.telemetria_peru_api.dto.IgnitionCountByDate(" +
-            "CAST(FUNCTION('DATE', vi.createdAt) AS LocalDate), COUNT(vi)) " +
-            "FROM VehicleIgnitionModel vi " +
-            "WHERE vi.vehicleModel.id = :vehicleId " +
-            "AND vi.createdAt >= CURRENT_DATE - 7 " +
-            "GROUP BY FUNCTION('DATE', vi.createdAt) " +
-            "ORDER BY FUNCTION('DATE', vi.createdAt) DESC")
-    List<IgnitionCountByDate> countIgnitionsByWeek2(Long vehicleId);
 
     @Query(value = """
     SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d %H:00:00') AS date, 
@@ -38,5 +30,5 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     GROUP BY DATE_FORMAT(vi.created_at, '%Y-%m-%d %H:00:00')
     ORDER BY date DESC
     """, nativeQuery = true)
-    List<IgnitionCountByDate> countIgnitionsByWeek(@Param("vehicleId") Long vehicleId);
+    List<Map<String, Object>> countIgnitionsByWeek(@Param("vehicleId") Long vehicleId);
 }

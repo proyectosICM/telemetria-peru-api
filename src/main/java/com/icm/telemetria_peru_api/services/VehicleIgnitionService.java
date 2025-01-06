@@ -68,9 +68,15 @@ public class VehicleIgnitionService {
         return durations;
     }
 
-
     public List<IgnitionCountByDate> countIgnitionsByWeek(Long vehicleId) {
-        return vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
+        List<Map<String, Object>> results = vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
+
+        return results.stream()
+                .map(result -> new IgnitionCountByDate(
+                        result.get("date").toString(),
+                        Long.valueOf(result.get("count").toString())
+                ))
+                .collect(Collectors.toList());
     }
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
