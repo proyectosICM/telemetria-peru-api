@@ -53,6 +53,10 @@ public class VehicleIgnitionController {
         return vehicleIgnitionService.calculateActiveDurations(vehicleId);
     }
 
+    @GetMapping("/count/{vehicleId}")
+    public List<Map<String, Object>> getIgnitionCounts(@PathVariable Long vehicleId) {
+        return vehicleIgnitionService.getIgnitionCounts(vehicleId);
+    }
 
     @GetMapping("/count-weekly/{vehicleId}")
     public List<IgnitionCountByDate> countWeeklyIgnitions(@PathVariable Long vehicleId) {
