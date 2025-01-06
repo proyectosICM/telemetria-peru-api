@@ -21,13 +21,13 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     List<VehicleIgnitionModel> findByVehicleModelIdOrderByCreatedAt(Long vehicleId);
 
     @Query(value = """
-    SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d %H:00:00') AS date, 
+    SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS date, 
            COUNT(vi.status) AS count 
     FROM vehicle_ignition vi 
     WHERE vi.vehicle_id = :vehicleId
       AND vi.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)
       AND vi.status = true
-    GROUP BY DATE_FORMAT(vi.created_at, '%Y-%m-%d %H:00:00')
+    GROUP BY DATE_FORMAT(vi.created_at, '%Y-%m-%d')
     ORDER BY date DESC
     """, nativeQuery = true)
     List<Map<String, Object>> countIgnitionsByWeek(@Param("vehicleId") Long vehicleId);
