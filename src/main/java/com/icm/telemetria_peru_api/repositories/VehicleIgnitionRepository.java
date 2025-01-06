@@ -45,7 +45,7 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
         WEEK(vi.created_at),
         DATE_FORMAT(vi.created_at, '%Y-%m')
     ORDER BY vi.created_at DESC
-    """, nativeQuery = true)
+""", nativeQuery = true)
     List<Map<String, Object>> countIgnitions(@Param("vehicleId") Long vehicleId);
 
     @Query(value = """
