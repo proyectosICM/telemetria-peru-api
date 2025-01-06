@@ -20,7 +20,7 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     List<VehicleIgnitionModel> findByVehicleModelIdOrderByCreatedAt(Long vehicleId);
 
     @Query("SELECT new com.icm.telemetria_peru_api.dto.IgnitionCountByDate(" +
-            "FUNCTION('DATE', vi.createdAt), COUNT(vi)) " +
+            "CAST(FUNCTION('DATE', vi.createdAt) AS LocalDate), COUNT(vi)) " +
             "FROM VehicleIgnitionModel vi " +
             "WHERE vi.vehicleModel.id = :vehicleId " +
             "AND vi.createdAt >= CURRENT_DATE - 7 " +

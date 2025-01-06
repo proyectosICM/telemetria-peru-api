@@ -10,6 +10,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IgnitionCountByDate {
-    private LocalDate date;
+    private java.sql.Date date;
     private Long count;
 }
