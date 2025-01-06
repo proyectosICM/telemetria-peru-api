@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/vehicle-ignition")
@@ -51,30 +52,12 @@ public class VehicleIgnitionController {
         return vehicleIgnitionService.calculateActiveDurations(vehicleId);
     }
 
-    @GetMapping("/today/{vehicleId}")
-    public ResponseEntity<List<VehicleIgnitionModel>> getTodayIgnitionRecords(@PathVariable Long vehicleId) {
-        // Llamar al servicio para obtener los registros de ignición del día actual
-        List<VehicleIgnitionModel> todayRecords = vehicleIgnitionService.findTodayIgnitionRecords(vehicleId);
+    @GetMapping("/count-ignitions/{vehicleId}")
+    public ResponseEntity<Map<String, Long>> countIgnitionsByPeriod(@PathVariable Long vehicleId) {
+        // Llamar al servicio para obtener el conteo de encendidos por período
+        Map<String, Long> count = vehicleIgnitionService.countIgnitionsByPeriod(vehicleId);
 
-        // Verificar si se encontraron registros
-        if (todayRecords.isEmpty()) {
-            return ResponseEntity.noContent().build();  // No hay registros para hoy
-        }
-
-        return ResponseEntity.ok(todayRecords);  // Devolver los registros encontrados
-    }
-
-    @GetMapping("/last-7-days/{vehicleId}")
-    public ResponseEntity<List<VehicleIgnitionModel>> getLast7DaysIgnitionRecords(@PathVariable Long vehicleId) {
-        // Llamar al servicio para obtener los registros de ignición de los últimos 7 días
-        List<VehicleIgnitionModel> last7DaysRecords = vehicleIgnitionService.findLast7DaysIgnitionRecords(vehicleId);
-
-        // Verificar si se encontraron registros
-        if (last7DaysRecords.isEmpty()) {
-            return ResponseEntity.noContent().build();  // No hay registros en los últimos 7 días
-        }
-
-        return ResponseEntity.ok(last7DaysRecords);  // Devolver los registros encontrados
+        return ResponseEntity.ok(count);
     }
 
     @PostMapping

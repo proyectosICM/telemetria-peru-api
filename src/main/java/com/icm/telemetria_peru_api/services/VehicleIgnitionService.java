@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,38 +70,28 @@ public class VehicleIgnitionService {
         return durations;
     }
 
-
-    public List<VehicleIgnitionModel> findTodayIgnitionRecords(Long vehicleId) {
-        // Obtener la fecha actual en formato LocalDate
-        LocalDate today = LocalDate.now();
-
+    public Map<String, Long> countIgnitionsByPeriod(Long vehicleId) {
         // Obtener los registros de ignición para el vehículo
         List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdOrderByCreatedAt(vehicleId);
 
-        // Filtrar los registros que correspondan al día actual
-        return records.stream()
-                .filter(record -> record.getCreatedAt().toLocalDate().equals(today))
-                .collect(Collectors.toList());
-    }
-
-    public List<VehicleIgnitionModel> findLast7DaysIgnitionRecords(Long vehicleId) {
-        // Obtener la fecha actual en formato LocalDate
+        // Obtener la fecha actual
         LocalDate today = LocalDate.now();
+        LocalDateTime startOfToday = today.atStartOfDay();
+        LocalDateTime startOfWeek = today.minusWeeks(1).atStartOfDay();
+        LocalDateTime startOfMonth = today.minusMonths(1).atStartOfDay();
+        LocalDateTime startOfYear = today.minusYears(1).atStartOfDay();
 
-        // Obtener la fecha de hace 7 días
-        LocalDate sevenDaysAgo = today.minusDays(7);
+        // Contar los encendidos para cada periodo
+        Map<String, Long> countByPeriod = Map.of(
+                "Today", records.stream().filter(record -> record.getStatus() && record.getCreatedAt().isAfter(startOfToday)).count(),
+                "Week", records.stream().filter(record -> record.getStatus() && record.getCreatedAt().isAfter(startOfWeek)).count(),
+                "Month", records.stream().filter(record -> record.getStatus() && record.getCreatedAt().isAfter(startOfMonth)).count(),
+                "Year", records.stream().filter(record -> record.getStatus() && record.getCreatedAt().isAfter(startOfYear)).count()
+        );
 
-        // Obtener los registros de ignición para el vehículo
-        List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdOrderByCreatedAt(vehicleId);
-
-        // Filtrar los registros que correspondan a los últimos 7 días
-        return records.stream()
-                .filter(record -> {
-                    LocalDate recordDate = record.getCreatedAt().toLocalDate();
-                    return !recordDate.isBefore(sevenDaysAgo) && !recordDate.isAfter(today);
-                })
-                .collect(Collectors.toList());
+        return countByPeriod;
     }
+
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
         return vehicleIgnitionRepository.save(vehicleIgnitionModel);
