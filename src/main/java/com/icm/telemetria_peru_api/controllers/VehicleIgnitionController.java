@@ -63,6 +63,11 @@ public class VehicleIgnitionController {
         }
     }
 
+    @GetMapping("/year-count/{vehicleId}")
+    public Map<String, Object> getYearCounts(@PathVariable Long vehicleId) {
+        return ignitionCountService.getCountsForYear(vehicleId);
+    }
+
     @GetMapping("/count-weekly/{vehicleId}")
     public List<IgnitionCountByDate> countWeeklyIgnitions(@PathVariable Long vehicleId) {
         return vehicleIgnitionService.countIgnitionsByWeek(vehicleId);

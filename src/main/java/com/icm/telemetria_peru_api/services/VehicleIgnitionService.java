@@ -126,6 +126,16 @@ public class VehicleIgnitionService {
         return consolidatedData;
     }
 
+    public Map<String, Object> getCountsForYear(Long vehicleId) {
+        List<Map<String, Object>> counts = vehicleIgnitionRepository.countsYear(vehicleId);
+
+        if (counts.isEmpty()) {
+            throw new RuntimeException("No se encontraron igniciones para el año actual.");
+        }
+
+        return counts.get(0);
+    }
+
     public List<IgnitionCountByDate> countIgnitionsByWeek(Long vehicleId) {
         List<Map<String, Object>> results = vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
 
