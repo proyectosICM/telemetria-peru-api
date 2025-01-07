@@ -21,17 +21,6 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     List<VehicleIgnitionModel> findByVehicleModelIdOrderByCreatedAt(Long vehicleId);
 
 
-
-    El error se debe a que la configuración de MySQL en tu entorno utiliza ONLY_FULL_GROUP_BY, lo que exige que todas las columnas seleccionadas en una consulta estén agregadas o estén incluidas en la cláusula GROUP BY. Esto causa conflictos porque la columna vi.created_at no está en GROUP BY, y tampoco se utiliza dentro de una función de agregación.
-
-            Solución definitiva
-    Para solucionar este problema, puedes elegir entre las siguientes opciones:
-
-            1. Modificar la consulta SQL para cumplir con ONLY_FULL_GROUP_BY
-    Asegúrate de que todas las columnas seleccionadas estén en la cláusula GROUP BY o sean agregadas. Aquí tienes la consulta corregida:
-
-    java
-    Copiar código
     @Query(value = """
     SELECT 
         -- Día
