@@ -76,10 +76,16 @@ public class VehicleIgnitionService {
         // Obtener los conteos para la última semana
         List<Map<String, Object>> countsWeek = vehicleIgnitionRepository.countsWeek(vehicleId);
 
-        // Crear un mapa para devolver ambos resultados
+        // Obtener los conteos para el mes actual
+        List<Map<String, Object>> countsMonth = vehicleIgnitionRepository.countsMonth(vehicleId);
+
+        // Obtener los conteos para el año actual
+        List<Map<String, Object>> countsYear = vehicleIgnitionRepository.countsYear(vehicleId);
+
+        // Crear un mapa para devolver todos los resultados
         Map<String, Object> consolidatedData = new HashMap<>();
 
-        // Verificar si se obtuvieron datos para el día actual
+        // Día actual
         if (!countsDay.isEmpty()) {
             Map<String, Object> dayData = countsDay.get(0);  // Se asume que solo habrá un registro para el día actual
             consolidatedData.put("day", Map.of("counts", dayData.get("count")));
@@ -87,15 +93,34 @@ public class VehicleIgnitionService {
             consolidatedData.put("day", Map.of("counts", 0));
         }
 
-        // Verificar si se obtuvieron datos para la última semana
+        // Semana
         if (!countsWeek.isEmpty()) {
-            // Sumar los conteos de los días de la última semana
             long weekCount = countsWeek.stream()
                     .mapToLong(item -> Long.parseLong(item.get("count").toString()))
                     .sum();
             consolidatedData.put("week", Map.of("counts", weekCount));
         } else {
             consolidatedData.put("week", Map.of("counts", 0));
+        }
+
+        // Mes
+        if (!countsMonth.isEmpty()) {
+            long monthCount = countsMonth.stream()
+                    .mapToLong(item -> Long.parseLong(item.get("count").toString()))
+                    .sum();
+            consolidatedData.put("month", Map.of("counts", monthCount));
+        } else {
+            consolidatedData.put("month", Map.of("counts", 0));
+        }
+
+        // Año
+        if (!countsYear.isEmpty()) {
+            long yearCount = countsYear.stream()
+                    .mapToLong(item -> Long.parseLong(item.get("count").toString()))
+                    .sum();
+            consolidatedData.put("year", Map.of("counts", yearCount));
+        } else {
+            consolidatedData.put("year", Map.of("counts", 0));
         }
 
         return consolidatedData;
