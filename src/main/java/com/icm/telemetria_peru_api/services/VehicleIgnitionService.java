@@ -81,16 +81,21 @@ public class VehicleIgnitionService {
 
         // Verificar si se obtuvieron datos para el día actual
         if (!countsDay.isEmpty()) {
-            consolidatedData.put("day", countsDay.get(0));  // Se asume que solo habrá un registro para el día actual
+            Map<String, Object> dayData = countsDay.get(0);  // Se asume que solo habrá un registro para el día actual
+            consolidatedData.put("day", Map.of("counts", dayData.get("count")));
         } else {
-            consolidatedData.put("day", "No data for today");
+            consolidatedData.put("day", Map.of("counts", 0));
         }
 
         // Verificar si se obtuvieron datos para la última semana
         if (!countsWeek.isEmpty()) {
-            consolidatedData.put("week", countsWeek);  // Puede haber múltiples días en la última semana
+            // Sumar los conteos de los días de la última semana
+            long weekCount = countsWeek.stream()
+                    .mapToLong(item -> Long.parseLong(item.get("count").toString()))
+                    .sum();
+            consolidatedData.put("week", Map.of("counts", weekCount));
         } else {
-            consolidatedData.put("week", "No data for the last 7 days");
+            consolidatedData.put("week", Map.of("counts", 0));
         }
 
         return consolidatedData;
