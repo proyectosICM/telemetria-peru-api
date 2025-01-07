@@ -26,26 +26,23 @@ public class VehicleIgnitionController {
     private final VehicleIgnitionService vehicleIgnitionService;
 
     @GetMapping
-    public List<VehicleIgnitionModel> findAll(){
+    public List<VehicleIgnitionModel> findAll() {
         return vehicleIgnitionService.findAll();
     }
 
     @GetMapping("/paged")
-    public Page<VehicleIgnitionModel> findAll(@RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "10") int size){
+    public Page<VehicleIgnitionModel> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return vehicleIgnitionService.findAll(pageable);
     }
 
     @GetMapping("/findByVehicle/{vehicleId}")
-    public List<VehicleIgnitionModel> findByVehicleModelId(@PathVariable Long vehicleId){
+    public List<VehicleIgnitionModel> findByVehicleModelId(@PathVariable Long vehicleId) {
         return vehicleIgnitionService.findByVehicleModelId(vehicleId);
     }
 
     @GetMapping("/findByVehicle-paged/{vehicleId}")
-    public Page<VehicleIgnitionModel> findByVehicleModelId(@PathVariable Long vehicleId,
-                                                           @RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "8") int size){
+    public Page<VehicleIgnitionModel> findByVehicleModelId(@PathVariable Long vehicleId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "8") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return vehicleIgnitionService.findByVehicleModelId(vehicleId, pageable);
     }
@@ -56,17 +53,13 @@ public class VehicleIgnitionController {
     }
 
     @GetMapping("/count/{vehicleId}")
-    public ResponseEntity<Map<String, Object>> getConsolidatedIgnitionData(@PathVariable Long vehicleId) {
+    public ResponseEntity<Map<String, Object>> getCountsByDay(@PathVariable Long vehicleId) {
         try {
-            // Llama al servicio para obtener los datos consolidados
-            Map<String, Object> data = vehicleIgnitionService.getConsolidatedIgnitionData(vehicleId);
+            Map<String, Object> data = vehicleIgnitionService.getCountsByDay(vehicleId);
             return ResponseEntity.ok(data);
         } catch (Exception e) {
             // Manejo de errores
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Error al obtener los datos consolidados de igniciones");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -76,7 +69,7 @@ public class VehicleIgnitionController {
     }
 
     @PostMapping
-    public VehicleIgnitionModel save(@RequestBody VehicleIgnitionModel vehicleIgnitionModel){
+    public VehicleIgnitionModel save(@RequestBody VehicleIgnitionModel vehicleIgnitionModel) {
         return vehicleIgnitionService.save(vehicleIgnitionModel);
     }
 }

@@ -20,26 +20,16 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     VehicleIgnitionModel findTopByVehicleModelOrderByCreatedAtDesc(VehicleModel  vehicleModel);
     List<VehicleIgnitionModel> findByVehicleModelIdOrderByCreatedAt(Long vehicleId);
 
-
-    @Query(value = """
-    SELECT 
-        DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS day,
-        CONCAT(YEAR(vi.created_at), '-', WEEK(vi.created_at)) AS week,
-        DATE_FORMAT(vi.created_at, '%Y-%m') AS month,
-        YEAR(vi.created_at) AS year,
-        COUNT(vi.status) AS arranques
+    @Query(value = """ 
+    SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS date, 
+           COUNT(vi.status) AS count 
     FROM vehicle_ignition vi 
     WHERE vi.vehicle_id = :vehicleId
       AND vi.status = true
-      AND vi.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)
-    GROUP BY 
-        DATE_FORMAT(vi.created_at, '%Y-%m-%d'), 
-        YEAR(vi.created_at), 
-        WEEK(vi.created_at), 
-        DATE_FORMAT(vi.created_at, '%Y-%m')
-    ORDER BY DATE_FORMAT(vi.created_at, '%Y-%m-%d') DESC
+      AND DATE(vi.created_at) = CURRENT_DATE
+    GROUP BY DATE_FORMAT(vi.created_at, '%Y-%m-%d')
 """, nativeQuery = true)
-    List<Map<String, Object>> countIgnitions(@Param("vehicleId") Long vehicleId);
+    List<Map<String, Object>> counts(@Param("vehicleId") Long vehicleId);
 
     @Query(value = """
     SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS date, 

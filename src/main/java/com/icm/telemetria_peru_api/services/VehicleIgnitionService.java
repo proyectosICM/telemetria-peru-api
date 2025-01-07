@@ -69,29 +69,15 @@ public class VehicleIgnitionService {
         return durations;
     }
 
-    public Map<String, Object> getConsolidatedIgnitionData(Long vehicleId) {
-        List<Map<String, Object>> rawData = vehicleIgnitionRepository.countIgnitions(vehicleId);
-        Map<String, Object> consolidatedData = new HashMap<>();
+    public Map<String, Object> getCountsByDay(Long vehicleId) {
+        List<Map<String, Object>> counts = vehicleIgnitionRepository.counts(vehicleId);
 
-        List<Map<String, Object>> dailyData = new ArrayList<>();
-        List<Map<String, Object>> weeklyData = new ArrayList<>();
-        List<Map<String, Object>> monthlyData = new ArrayList<>();
-        List<Map<String, Object>> yearlyData = new ArrayList<>();
-
-        for (Map<String, Object> row : rawData) {
-            // Separar por tipo
-            dailyData.add(Map.of("day", row.get("day"), "arranques", row.get("arranques")));
-            weeklyData.add(Map.of("week", row.get("week"), "arranques", row.get("arranques")));
-            monthlyData.add(Map.of("month", row.get("month"), "arranques", row.get("arranques")));
-            yearlyData.add(Map.of("year", row.get("year"), "arranques", row.get("arranques")));
+        if (counts.isEmpty()) {
+            throw new RuntimeException("No se encontraron igniciones para el día de hoy.");
         }
 
-        consolidatedData.put("daily", dailyData);
-        consolidatedData.put("weekly", weeklyData);
-        consolidatedData.put("monthly", monthlyData);
-        consolidatedData.put("yearly", yearlyData);
-
-        return consolidatedData;
+        // Retornamos el primer registro, ya que debería haber solo un día actual.
+        return counts.get(0);
     }
 
     public List<IgnitionCountByDate> countIgnitionsByWeek(Long vehicleId) {
