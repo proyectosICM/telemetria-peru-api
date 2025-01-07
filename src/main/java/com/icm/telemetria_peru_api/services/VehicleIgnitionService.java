@@ -69,15 +69,31 @@ public class VehicleIgnitionService {
         return durations;
     }
 
-    public Map<String, Object> getCountsByDay(Long vehicleId) {
-        List<Map<String, Object>> counts = vehicleIgnitionRepository.counts(vehicleId);
+    public Map<String, Object> getCounts(Long vehicleId) {
+        // Obtener los conteos para el día actual
+        List<Map<String, Object>> countsDay = vehicleIgnitionRepository.countsDay(vehicleId);
 
-        if (counts.isEmpty()) {
-            throw new RuntimeException("No se encontraron igniciones para el día de hoy.");
+        // Obtener los conteos para la última semana
+        List<Map<String, Object>> countsWeek = vehicleIgnitionRepository.countsWeek(vehicleId);
+
+        // Crear un mapa para devolver ambos resultados
+        Map<String, Object> consolidatedData = new HashMap<>();
+
+        // Verificar si se obtuvieron datos para el día actual
+        if (!countsDay.isEmpty()) {
+            consolidatedData.put("day", countsDay.get(0));  // Se asume que solo habrá un registro para el día actual
+        } else {
+            consolidatedData.put("day", "No data for today");
         }
 
-        // Retornamos el primer registro, ya que debería haber solo un día actual.
-        return counts.get(0);
+        // Verificar si se obtuvieron datos para la última semana
+        if (!countsWeek.isEmpty()) {
+            consolidatedData.put("week", countsWeek);  // Puede haber múltiples días en la última semana
+        } else {
+            consolidatedData.put("week", "No data for the last 7 days");
+        }
+
+        return consolidatedData;
     }
 
     public List<IgnitionCountByDate> countIgnitionsByWeek(Long vehicleId) {

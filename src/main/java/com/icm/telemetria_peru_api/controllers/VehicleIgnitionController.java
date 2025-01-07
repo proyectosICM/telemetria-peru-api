@@ -55,7 +55,7 @@ public class VehicleIgnitionController {
     @GetMapping("/count/{vehicleId}")
     public ResponseEntity<Map<String, Object>> getCountsByDay(@PathVariable Long vehicleId) {
         try {
-            Map<String, Object> data = vehicleIgnitionService.getCountsByDay(vehicleId);
+            Map<String, Object> data = vehicleIgnitionService.getCounts(vehicleId);
             return ResponseEntity.ok(data);
         } catch (Exception e) {
             // Manejo de errores

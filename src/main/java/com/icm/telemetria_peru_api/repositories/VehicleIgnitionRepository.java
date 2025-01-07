@@ -21,7 +21,7 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     List<VehicleIgnitionModel> findByVehicleModelIdOrderByCreatedAt(Long vehicleId);
 
     @Query(value = """ 
-    SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS date, 
+    SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS day, 
            COUNT(vi.status) AS count 
     FROM vehicle_ignition vi 
     WHERE vi.vehicle_id = :vehicleId
@@ -29,7 +29,19 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
       AND DATE(vi.created_at) = CURRENT_DATE
     GROUP BY DATE_FORMAT(vi.created_at, '%Y-%m-%d')
 """, nativeQuery = true)
-    List<Map<String, Object>> counts(@Param("vehicleId") Long vehicleId);
+    List<Map<String, Object>> countsDay(@Param("vehicleId") Long vehicleId);
+
+    @Query(value = """ 
+    SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS day, 
+           COUNT(vi.status) AS count 
+    FROM vehicle_ignition vi 
+    WHERE vi.vehicle_id = :vehicleId
+      AND vi.status = true
+      AND vi.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)  
+    GROUP BY DATE_FORMAT(vi.created_at, '%Y-%m-%d')
+    ORDER BY day DESC  
+""", nativeQuery = true)
+    List<Map<String, Object>> countsWeek(@Param("vehicleId") Long vehicleId);
 
     @Query(value = """
     SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS date, 
