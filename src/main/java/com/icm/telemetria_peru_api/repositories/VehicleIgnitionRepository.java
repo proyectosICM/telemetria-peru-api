@@ -43,6 +43,31 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
 """, nativeQuery = true)
     List<Map<String, Object>> countsWeek(@Param("vehicleId") Long vehicleId);
 
+    @Query(value = """ 
+    SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS day, 
+           COUNT(vi.status) AS count 
+    FROM vehicle_ignition vi 
+    WHERE vi.vehicle_id = :vehicleId
+      AND vi.status = true
+      AND MONTH(vi.created_at) = MONTH(CURRENT_DATE)  
+      AND YEAR(vi.created_at) = YEAR(CURRENT_DATE)   
+    GROUP BY DATE_FORMAT(vi.created_at, '%Y-%m-%d')
+    ORDER BY day DESC  
+""", nativeQuery = true)
+    List<Map<String, Object>> countsMonth(@Param("vehicleId") Long vehicleId);
+
+    @Query(value = """ 
+    SELECT YEAR(vi.created_at) AS year, 
+           COUNT(vi.status) AS count 
+    FROM vehicle_ignition vi 
+    WHERE vi.vehicle_id = :vehicleId
+      AND vi.status = true
+      AND YEAR(vi.created_at) = YEAR(CURRENT_DATE)
+    GROUP BY YEAR(vi.created_at)
+    ORDER BY year DESC  
+""", nativeQuery = true)
+    List<Map<String, Object>> countsYear(@Param("vehicleId") Long vehicleId);
+
     @Query(value = """
     SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS date, 
            COUNT(vi.status) AS count 
