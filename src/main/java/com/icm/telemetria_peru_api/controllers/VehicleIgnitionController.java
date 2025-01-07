@@ -11,9 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,8 +56,18 @@ public class VehicleIgnitionController {
     }
 
     @GetMapping("/count/{vehicleId}")
-    public List<Map<String, Object>> getIgnitionCounts(@PathVariable Long vehicleId) {
-        return vehicleIgnitionService.getIgnitionCounts(vehicleId);
+    public ResponseEntity<Map<String, Object>> getConsolidatedIgnitionData(@PathVariable Long vehicleId) {
+        try {
+            // Llama al servicio para obtener los datos consolidados
+            Map<String, Object> data = vehicleIgnitionService.getConsolidatedIgnitionData(vehicleId);
+            return ResponseEntity.ok(data);
+        } catch (Exception e) {
+            // Manejo de errores
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error al obtener los datos consolidados de igniciones");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     @GetMapping("/count-weekly/{vehicleId}")

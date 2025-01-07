@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,12 +69,25 @@ public class VehicleIgnitionService {
         return durations;
     }
 
-    public List<Map<String, Object>> getIgnitionCounts(Long vehicleId) {
-        return vehicleIgnitionRepository.countIgnitions(vehicleId);
+    public Map<String, Object> getConsolidatedIgnitionData(Long vehicleId) {
+        // Llama a los métodos del repositorio
+        List<Map<String, Object>> dailyData = vehicleIgnitionRepository.countIgnitionsByDay(vehicleId);
+        List<Map<String, Object>> weeklyData = vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
+        List<Map<String, Object>> monthlyData = vehicleIgnitionRepository.countIgnitionsByMonth(vehicleId);
+        List<Map<String, Object>> yearlyData = vehicleIgnitionRepository.countIgnitionsByYear(vehicleId);
+
+        // Combina los resultados en un solo mapa
+        Map<String, Object> consolidatedData = new HashMap<>();
+        consolidatedData.put("daily", dailyData);
+        consolidatedData.put("weekly", weeklyData);
+        consolidatedData.put("monthly", monthlyData);
+        consolidatedData.put("yearly", yearlyData);
+
+        return consolidatedData;
     }
 
     public List<IgnitionCountByDate> countIgnitionsByWeek(Long vehicleId) {
-        List<Map<String, Object>> results = vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
+        List<Map<String, Object>> results = vehicleIgnitionRepository.countIgnitionsByWeek2(vehicleId);
 
         return results.stream()
                 .map(result -> new IgnitionCountByDate(
