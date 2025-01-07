@@ -40,6 +40,22 @@ public class VehicleIgnitionService {
         return vehicleIgnitionRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
+    /**
+     * Calculates the active durations (time intervals where the vehicle ignition was active)
+     * for a given vehicle ID.
+     *
+     * This method processes ignition records to compute the duration of "ON" states.
+     * The durations are formatted as HH:MM and also provided as decimal hours.
+     *
+     * @param vehicleId the ID of the vehicle whose ignition durations are to be calculated.
+     * @return a list of {@link IgnitionDuration} objects representing the start time,
+     *         end time, formatted duration, and decimal duration of each active period.
+     *
+     * @deprecated This method is no longer recommended due to performance issues
+     *             when processing large datasets. Consider implementing a more
+     *             efficient solution or a database query to handle this logic.
+     */
+    @Deprecated
     public List<IgnitionDuration> calculateActiveDurations(Long vehicleId) {
         List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdOrderByCreatedAt(vehicleId);
 
@@ -126,29 +142,7 @@ public class VehicleIgnitionService {
         return consolidatedData;
     }
 
-    public Map<String, Object> getCountsForYear(Long vehicleId) {
-        List<Map<String, Object>> counts = vehicleIgnitionRepository.countsYear(vehicleId);
-
-        if (counts.isEmpty()) {
-            throw new RuntimeException("No se encontraron igniciones para el año actual.");
-        }
-
-        return counts.get(0);
-    }
-
-    public List<IgnitionCountByDate> countIgnitionsByWeek(Long vehicleId) {
-        List<Map<String, Object>> results = vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
-
-        return results.stream()
-                .map(result -> new IgnitionCountByDate(
-                        result.get("date").toString(),
-                        Long.valueOf(result.get("count").toString())
-                ))
-                .collect(Collectors.toList());
-    }
-
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
         return vehicleIgnitionRepository.save(vehicleIgnitionModel);
     }
-
 }
