@@ -37,7 +37,8 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     FROM vehicle_ignition vi 
     WHERE vi.vehicle_id = :vehicleId
       AND vi.status = true
-      AND vi.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)  
+      AND vi.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL WEEKDAY(CURRENT_DATE) DAY)
+      AND vi.created_at <= CURRENT_DATE
     GROUP BY DATE_FORMAT(vi.created_at, '%Y-%m-%d')
     ORDER BY day DESC  
 """, nativeQuery = true)
