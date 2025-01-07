@@ -70,14 +70,22 @@ public class VehicleIgnitionService {
     }
 
     public Map<String, Object> getConsolidatedIgnitionData(Long vehicleId) {
-        // Llama a los métodos del repositorio
-        List<Map<String, Object>> dailyData = vehicleIgnitionRepository.countIgnitionsByDay(vehicleId);
-        List<Map<String, Object>> weeklyData = vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
-        List<Map<String, Object>> monthlyData = vehicleIgnitionRepository.countIgnitionsByMonth(vehicleId);
-        List<Map<String, Object>> yearlyData = vehicleIgnitionRepository.countIgnitionsByYear(vehicleId);
-
-        // Combina los resultados en un solo mapa
+        List<Map<String, Object>> rawData = vehicleIgnitionRepository.countIgnitions(vehicleId);
         Map<String, Object> consolidatedData = new HashMap<>();
+
+        List<Map<String, Object>> dailyData = new ArrayList<>();
+        List<Map<String, Object>> weeklyData = new ArrayList<>();
+        List<Map<String, Object>> monthlyData = new ArrayList<>();
+        List<Map<String, Object>> yearlyData = new ArrayList<>();
+
+        for (Map<String, Object> row : rawData) {
+            // Separar por tipo
+            dailyData.add(Map.of("day", row.get("day"), "arranques", row.get("arranques")));
+            weeklyData.add(Map.of("week", row.get("week"), "arranques", row.get("arranques")));
+            monthlyData.add(Map.of("month", row.get("month"), "arranques", row.get("arranques")));
+            yearlyData.add(Map.of("year", row.get("year"), "arranques", row.get("arranques")));
+        }
+
         consolidatedData.put("daily", dailyData);
         consolidatedData.put("weekly", weeklyData);
         consolidatedData.put("monthly", monthlyData);
@@ -87,7 +95,7 @@ public class VehicleIgnitionService {
     }
 
     public List<IgnitionCountByDate> countIgnitionsByWeek(Long vehicleId) {
-        List<Map<String, Object>> results = vehicleIgnitionRepository.countIgnitionsByWeek2(vehicleId);
+        List<Map<String, Object>> results = vehicleIgnitionRepository.countIgnitionsByWeek(vehicleId);
 
         return results.stream()
                 .map(result -> new IgnitionCountByDate(
