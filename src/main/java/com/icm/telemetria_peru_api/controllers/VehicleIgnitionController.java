@@ -65,7 +65,7 @@ public class VehicleIgnitionController {
 
     @GetMapping("/year-count/{vehicleId}")
     public Map<String, Object> getYearCounts(@PathVariable Long vehicleId) {
-        return ignitionCountService.getCountsForYear(vehicleId);
+        return vehicleIgnitionService.getCountsForYear(vehicleId);
     }
 
     @GetMapping("/count-weekly/{vehicleId}")
