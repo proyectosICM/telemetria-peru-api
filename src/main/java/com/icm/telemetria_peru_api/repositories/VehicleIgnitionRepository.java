@@ -31,13 +31,13 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     FROM vehicle_ignition vi 
     WHERE vi.vehicle_id = :vehicleId
       AND vi.status = true
-      AND vi.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH) -- Para solo contar los datos del mes actual
+      AND vi.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)
     GROUP BY 
         DATE_FORMAT(vi.created_at, '%Y-%m-%d'), 
-        CONCAT(YEAR(vi.created_at), '-', WEEK(vi.created_at)),
-        DATE_FORMAT(vi.created_at, '%Y-%m'),
-        YEAR(vi.created_at)
-    ORDER BY vi.created_at DESC
+        YEAR(vi.created_at), 
+        WEEK(vi.created_at), 
+        DATE_FORMAT(vi.created_at, '%Y-%m')
+    ORDER BY DATE_FORMAT(vi.created_at, '%Y-%m-%d') DESC
 """, nativeQuery = true)
     List<Map<String, Object>> countIgnitions(@Param("vehicleId") Long vehicleId);
 
