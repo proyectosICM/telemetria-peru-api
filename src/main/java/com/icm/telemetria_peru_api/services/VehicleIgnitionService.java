@@ -171,7 +171,26 @@ public class VehicleIgnitionService {
     public List<Map<String, Object>> getCountByMonth(Long vehicleId, Integer year, Integer month) {
         int yearToQuery = (year != null) ? year : Year.now().getValue();
         int monthToQuery = (month != null) ? month : LocalDate.now().getMonthValue();
-        return vehicleIgnitionRepository.countsAllDays(vehicleId, yearToQuery, monthToQuery);
+
+        // Obtenemos los datos desde el repositorio
+        List<Map<String, Object>> rawData = vehicleIgnitionRepository.countsAllDays(vehicleId, yearToQuery, monthToQuery);
+
+        // Ajustamos los días al servidor
+        return rawData.stream()
+                .map(entry -> {
+                    int day = (int) entry.get("day");
+
+                    // Suponiendo que el servidor está en una zona horaria conocida (e.g., UTC-5 para Perú)
+                    ZonedDateTime originalDate = ZonedDateTime.of(yearToQuery, monthToQuery, day, 0, 0, 0, 0, ZoneId.of("UTC"));
+                    ZonedDateTime adjustedDate = originalDate.withZoneSameInstant(ZoneId.of("America/Lima"));
+
+                    // Devolvemos el nuevo mapa con la fecha ajustada
+                    return Map.of(
+                            "day", adjustedDate.getDayOfMonth(),
+                            "count", entry.get("count")
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
