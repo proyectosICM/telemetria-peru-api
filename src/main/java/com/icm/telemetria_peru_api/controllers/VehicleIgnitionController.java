@@ -84,7 +84,7 @@ public class VehicleIgnitionController {
      * @param month the month for which to retrieve the ignition count.
      * @return a ResponseEntity containing the ignition count for that month, or NOT_FOUND if no data is found.
      */
-    @GetMapping("/counts-by-month/{vehicleId}/{year}/{month}")
+    @GetMapping("/counts-by-month/{vehicleId}")
     public ResponseEntity<Map<String, Object>> getCountByMonth(
             @PathVariable Long vehicleId,
             @RequestParam(value = "year", required = false) Integer year,
