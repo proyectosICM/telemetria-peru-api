@@ -114,6 +114,14 @@ public class VehicleIgnitionController {
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month) {
 
+        if (year != null && (year < 1 || year > 9999)) {
+            throw new IllegalArgumentException("Invalid year.");
+        }
+
+        if (month != null && (month < 1 || month > 12)) {
+            throw new IllegalArgumentException("Invalid month.");
+        }
+
         return vehicleIgnitionService.getfet(vehicleId, year, month);
     }
 
