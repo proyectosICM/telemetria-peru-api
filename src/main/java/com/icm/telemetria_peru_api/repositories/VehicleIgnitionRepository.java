@@ -124,14 +124,14 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      *         - "count": the number of ignition events for that month.
      */
     @Query(value = """ 
-        SELECT MONTHNAME(vi.created_at) AS month, 
-               COUNT(vi.status) AS count 
-        FROM vehicle_ignition vi 
-        WHERE vi.vehicle_id = :vehicleId
-          AND vi.status = true
-          AND YEAR(vi.created_at) = :year
-        GROUP BY MONTH(vi.created_at), MONTHNAME(vi.created_at)
-        ORDER BY MONTH(vi.created_at) ASC  
-    """, nativeQuery = true)
+                SELECT MONTH(vi.created_at) AS month, 
+                       COUNT(vi.status) AS count 
+                FROM vehicle_ignition vi 
+                WHERE vi.vehicle_id = :vehicleId
+                  AND vi.status = true
+                  AND YEAR(vi.created_at) = :year
+                GROUP BY MONTH(vi.created_at)
+                ORDER BY month ASC  
+            """, nativeQuery = true)
     List<Map<String, Object>> countsAllMonths(@Param("vehicleId") Long vehicleId, @Param("year") int year);
 }
