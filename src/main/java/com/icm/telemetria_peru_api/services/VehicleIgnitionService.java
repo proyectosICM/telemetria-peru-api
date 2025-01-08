@@ -172,28 +172,8 @@ public class VehicleIgnitionService {
         int yearToQuery = (year != null) ? year : Year.now().getValue();
         int monthToQuery = (month != null) ? month : LocalDate.now().getMonthValue();
 
-        // Obtenemos los datos desde el repositorio
-        List<Map<String, Object>> rawData = vehicleIgnitionRepository.countsAllDays(vehicleId, yearToQuery, monthToQuery);
-
-        // Convertimos las fechas a la zona horaria de Perú
-        return rawData.stream()
-                .map(entry -> {
-                    // Convertimos el día al formato correcto si es necesario
-                    int day = (int) entry.get("day");
-
-                    // Construimos la fecha original usando año, mes y día
-                    ZonedDateTime originalDate = ZonedDateTime.of(yearToQuery, monthToQuery, day, 0, 0, 0, 0, ZoneId.of("UTC"));
-
-                    // Convertimos la fecha a la zona horaria de Perú
-                    ZonedDateTime dateInPeru = originalDate.withZoneSameInstant(ZoneId.of("America/Lima"));
-
-                    // Devolvemos el nuevo mapa con la fecha ajustada
-                    return Map.of(
-                            "day", dateInPeru.getDayOfMonth(),
-                            "count", entry.get("count")
-                    );
-                })
-                .collect(Collectors.toList());
+        // Obtenemos los datos directamente desde el repositorio y los devolvemos
+        return vehicleIgnitionRepository.countsAllDays(vehicleId, yearToQuery, monthToQuery);
     }
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
