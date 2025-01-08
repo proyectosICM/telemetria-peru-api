@@ -108,9 +108,9 @@ public class VehicleIgnitionController {
         }
     }
 
-    @GetMapping("/getfet")
+    @GetMapping("/getfet/{vehicleId}")
     public List<Map<String, Object>> getfet(
-            @RequestParam Long vehicleId,
+            @PathVariable Long vehicleId,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month) {
 

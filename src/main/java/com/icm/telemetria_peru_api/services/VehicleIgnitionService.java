@@ -182,17 +182,21 @@ public class VehicleIgnitionService {
         // Calculamos el inicio del mes
         LocalDateTime startOfMonth = LocalDateTime.of(yearToQuery, monthToQuery, 1, 0, 0);
         ZonedDateTime startOfMonthWithZone = startOfMonth.atZone(ZoneId.of("America/Lima"));
+        long startTimestamp = startOfMonthWithZone.toEpochSecond();
 
         // Calculamos el fin del mes
         LocalDateTime endOfMonth = LocalDateTime.of(yearToQuery, monthToQuery, startOfMonth.toLocalDate().lengthOfMonth(), 23, 59, 59);
         ZonedDateTime endOfMonthWithZone = endOfMonth.atZone(ZoneId.of("America/Lima"));
+        long endTimestamp = endOfMonthWithZone.toEpochSecond();
 
-        // Devolvemos los timestamps de inicio y fin del mes en formato de ZonedDateTime
-        System.out.println("Start of month: " + startOfMonthWithZone);
-        System.out.println("End of month: " + endOfMonthWithZone);
+        System.out.println("Start of month timestamp: " + startTimestamp);
+        System.out.println("End of month timestamp: " + endTimestamp);
 
         // Aquí puedes retornar o utilizar esos timestamps como necesites
-        return new ArrayList<>(); // Cambia según el uso que le quieras dar
+        // Devuelve una lista con los datos en formato de timestamps
+        return List.of(
+                Map.of("startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
+        );
     }
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
