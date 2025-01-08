@@ -20,9 +20,6 @@ public class BatteryRecordService {
     private final BatteryRecordMapper batteryRecordMapper;
     private final BatteryRecordRepository batteryRecordRepository;
 
-    /*********************************/
-    /** Starting point for find methods **/
-    /*********************************/
     public BatteryRecordDTO findById(Long id){
         BatteryRecordModel batteryRecordModel = batteryRecordRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
@@ -59,13 +56,6 @@ public class BatteryRecordService {
         return new PageImpl<>(batteryRecordDTOs, pageable, batteryRecordModelsPage.getTotalElements());
     }
 
-    /*********************************/
-    /** End of find methods section **/
-    /*********************************/
-
-    /*********************************/
-    /** More CRUD methods **/
-    /*********************************/
     public BatteryRecordModel save(BatteryRecordModel batteryRecordModel){
         return batteryRecordRepository.save(batteryRecordModel);
     }

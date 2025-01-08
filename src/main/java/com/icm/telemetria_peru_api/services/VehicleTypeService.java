@@ -17,9 +17,6 @@ import java.util.Optional;
 public class VehicleTypeService {
     private final VehicleTypeRepository vehicleTypeRepository;
 
-    /*********************************/
-    /** Starting point for find methods **/
-    /*********************************/
     public Optional<VehicleTypeModel> findById(Long id) {
         return vehicleTypeRepository.findById(id);
     }
@@ -32,13 +29,6 @@ public class VehicleTypeService {
         return vehicleTypeRepository.findAll(pageable);
     }
 
-    /*********************************/
-    /** End of find methods section **/
-    /*********************************/
-
-    /*********************************/
-    /** More CRUD methods **/
-    /*********************************/
     public VehicleTypeModel save(VehicleTypeModel vehicletypeModel){
         return vehicleTypeRepository.save(vehicletypeModel);
     }
@@ -50,6 +40,5 @@ public class VehicleTypeService {
                     return vehicleTypeRepository.save(existing);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("VehicleType with id " + id + " not found"));
-
     }
 }

@@ -5,7 +5,6 @@ import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.services.BatteryService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,7 +59,7 @@ public class BatteryController {
                                                                 @RequestParam(defaultValue = "10") int size){
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<BatteryDTO> data = batteryService.findByVehicleId(vehicleId, pageable); // Corrige el tipo de retorno aquí
+            Page<BatteryDTO> data = batteryService.findByVehicleId(vehicleId, pageable);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

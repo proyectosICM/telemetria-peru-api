@@ -27,7 +27,8 @@ public class UserModel {
     private Boolean status = true;
 
     @NotEmpty(message = "Username is required")
-    @Pattern(regexp = "^[a-zA-Z0-9-_]{1,50}$", message = "Username must be between 1 and 50 characters and can only contain letters, numbers, hyphens, and underscores")
+    @Pattern(regexp = "^[a-zA-Z0-9-_]{1,50}$", message = "Username must be between 1 and 50 characters and can only " +
+            "contain letters, numbers, hyphens, and underscores")
     @Column(nullable = false, length = 50, unique = true)
     private String username;
 

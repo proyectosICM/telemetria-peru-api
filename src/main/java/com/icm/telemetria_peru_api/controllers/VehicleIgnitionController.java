@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +56,21 @@ public class VehicleIgnitionController {
             return ResponseEntity.ok(data);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/counts-all-months/{vehicleId}")
+    public ResponseEntity<List<Map<String, Object>>> getCountsByMonth(@PathVariable Long vehicleId) {
+        try {
+            List<Map<String, Object>> counts = vehicleIgnitionService.getIgnitionCountsByMonth(vehicleId);
+
+            if (counts.isEmpty()) {
+                return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(counts, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
