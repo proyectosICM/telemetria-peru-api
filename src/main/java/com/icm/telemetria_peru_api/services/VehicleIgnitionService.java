@@ -174,6 +174,27 @@ public class VehicleIgnitionService {
         return vehicleIgnitionRepository.countsAllDays(vehicleId, yearToQuery, monthToQuery);
     }
 
+    public List<Map<String, Object>> getfet(Long vehicleId, Integer year, Integer month) {
+        // Verificar si se proporcionaron mes y año, si no, usar el mes y año actual por defecto
+        int yearToQuery = (year != null) ? year : LocalDateTime.now().getYear();
+        int monthToQuery = (month != null) ? month : LocalDateTime.now().getMonthValue();
+
+        // Calculamos el inicio del mes
+        LocalDateTime startOfMonth = LocalDateTime.of(yearToQuery, monthToQuery, 1, 0, 0);
+        ZonedDateTime startOfMonthWithZone = startOfMonth.atZone(ZoneId.of("America/Lima"));
+
+        // Calculamos el fin del mes
+        LocalDateTime endOfMonth = LocalDateTime.of(yearToQuery, monthToQuery, startOfMonth.toLocalDate().lengthOfMonth(), 23, 59, 59);
+        ZonedDateTime endOfMonthWithZone = endOfMonth.atZone(ZoneId.of("America/Lima"));
+
+        // Devolvemos los timestamps de inicio y fin del mes en formato de ZonedDateTime
+        System.out.println("Start of month: " + startOfMonthWithZone);
+        System.out.println("End of month: " + endOfMonthWithZone);
+
+        // Aquí puedes retornar o utilizar esos timestamps como necesites
+        return new ArrayList<>(); // Cambia según el uso que le quieras dar
+    }
+
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
         return vehicleIgnitionRepository.save(vehicleIgnitionModel);
     }

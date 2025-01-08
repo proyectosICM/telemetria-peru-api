@@ -139,14 +139,14 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
 
 
     /**
-     * Retrieves ignition count for a specific month and year for a given vehicle.
+     * Retrieves ignition counts for specific days in a given month and year for a specified vehicle.
      *
-     * @param vehicleId the ID of the vehicle for which to retrieve the ignition count.
-     * @param year      the year for which to retrieve the ignition count.
-     * @param month     the month for which to retrieve the ignition count (1 = January, 12 = December).
-     * @return a map containing:
-     * - "month": the number of the month (1 = January, 12 = December).
-     * - "count": the number of ignition events for that month.
+     * @param vehicleId the ID of the vehicle for which to retrieve the ignition counts.
+     * @param year      the year for which to retrieve the ignition counts.
+     * @param month     the month for which to retrieve the ignition counts (1 = January, 12 = December).
+     * @return a list of maps, where each map contains:
+     * - "day": the day of the month.
+     * - "count": the number of ignition events for that specific day.
      */
     @Query(value = """ 
                 SELECT DAY(vi.created_at) AS day, 

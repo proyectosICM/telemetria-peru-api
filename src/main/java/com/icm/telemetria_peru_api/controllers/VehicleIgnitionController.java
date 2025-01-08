@@ -108,6 +108,15 @@ public class VehicleIgnitionController {
         }
     }
 
+    @GetMapping("/getfet")
+    public List<Map<String, Object>> getfet(
+            @RequestParam Long vehicleId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
+
+        return vehicleIgnitionService.getfet(vehicleId, year, month);
+    }
+
     @PostMapping
     public VehicleIgnitionModel save(@RequestBody VehicleIgnitionModel vehicleIgnitionModel) {
         return vehicleIgnitionService.save(vehicleIgnitionModel);
