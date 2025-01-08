@@ -116,9 +116,10 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
     List<Map<String, Object>> countsYear(@Param("vehicleId") Long vehicleId);
 
     /**
-     * Retrieves ignition counts for all months of the current year for a given vehicle.
+     * Retrieves ignition counts for all months of a specified year for a given vehicle.
      *
      * @param vehicleId the ID of the vehicle for which to retrieve monthly ignition counts.
+     * @param year the year for which to retrieve the ignition counts.
      * @return a list of maps where each map contains:
      *         - "month": the number of the month (1 = January, 12 = December).
      *         - "count": the number of ignition events for that month.
@@ -134,4 +135,28 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
                 ORDER BY month ASC  
             """, nativeQuery = true)
     List<Map<String, Object>> countsAllMonths(@Param("vehicleId") Long vehicleId, @Param("year") int year);
+
+
+    /**
+     * Retrieves ignition count for a specific month and year for a given vehicle.
+     *
+     * @param vehicleId the ID of the vehicle for which to retrieve the ignition count.
+     * @param year the year for which to retrieve the ignition count.
+     * @param month the month for which to retrieve the ignition count (1 = January, 12 = December).
+     * @return a map containing:
+     *         - "month": the number of the month (1 = January, 12 = December).
+     *         - "count": the number of ignition events for that month.
+     */
+    @Query(value = """ 
+            SELECT MONTH(vi.created_at) AS month, 
+                   COUNT(vi.status) AS count 
+            FROM vehicle_ignition vi 
+            WHERE vi.vehicle_id = :vehicleId
+              AND vi.status = true
+              AND YEAR(vi.created_at) = :year
+              AND MONTH(vi.created_at) = :month
+            GROUP BY MONTH(vi.created_at)
+            ORDER BY month ASC  
+        """, nativeQuery = true)
+    Map<String, Object> countsAllDays(@Param("vehicleId") Long vehicleId, @Param("year") int year, @Param("month") int month);
 }

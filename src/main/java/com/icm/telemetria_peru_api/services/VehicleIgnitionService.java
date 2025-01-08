@@ -157,6 +157,22 @@ public class VehicleIgnitionService {
         return vehicleIgnitionRepository.countsAllMonths(vehicleId, yearToQuery);
     }
 
+    /**
+     * Retrieves ignition count for a specific month and year for a given vehicle.
+     *
+     * @param vehicleId the ID of the vehicle for which to retrieve the ignition count.
+     * @param year the year for which to retrieve the ignition count.
+     * @param month the month for which to retrieve the ignition count (1 = January, 12 = December).
+     * @return a map containing:
+     *         - "month": the number of the month (1 = January, 12 = December).
+     *         - "count": the number of ignition events for that month.
+     */
+    public Map<String, Object> getCountByMonth(Long vehicleId, Integer year, Integer month) {
+        int yearToQuery = (year != null) ? year : Year.now().getValue();
+        int monthToQuery = (month != null) ? month : LocalDate.now().getMonthValue();
+        return vehicleIgnitionRepository.countsAllDays(vehicleId, yearToQuery, monthToQuery);
+    }
+
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){
         return vehicleIgnitionRepository.save(vehicleIgnitionModel);
     }

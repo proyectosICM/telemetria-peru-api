@@ -76,6 +76,30 @@ public class VehicleIgnitionController {
         }
     }
 
+    /**
+     * Endpoint to retrieve ignition count for a specific month and year for a given vehicle.
+     *
+     * @param vehicleId the ID of the vehicle.
+     * @param year the year for which to retrieve the ignition count.
+     * @param month the month for which to retrieve the ignition count.
+     * @return a ResponseEntity containing the ignition count for that month, or NOT_FOUND if no data is found.
+     */
+    @GetMapping("/counts-by-month/{vehicleId}/{year}/{month}")
+    public ResponseEntity<Map<String, Object>> getCountByMonth(
+            @PathVariable Long vehicleId,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "month", required = false) Integer month) {
+        try {
+            Map<String, Object> countData = vehicleIgnitionService.getCountByMonth(vehicleId, year, month);
+            if (countData == null || countData.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(countData, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping
     public VehicleIgnitionModel save(@RequestBody VehicleIgnitionModel vehicleIgnitionModel) {
         return vehicleIgnitionService.save(vehicleIgnitionModel);
