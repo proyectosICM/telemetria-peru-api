@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+
 import com.icm.telemetria_peru_api.integration.mqtt.handlers.IgnitionHandler;
 
 @Repository
@@ -25,7 +26,7 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      *
      * @param vehicleModel the {@link VehicleModel} for which the most recent ignition log is retrieved.
      * @return the most recent {@link VehicleIgnitionModel} associated with the given vehicle model,
-     *         or {@code null} if no ignition record exists.
+     * or {@code null} if no ignition record exists.
      */
     VehicleIgnitionModel findTopByVehicleModelOrderByCreatedAtDesc(VehicleModel vehicleModel);
 
@@ -36,8 +37,8 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      *
      * @param vehicleId the ID of the vehicle for which to count ignition events.
      * @return a list of maps where each map contains:
-     *         - "day" (String): the formatted date (YYYY-MM-DD).
-     *         - "count" (Long): the number of ignition events on that day.
+     * - "day" (String): the formatted date (YYYY-MM-DD).
+     * - "count" (Long): the number of ignition events on that day.
      */
     @Query(value = """ 
                 SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS day, 
@@ -55,9 +56,9 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      *
      * @param vehicleId the ID of the vehicle for which to count ignition events.
      * @return a list of maps where each map contains:
-     *         - "day" (String): the formatted date (YYYY-MM-DD) within the current week.
-     *         - "count" (Long): the number of ignition events on that day.
-     *         Results are ordered by date in descending order.
+     * - "day" (String): the formatted date (YYYY-MM-DD) within the current week.
+     * - "count" (Long): the number of ignition events on that day.
+     * Results are ordered by date in descending order.
      */
     @Query(value = """ 
                 SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS day, 
@@ -77,9 +78,9 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      *
      * @param vehicleId the ID of the vehicle for which to count ignition events.
      * @return a list of maps where each map contains:
-     *         - "day" (String): the formatted date (YYYY-MM-DD) within the current month.
-     *         - "count" (Long): the number of ignition events on that day.
-     *         Results are ordered by date in descending order.
+     * - "day" (String): the formatted date (YYYY-MM-DD) within the current month.
+     * - "count" (Long): the number of ignition events on that day.
+     * Results are ordered by date in descending order.
      */
     @Query(value = """ 
                 SELECT DATE_FORMAT(vi.created_at, '%Y-%m-%d') AS day, 
@@ -99,9 +100,9 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      *
      * @param vehicleId the ID of the vehicle for which to count ignition events.
      * @return a list of maps where each map contains:
-     *         - "year" (Integer): the year for which the ignition events are counted.
-     *         - "count" (Long): the number of ignition events during that year.
-     *         Results are ordered by year in descending order.
+     * - "year" (Integer): the year for which the ignition events are counted.
+     * - "count" (Long): the number of ignition events during that year.
+     * Results are ordered by year in descending order.
      */
     @Query(value = """ 
                 SELECT YEAR(vi.created_at) AS year, 
@@ -119,10 +120,10 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      * Retrieves ignition counts for all months of a specified year for a given vehicle.
      *
      * @param vehicleId the ID of the vehicle for which to retrieve monthly ignition counts.
-     * @param year the year for which to retrieve the ignition counts.
+     * @param year      the year for which to retrieve the ignition counts.
      * @return a list of maps where each map contains:
-     *         - "month": the number of the month (1 = January, 12 = December).
-     *         - "count": the number of ignition events for that month.
+     * - "month": the number of the month (1 = January, 12 = December).
+     * - "count": the number of ignition events for that month.
      */
     @Query(value = """ 
                 SELECT MONTH(vi.created_at) AS month, 
@@ -141,22 +142,22 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      * Retrieves ignition count for a specific month and year for a given vehicle.
      *
      * @param vehicleId the ID of the vehicle for which to retrieve the ignition count.
-     * @param year the year for which to retrieve the ignition count.
-     * @param month the month for which to retrieve the ignition count (1 = January, 12 = December).
+     * @param year      the year for which to retrieve the ignition count.
+     * @param month     the month for which to retrieve the ignition count (1 = January, 12 = December).
      * @return a map containing:
-     *         - "month": the number of the month (1 = January, 12 = December).
-     *         - "count": the number of ignition events for that month.
+     * - "month": the number of the month (1 = January, 12 = December).
+     * - "count": the number of ignition events for that month.
      */
     @Query(value = """ 
-    SELECT DAY(vi.created_at) AS day, 
-           COUNT(vi.status) AS count 
-    FROM vehicle_ignition vi 
-    WHERE vi.vehicle_id = :vehicleId
-      AND vi.status = true
-      AND YEAR(vi.created_at) = :year
-      AND MONTH(vi.created_at) = :month
-    GROUP BY DAY(vi.created_at)
-    ORDER BY day ASC  
-""", nativeQuery = true)
+                SELECT DAY(vi.created_at) AS day, 
+                       COUNT(vi.status) AS count 
+                FROM vehicle_ignition vi 
+                WHERE vi.vehicle_id = :vehicleId
+                  AND vi.status = true
+                  AND YEAR(vi.created_at) = :year
+                  AND MONTH(vi.created_at) = :month
+                GROUP BY DAY(vi.created_at)
+                ORDER BY day ASC  
+            """, nativeQuery = true)
     List<Map<String, Object>> countsAllDays(@Param("vehicleId") Long vehicleId, @Param("year") int year, @Param("month") int month);
 }
