@@ -124,7 +124,7 @@ public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnition
      *         - "count": the number of ignition events for that month.
      */
     @Query(value = """ 
-                SELECT MONTH(vi.created_at) AS month, 
+                SELECT MONTHNAME(vi.created_at) AS month, 
                        COUNT(vi.status) AS count 
                 FROM vehicle_ignition vi 
                 WHERE vi.vehicle_id = :vehicleId
