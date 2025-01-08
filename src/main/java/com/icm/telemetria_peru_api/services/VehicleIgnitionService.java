@@ -152,8 +152,9 @@ public class VehicleIgnitionService {
         return consolidatedData;
     }
 
-    public List<Map<String, Object>> getIgnitionCountsByMonth(Long vehicleId) {
-        return vehicleIgnitionRepository.countsAllMonths(vehicleId);
+    public List<Map<String, Object>> getIgnitionCountsByMonth(Long vehicleId, Integer year) {
+        int yearToQuery = (year != null) ? year : Year.now().getValue();
+        return vehicleIgnitionRepository.countsAllMonths(vehicleId, yearToQuery);
     }
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){

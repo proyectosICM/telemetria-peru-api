@@ -60,9 +60,11 @@ public class VehicleIgnitionController {
     }
 
     @GetMapping("/counts-all-months/{vehicleId}")
-    public ResponseEntity<List<Map<String, Object>>> getCountsByMonth(@PathVariable Long vehicleId) {
+    public ResponseEntity<List<Map<String, Object>>> getCountsByMonth(
+            @PathVariable Long vehicleId,
+            @RequestParam(value = "year", required = false) Integer year) {
         try {
-            List<Map<String, Object>> counts = vehicleIgnitionService.getIgnitionCountsByMonth(vehicleId);
+            List<Map<String, Object>> counts = vehicleIgnitionService.getIgnitionCountsByMonth(vehicleId, year);
 
             if (counts.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
