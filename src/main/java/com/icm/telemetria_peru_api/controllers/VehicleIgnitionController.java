@@ -85,12 +85,12 @@ public class VehicleIgnitionController {
      * @return a ResponseEntity containing the ignition count for that month, or NOT_FOUND if no data is found.
      */
     @GetMapping("/counts-all-days/{vehicleId}")
-    public ResponseEntity<Map<String, Object>> getCountByMonth(
+    public ResponseEntity<List<Map<String, Object>>> getCountByMonth(
             @PathVariable Long vehicleId,
             @RequestParam(value = "year", required = false) Integer year,
             @RequestParam(value = "month", required = false) Integer month) {
         try {
-            Map<String, Object> countData = vehicleIgnitionService.getCountByMonth(vehicleId, year, month);
+            List<Map<String, Object>> countData = vehicleIgnitionService.getCountByMonth(vehicleId, year, month);
             if (countData == null || countData.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

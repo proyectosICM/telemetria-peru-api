@@ -167,7 +167,7 @@ public class VehicleIgnitionService {
      *         - "month": the number of the month (1 = January, 12 = December).
      *         - "count": the number of ignition events for that month.
      */
-    public Map<String, Object> getCountByMonth(Long vehicleId, Integer year, Integer month) {
+    public List<Map<String, Object>> getCountByMonth(Long vehicleId, Integer year, Integer month) {
         int yearToQuery = (year != null) ? year : Year.now().getValue();
         int monthToQuery = (month != null) ? month : LocalDate.now().getMonthValue();
         return vehicleIgnitionRepository.countsAllDays(vehicleId, yearToQuery, monthToQuery);
