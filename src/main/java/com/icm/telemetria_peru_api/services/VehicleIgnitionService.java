@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -158,6 +159,15 @@ public class VehicleIgnitionService {
         return vehicleIgnitionRepository.countsAllMonths(vehicleId, yearToQuery);
     }
 
+    public static String getDateFromTimestamp(long timestamp) {
+        ZonedDateTime date = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(timestamp),
+                ZoneId.of("America/Lima") // Ajusta la zona horaria a la de Perú
+        );
+
+        return date.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
     /**
      * Retrieves ignition count for a specific month and year for a given vehicle.
      *
@@ -180,14 +190,20 @@ public class VehicleIgnitionService {
                 .map(entry -> {
                     int day = (int) entry.get("day");
 
-                    // Suponiendo que el servidor está en una zona horaria conocida (e.g., UTC-5 para Perú)
+                    // Suponiendo que el servidor está en UTC o almacenando UTC
                     ZonedDateTime originalDate = ZonedDateTime.of(yearToQuery, monthToQuery, day, 0, 0, 0, 0, ZoneId.of("UTC"));
+
+                    // Convertimos la fecha a la zona horaria de Perú
                     ZonedDateTime adjustedDate = originalDate.withZoneSameInstant(ZoneId.of("America/Lima"));
+
+                    // Usamos el método de conversión para dar formato
+                    String formattedDate = getDateFromTimestamp(adjustedDate.toEpochSecond() * 1000);
 
                     // Devolvemos el nuevo mapa con la fecha ajustada
                     return Map.of(
                             "day", adjustedDate.getDayOfMonth(),
-                            "count", entry.get("count")
+                            "count", entry.get("count"),
+                            "formattedDate", formattedDate
                     );
                 })
                 .collect(Collectors.toList());
