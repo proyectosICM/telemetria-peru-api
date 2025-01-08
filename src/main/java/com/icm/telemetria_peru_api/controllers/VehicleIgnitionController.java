@@ -103,6 +103,7 @@ public class VehicleIgnitionController {
             }
             return new ResponseEntity<>(countData, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
