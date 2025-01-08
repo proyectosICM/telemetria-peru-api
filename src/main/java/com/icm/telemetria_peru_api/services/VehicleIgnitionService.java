@@ -13,16 +13,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class VehicleIgnitionService {
     private final VehicleIgnitionRepository vehicleIgnitionRepository;
+
+    public Optional<VehicleIgnitionModel> findById(Long id) {
+        return vehicleIgnitionRepository.findById(id);
+    }
 
     public List<VehicleIgnitionModel> findAll(){
         return vehicleIgnitionRepository.findAll();
