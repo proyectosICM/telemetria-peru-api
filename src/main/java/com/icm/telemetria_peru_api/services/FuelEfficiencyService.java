@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import javax.swing.text.html.Option;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +46,7 @@ public class FuelEfficiencyService {
 
             // Crear la cabecera
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"ID", "Vehicle ID", "Efficiency", "Created At"};
+            String[] headers = {"Estado", "Placa", "Día", "Hora de inicio"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -55,10 +57,19 @@ public class FuelEfficiencyService {
             int rowIdx = 1;
             for (FuelEfficiencyModel model : data) {
                 Row row = sheet.createRow(rowIdx++);
-                row.createCell(0).setCellValue(model.getId());
-                row.createCell(1).setCellValue(model.getFuelEfficiencyStatus().toString());
-                row.createCell(2).setCellValue(model.getVehicleModel().getLicensePlate().toString());
-                row.createCell(3).setCellValue(model.getCreatedAt().toString());
+
+                // Convertir la fecha creada (createdAt) a epoch timestamp con nanosegundos
+                ZonedDateTime createdAt = model.getCreatedAt();
+                String formattedTimestamp = createdAt.toEpochSecond() + "." + createdAt.getNano();
+
+                // Extraer el día y la hora de inicio a partir de la fecha
+                String day = createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                String time = createdAt.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+
+                row.createCell(0).setCellValue(model.getFuelEfficiencyStatus().toString()); // Estado
+                row.createCell(1).setCellValue(model.getVehicleModel().getLicensePlate().toString()); // Placa
+                row.createCell(2).setCellValue(day); // Día
+                row.createCell(3).setCellValue(time); // Hora de inicio
             }
 
             workbook.write(out);
