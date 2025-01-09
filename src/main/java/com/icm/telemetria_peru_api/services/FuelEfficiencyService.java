@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.services;
 import com.icm.telemetria_peru_api.dto.FuelEfficiencyDTO;
 import com.icm.telemetria_peru_api.dto.FuelEfficiencySummaryDTO;
 import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
+import com.icm.telemetria_peru_api.enums.FuelType;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
@@ -68,15 +69,25 @@ public class FuelEfficiencyService {
                 ZonedDateTime startTime = model.getStartTime().withZoneSameInstant(serverZoneId);
                 ZonedDateTime endTime = model.getEndTime() != null ? model.getEndTime().withZoneSameInstant(serverZoneId) : null;
 
+                // Validar si el modelo de vehículo y el tipo de combustible son válidos
+                VehicleModel vehicleModel = model.getVehicleModel();
+                FuelType fuelType = vehicleModel != null ? vehicleModel.getFuelType() : null;
+
+                // Multiplicar valores de combustible si el tipo es DIESEL
+                double conversionFactor = (fuelType != null && fuelType == FuelType.DIESEL) ? 0.264172 : 1.0;
+                double initialFuel = model.getInitialFuel() != null ? model.getInitialFuel() * conversionFactor : 0;
+                double finalFuel = model.getFinalFuel() != null ? model.getFinalFuel() * conversionFactor : 0;
+                double fuelConsumed = model.getFinalFuel() != null ? initialFuel - finalFuel : 0;
+
                 row.createCell(0).setCellValue(model.getFuelEfficiencyStatus() != null ? model.getFuelEfficiencyStatus().toString() : "Aún no disponible");
-                row.createCell(1).setCellValue(model.getVehicleModel() != null ? model.getVehicleModel().getLicensePlate() : "Aún no disponible");
+                row.createCell(1).setCellValue(vehicleModel != null ? vehicleModel.getLicensePlate() : "Aún no disponible");
                 row.createCell(2).setCellValue(startTime != null ? startTime.toLocalDate().toString() : "Aún no disponible");
                 row.createCell(3).setCellValue(startTime != null ? startTime.toLocalTime().toString() : "Aún no disponible");
                 row.createCell(4).setCellValue(endTime != null ? endTime.toLocalTime().toString() : "Aún no disponible");
                 row.createCell(5).setCellValue(model.getAccumulatedHours() != null ? model.getAccumulatedHours().toString() : "Aún no disponible");
-                row.createCell(6).setCellValue(model.getInitialFuel() != null ? model.getInitialFuel() : 0);
-                row.createCell(7).setCellValue(model.getFinalFuel() != null ? model.getFinalFuel() : 0);
-                row.createCell(8).setCellValue(model.getFinalFuel() != null ? model.getInitialFuel() - model.getFinalFuel() : 0);
+                row.createCell(6).setCellValue(initialFuel); // Combustible inicial (ajustado si es DIESEL)
+                row.createCell(7).setCellValue(finalFuel); // Combustible final (ajustado si es DIESEL)
+                row.createCell(8).setCellValue(fuelConsumed); // Combustible Consumido (ajustado si es DIESEL)
                 row.createCell(9).setCellValue(model.getFuelEfficiency() != null ? model.getFuelEfficiency() : 0);
                 row.createCell(10).setCellValue(model.getFuelConsumptionPerHour() != null ? model.getFuelConsumptionPerHour() : 0);
                 row.createCell(11).setCellValue(model.getCoordinates() != null ? model.getCoordinates() : "Aún no disponible");
