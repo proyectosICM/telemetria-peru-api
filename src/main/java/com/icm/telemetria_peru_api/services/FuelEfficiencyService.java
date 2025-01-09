@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.services;
 import com.icm.telemetria_peru_api.dto.FuelEfficiencyDTO;
 import com.icm.telemetria_peru_api.dto.FuelEfficiencySummaryDTO;
 import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
+import com.icm.telemetria_peru_api.enums.FuelType;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
@@ -157,43 +158,59 @@ public class FuelEfficiencyService {
      * STAST
      */
 
-    public List<FuelEfficiencySummaryDTO> getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(Long vehicleId, Integer year, Integer month, Integer day) {
-        List<Object[]> results;
+    public byte[] generateExcel(List<FuelEfficiencyModel> data) throws IOException {
+        // Zona horaria del servidor
+        ZoneId serverZoneId = ZoneId.of("America/Lima"); // Cambia según la zona horaria del servidor.
 
-        if (year != null && month == null && day == null) {
-            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByYear(vehicleId, year);
-        } else if (year != null && month != null && day == null) {
-            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByMonth(vehicleId, month, year);
-        } else if (year != null && month != null && day != null) {
-            results = fuelEfficiencyRepository.getAggregatedFuelEfficiencyByDay(vehicleId, day, month, year);
-        } else {
-            results = null;
-        }
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Fuel Efficiency");
 
-        Optional<VehicleModel> vehicleModel = vehicleRepository.findById(vehicleId);
+            // Crear la cabecera
+            Row headerRow = sheet.createRow(0);
+            String[] headers = {"Estado", "Placa", "Día", "Hora de inicio", "Hora de fin", "Horas acumuladas",
+                    "Combustible inicial", "Combustible final", "Combustible Consumido",
+                    "Rendimiento Combustible (x KM)", "Rendimiento Combustible (gal/h)", "Coordenadas Final"};
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]); // Encabezados son siempre cadenas
+                cell.setCellStyle(createHeaderCellStyle(workbook));
+            }
 
-        if (results != null && !results.isEmpty()) {
-            List<FuelEfficiencySummaryDTO> summaries = results.stream().map(result -> {
-                FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
-                Double totalHours = Math.max(0.0, Double.valueOf(result[1].toString()));
-                Double totalFuelConsumed = Math.max(0.0, Double.valueOf(result[2].toString()));
-                Double avgFuelEfficiency = Math.max(0.0, Double.valueOf(result[3].toString()));
+            // Llenar datos
+            int rowIdx = 1;
+            for (FuelEfficiencyModel model : data) {
+                Row row = sheet.createRow(rowIdx++);
 
-                if (vehicleModel.isPresent()) {
-                    switch (vehicleModel.get().getFuelType()) {
-                        case DIESEL:
-                            totalFuelConsumed *= 0.264172;
-                            avgFuelEfficiency *= 0.264172;
-                            break;
-                    }
-                }
+                // Ajustar las fechas a la zona horaria del servidor
+                ZonedDateTime startTime = model.getStartTime().withZoneSameInstant(serverZoneId);
+                ZonedDateTime endTime = model.getEndTime() != null ? model.getEndTime().withZoneSameInstant(serverZoneId) : null;
 
-                return new FuelEfficiencySummaryDTO(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
-            }).collect(Collectors.toList());
+                // Validar si el modelo de vehículo y el tipo de combustible son válidos
+                VehicleModel vehicleModel = model.getVehicleModel();
+                FuelType fuelType = vehicleModel != null ? vehicleModel.getFuelType() : null;
 
-            return summaries;
-        } else {
-            return getDefaultSummary();
+                // Multiplicar valores de combustible si el tipo es DIESEL
+                double conversionFactor = (fuelType != null && fuelType == FuelType.DIESEL) ? 0.264172 : 1.0;
+                double initialFuel = model.getInitialFuel() != null ? model.getInitialFuel() * conversionFactor : 0;
+                double finalFuel = model.getFinalFuel() != null ? model.getFinalFuel() * conversionFactor : 0;
+                double fuelConsumed = model.getFinalFuel() != null ? initialFuel - finalFuel : 0;
+
+                row.createCell(0).setCellValue(model.getFuelEfficiencyStatus() != null ? model.getFuelEfficiencyStatus().toString() : "Aún no disponible");
+                row.createCell(1).setCellValue(vehicleModel != null ? vehicleModel.getLicensePlate() : "Aún no disponible");
+                row.createCell(2).setCellValue(startTime != null ? startTime.toLocalDate().toString() : "Aún no disponible");
+                row.createCell(3).setCellValue(startTime != null ? startTime.toLocalTime().toString() : "Aún no disponible");
+                row.createCell(4).setCellValue(endTime != null ? endTime.toLocalTime().toString() : "Aún no disponible");
+                row.createCell(5).setCellValue(model.getAccumulatedHours() != null ? model.getAccumulatedHours().toString() : "Aún no disponible");
+                row.createCell(6).setCellValue(initialFuel); // Combustible inicial (ajustado si es DIESEL)
+                row.createCell(7).setCellValue(finalFuel); // Combustible final (ajustado si es DIESEL)
+                row.createCell(8).setCellValue(fuelConsumed); // Combustible Consumido (ajustado si es DIESEL)
+                row.createCell(9).setCellValue(model.getFuelEfficiency() != null ? model.getFuelEfficiency() : 0);
+                row.createCell(10).setCellValue(model.getFuelConsumptionPerHour() != null ? model.getFuelConsumptionPerHour() : 0);
+                row.createCell(11).setCellValue(model.getCoordinates() != null ? model.getCoordinates() : "Aún no disponible");
+            }
+
+            workbook.write(out);
+            return out.toByteArray();
         }
     }
 
