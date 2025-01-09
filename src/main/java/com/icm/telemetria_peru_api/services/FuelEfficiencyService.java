@@ -10,11 +10,15 @@ import com.icm.telemetria_peru_api.repositories.FuelEfficiencyRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,42 @@ public class FuelEfficiencyService {
 
     public List<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId) {
         return fuelEfficiencyRepository.findByVehicleModelIdOrderByCreatedAtDesc(vehicleId);
+    }
+
+    public byte[] generateExcel(List<FuelEfficiencyModel> data) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Fuel Efficiency");
+
+            // Crear la cabecera
+            Row headerRow = sheet.createRow(0);
+            String[] headers = {"ID", "Vehicle ID", "Efficiency", "Created At"};
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(createHeaderCellStyle(workbook));
+            }
+
+            // Llenar datos
+            int rowIdx = 1;
+            for (FuelEfficiencyModel model : data) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(model.getId());
+                row.createCell(1).setCellValue(model.getFuelEfficiencyStatus().toString());
+                row.createCell(2).setCellValue(model.getVehicleModel().getLicensePlate().toString());
+                row.createCell(3).setCellValue(model.getCreatedAt().toString());
+            }
+
+            workbook.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private CellStyle createHeaderCellStyle(Workbook workbook) {
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        headerCellStyle.setFont(font);
+        return headerCellStyle;
     }
 
     public List<FuelEfficiencyDTO> findByVehicleModelId2(Long vehicleId) {

@@ -11,10 +11,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,17 @@ public class FuelEfficiencyController {
     public ResponseEntity<Optional<FuelEfficiencyModel>> findById(@PathVariable Long id){
         Optional<FuelEfficiencyModel> data = fuelEfficiencyService.findById(id);
         return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
+    @GetMapping("/download-excel/{vehicleModelId}")
+    public ResponseEntity<byte[]> downloadExcel(@PathVariable Long vehicleModelId) throws IOException {
+        List<FuelEfficiencyModel> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId);
+        byte[] excelData = fuelEfficiencyService.generateExcel(data);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=fuel_efficiency.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excelData);
     }
 
     @GetMapping("/findByVehicle/{vehicleModelId}")

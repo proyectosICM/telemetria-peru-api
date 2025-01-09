@@ -80,6 +80,7 @@ public class WebSecurityConfig {
                     auth.requestMatchers("/hello").permitAll();
                     auth.requestMatchers("/api/role").permitAll();
                     auth.requestMatchers("/api/users").permitAll();
+                    auth.requestMatchers("/api/fuel-efficiency/download-excel/**").permitAll();
                     auth.requestMatchers("/api/companies").permitAll();
                     auth.requestMatchers("/api/checklist-records").permitAll();
                     auth.requestMatchers("/api/images-cl/**").permitAll();
