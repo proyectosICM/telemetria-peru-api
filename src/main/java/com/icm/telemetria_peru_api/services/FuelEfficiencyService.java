@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import javax.swing.text.html.Option;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -75,9 +77,15 @@ public class FuelEfficiencyService {
 
                 // Multiplicar valores de combustible si el tipo es DIESEL
                 double conversionFactor = (fuelType != null && fuelType == FuelType.DIESEL) ? 0.264172 : 1.0;
+
                 double initialFuel = model.getInitialFuel() != null ? model.getInitialFuel() * conversionFactor : 0;
                 double finalFuel = model.getFinalFuel() != null ? model.getFinalFuel() * conversionFactor : 0;
                 double fuelConsumed = model.getFinalFuel() != null ? initialFuel - finalFuel : 0;
+
+                // Redondear a dos decimales
+                initialFuel = roundToTwoDecimalPlaces(initialFuel);
+                finalFuel = roundToTwoDecimalPlaces(finalFuel);
+                fuelConsumed = roundToTwoDecimalPlaces(fuelConsumed);
 
                 row.createCell(0).setCellValue(model.getFuelEfficiencyStatus() != null ? model.getFuelEfficiencyStatus().toString() : "Aún no disponible");
                 row.createCell(1).setCellValue(vehicleModel != null ? vehicleModel.getLicensePlate() : "Aún no disponible");
@@ -85,9 +93,9 @@ public class FuelEfficiencyService {
                 row.createCell(3).setCellValue(startTime != null ? startTime.toLocalTime().toString() : "Aún no disponible");
                 row.createCell(4).setCellValue(endTime != null ? endTime.toLocalTime().toString() : "Aún no disponible");
                 row.createCell(5).setCellValue(model.getAccumulatedHours() != null ? model.getAccumulatedHours().toString() : "Aún no disponible");
-                row.createCell(6).setCellValue(initialFuel); // Combustible inicial (ajustado si es DIESEL)
-                row.createCell(7).setCellValue(finalFuel); // Combustible final (ajustado si es DIESEL)
-                row.createCell(8).setCellValue(fuelConsumed); // Combustible Consumido (ajustado si es DIESEL)
+                row.createCell(6).setCellValue(initialFuel); // Combustible inicial (redondeado)
+                row.createCell(7).setCellValue(finalFuel); // Combustible final (redondeado)
+                row.createCell(8).setCellValue(fuelConsumed); // Combustible Consumido (redondeado)
                 row.createCell(9).setCellValue(model.getFuelEfficiency() != null ? model.getFuelEfficiency() : 0);
                 row.createCell(10).setCellValue(model.getFuelConsumptionPerHour() != null ? model.getFuelConsumptionPerHour() : 0);
                 row.createCell(11).setCellValue(model.getCoordinates() != null ? model.getCoordinates() : "Aún no disponible");
@@ -96,6 +104,13 @@ public class FuelEfficiencyService {
             workbook.write(out);
             return out.toByteArray();
         }
+    }
+
+    // Método para redondear a dos decimales
+    private double roundToTwoDecimalPlaces(double value) {
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(2, RoundingMode.HALF_UP); // Redondeo hacia el más cercano
+        return bd.doubleValue();
     }
 
     private CellStyle createHeaderCellStyle(Workbook workbook) {
