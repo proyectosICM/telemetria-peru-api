@@ -86,6 +86,7 @@ public class FuelEfficiencyService {
                 initialFuel = roundToTwoDecimalPlaces(initialFuel);
                 finalFuel = roundToTwoDecimalPlaces(finalFuel);
                 fuelConsumed = roundToTwoDecimalPlaces(fuelConsumed);
+                double fuelEfficiency = roundToTwoDecimalPlaces(model.getFuelEfficiency() != null ? model.getFuelEfficiency() : 0);
 
                 row.createCell(0).setCellValue(model.getFuelEfficiencyStatus() != null ? model.getFuelEfficiencyStatus().toString() : "Aún no disponible");
                 row.createCell(1).setCellValue(vehicleModel != null ? vehicleModel.getLicensePlate() : "Aún no disponible");
@@ -96,7 +97,7 @@ public class FuelEfficiencyService {
                 row.createCell(6).setCellValue(initialFuel); // Combustible inicial (redondeado)
                 row.createCell(7).setCellValue(finalFuel); // Combustible final (redondeado)
                 row.createCell(8).setCellValue(fuelConsumed); // Combustible Consumido (redondeado)
-                row.createCell(9).setCellValue(model.getFuelEfficiency() != null ? model.getFuelEfficiency() : 0);
+                row.createCell(9).setCellValue(fuelEfficiency);
                 row.createCell(10).setCellValue(model.getFuelConsumptionPerHour() != null ? model.getFuelConsumptionPerHour() : 0);
                 row.createCell(11).setCellValue(model.getCoordinates() != null ? model.getCoordinates() : "Aún no disponible");
             }
