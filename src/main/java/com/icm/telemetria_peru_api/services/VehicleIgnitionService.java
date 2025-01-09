@@ -21,6 +21,10 @@ import java.util.stream.Collectors;
 public class VehicleIgnitionService {
     private final VehicleIgnitionRepository vehicleIgnitionRepository;
 
+    public List<VehicleIgnitionModel> getRecordsBetweenTimestamps(ZonedDateTime startTimestamp, ZonedDateTime endTimestamp) {
+        return vehicleIgnitionRepository.findByCreatedAtBetween(startTimestamp, endTimestamp);
+    }
+
     public Optional<VehicleIgnitionModel> findById(Long id) {
         return vehicleIgnitionRepository.findById(id);
     }

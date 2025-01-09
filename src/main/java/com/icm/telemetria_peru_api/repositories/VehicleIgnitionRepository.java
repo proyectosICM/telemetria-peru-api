@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import com.icm.telemetria_peru_api.integration.mqtt.handlers.IgnitionHandler;
 
 @Repository
 public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnitionModel, Long> {
+    List<VehicleIgnitionModel> findByCreatedAtBetween(ZonedDateTime startTimestamp, ZonedDateTime endTimestamp);
     List<VehicleIgnitionModel> findByVehicleModelId(Long vehicleId);
 
     Page<VehicleIgnitionModel> findByVehicleModelId(Long vehicleId, Pageable pageable);

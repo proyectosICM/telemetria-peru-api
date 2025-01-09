@@ -21,6 +21,8 @@ import java.util.Map;
 public class VehicleIgnitionController {
     private final VehicleIgnitionService vehicleIgnitionService;
 
+    
+
     @GetMapping("/{id}")
     public ResponseEntity<VehicleIgnitionModel> findById(@PathVariable Long id) {
         return vehicleIgnitionService.findById(id)

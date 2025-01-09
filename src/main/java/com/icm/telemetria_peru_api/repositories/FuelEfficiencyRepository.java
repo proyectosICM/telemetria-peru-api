@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Repository
 public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyModel, Long> {
-    List<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId);
+    List<FuelEfficiencyModel> findByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
 
     Page<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 

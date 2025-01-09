@@ -31,11 +31,11 @@ public class FuelEfficiencyService {
     }
 
     public List<FuelEfficiencyModel> findByVehicleModelId(Long vehicleId) {
-        return fuelEfficiencyRepository.findByVehicleModelId(vehicleId);
+        return fuelEfficiencyRepository.findByVehicleModelIdOrderByCreatedAtDesc(vehicleId);
     }
 
     public List<FuelEfficiencyDTO> findByVehicleModelId2(Long vehicleId) {
-        List<FuelEfficiencyModel> records = fuelEfficiencyRepository.findByVehicleModelId(vehicleId);
+        List<FuelEfficiencyModel> records = fuelEfficiencyRepository.findByVehicleModelIdOrderByCreatedAtDesc(vehicleId);
 
         if (records.isEmpty()) {
             throw new EntityNotFoundException("No se encontraron registros para el vehículo con ID " + vehicleId);
