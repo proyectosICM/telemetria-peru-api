@@ -68,7 +68,7 @@ public class FuelEfficiencyService {
 
                 row.createCell(0).setCellValue(model.getFuelEfficiencyStatus().toString()); // Estado
                 row.createCell(1).setCellValue(model.getVehicleModel().getLicensePlate().toString()); // Placa
-                row.createCell(2).setCellValue(day); // Día
+                row.createCell(2).setCellValue(model.getCreatedAt().toLocalDateTime()); // Día
                 row.createCell(3).setCellValue(time); // Hora de inicio
             }
 
