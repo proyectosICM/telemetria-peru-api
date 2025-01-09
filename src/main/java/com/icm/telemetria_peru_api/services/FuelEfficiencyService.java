@@ -71,6 +71,9 @@ public class FuelEfficiencyService {
                 ZonedDateTime startTime = model.getStartTime().withZoneSameInstant(serverZoneId);
                 ZonedDateTime endTime = model.getEndTime() != null ? model.getEndTime().withZoneSameInstant(serverZoneId) : null;
 
+                // Formatear la hora a solo HH:mm
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
                 // Validar si el modelo de vehículo y el tipo de combustible son válidos
                 VehicleModel vehicleModel = model.getVehicleModel();
                 FuelType fuelType = vehicleModel != null ? vehicleModel.getFuelType() : null;
@@ -92,8 +95,8 @@ public class FuelEfficiencyService {
                 row.createCell(0).setCellValue(model.getFuelEfficiencyStatus() != null ? model.getFuelEfficiencyStatus().toString() : "Aún no disponible");
                 row.createCell(1).setCellValue(vehicleModel != null ? vehicleModel.getLicensePlate() : "Aún no disponible");
                 row.createCell(2).setCellValue(startTime != null ? startTime.toLocalDate().toString() : "Aún no disponible");
-                row.createCell(3).setCellValue(startTime != null ? startTime.toLocalTime().toString() : "Aún no disponible");
-                row.createCell(4).setCellValue(endTime != null ? endTime.toLocalTime().toString() : "Aún no disponible");
+                row.createCell(3).setCellValue(startTime != null ? startTime.toLocalTime().format(timeFormatter) : "Aún no disponible");
+                row.createCell(4).setCellValue(endTime != null ? endTime.toLocalTime().format(timeFormatter) : "Aún no disponible");
                 row.createCell(5).setCellValue(model.getAccumulatedHours() != null ? model.getAccumulatedHours().toString() : "Aún no disponible");
                 row.createCell(6).setCellValue(initialFuel); // Combustible inicial (redondeado)
                 row.createCell(7).setCellValue(finalFuel); // Combustible final (redondeado)
