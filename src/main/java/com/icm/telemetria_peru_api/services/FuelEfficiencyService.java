@@ -74,6 +74,13 @@ public class FuelEfficiencyService {
                 // Formatear la hora a solo HH:mm
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
+                // Convertir horas acumuladas a formato HH:mm
+                double accumulatedHours = model.getAccumulatedHours() != null ? model.getAccumulatedHours() : 0.0;
+                long totalMinutes = (long) (accumulatedHours * 60);
+                long hours = totalMinutes / 60;
+                long minutes = totalMinutes % 60;
+                String formattedAccumulatedHours = String.format("%02d:%02d", hours, minutes);
+
                 // Validar si el modelo de vehículo y el tipo de combustible son válidos
                 VehicleModel vehicleModel = model.getVehicleModel();
                 FuelType fuelType = vehicleModel != null ? vehicleModel.getFuelType() : null;
@@ -97,7 +104,7 @@ public class FuelEfficiencyService {
                 row.createCell(2).setCellValue(startTime != null ? startTime.toLocalDate().toString() : "Aún no disponible");
                 row.createCell(3).setCellValue(startTime != null ? startTime.toLocalTime().format(timeFormatter) : "Aún no disponible");
                 row.createCell(4).setCellValue(endTime != null ? endTime.toLocalTime().format(timeFormatter) : "Aún no disponible");
-                row.createCell(5).setCellValue(model.getAccumulatedHours() != null ? model.getAccumulatedHours().toString() : "Aún no disponible");
+                row.createCell(5).setCellValue(formattedAccumulatedHours); // Horas acumuladas en formato HH:mm
                 row.createCell(6).setCellValue(initialFuel); // Combustible inicial (redondeado)
                 row.createCell(7).setCellValue(finalFuel); // Combustible final (redondeado)
                 row.createCell(8).setCellValue(fuelConsumed); // Combustible Consumido (redondeado)
