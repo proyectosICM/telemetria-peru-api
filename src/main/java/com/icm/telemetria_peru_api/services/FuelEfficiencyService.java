@@ -46,7 +46,9 @@ public class FuelEfficiencyService {
 
             // Crear la cabecera
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"Estado", "Placa", "Día", "Hora de inicio"};
+            String[] headers = {"Estado", "Placa", "Día", "Hora de inicio", "Hora de fin", "Horas acumuladas",
+                    "Combustible inicial", "Combustible final", "Combustible Consumido",
+                    "Rendimiendo Combustible (x KM)", "Rendimiendo Combustible (gal/h)", "Coordenadas Final"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
