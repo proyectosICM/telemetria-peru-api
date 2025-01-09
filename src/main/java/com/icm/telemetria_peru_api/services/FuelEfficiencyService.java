@@ -78,15 +78,16 @@ public class FuelEfficiencyService {
                 // Multiplicar valores de combustible si el tipo es DIESEL
                 double conversionFactor = (fuelType != null && fuelType == FuelType.DIESEL) ? 0.264172 : 1.0;
 
-                double initialFuel = model.getInitialFuel() != null ? model.getInitialFuel() * conversionFactor : 0;
-                double finalFuel = model.getFinalFuel() != null ? model.getFinalFuel() * conversionFactor : 0;
-                double fuelConsumed = model.getFinalFuel() != null ? initialFuel - finalFuel : 0;
+                double initialFuel = model.getInitialFuel() != null ? model.getInitialFuel() * conversionFactor : 0.0;
+                double finalFuel = model.getFinalFuel() != null ? model.getFinalFuel() * conversionFactor : 0.0;
+                double fuelConsumed = model.getFinalFuel() != null ? initialFuel - finalFuel : 0.0;
 
                 // Redondear a dos decimales
                 initialFuel = roundToTwoDecimalPlaces(initialFuel);
                 finalFuel = roundToTwoDecimalPlaces(finalFuel);
                 fuelConsumed = roundToTwoDecimalPlaces(fuelConsumed);
                 double fuelEfficiency = roundToTwoDecimalPlaces(model.getFuelEfficiency() != null ? model.getFuelEfficiency() : 0);
+                double fuelConsumptionPerHour = roundToTwoDecimalPlaces(model.getFuelConsumptionPerHour() != null ? model.getFuelConsumptionPerHour() : 0);
 
                 row.createCell(0).setCellValue(model.getFuelEfficiencyStatus() != null ? model.getFuelEfficiencyStatus().toString() : "Aún no disponible");
                 row.createCell(1).setCellValue(vehicleModel != null ? vehicleModel.getLicensePlate() : "Aún no disponible");
@@ -97,8 +98,8 @@ public class FuelEfficiencyService {
                 row.createCell(6).setCellValue(initialFuel); // Combustible inicial (redondeado)
                 row.createCell(7).setCellValue(finalFuel); // Combustible final (redondeado)
                 row.createCell(8).setCellValue(fuelConsumed); // Combustible Consumido (redondeado)
-                row.createCell(9).setCellValue(fuelEfficiency);
-                row.createCell(10).setCellValue(model.getFuelConsumptionPerHour() != null ? model.getFuelConsumptionPerHour() : 0);
+                row.createCell(9).setCellValue(fuelEfficiency); // Rendimiento Combustible (x KM) (redondeado)
+                row.createCell(10).setCellValue(fuelConsumptionPerHour); // Rendimiento Combustible (gal/h) (redondeado)
                 row.createCell(11).setCellValue(model.getCoordinates() != null ? model.getCoordinates() : "Aún no disponible");
             }
 
