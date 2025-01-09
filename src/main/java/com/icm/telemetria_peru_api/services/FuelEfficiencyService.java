@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.swing.text.html.Option;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -41,6 +42,9 @@ public class FuelEfficiencyService {
     }
 
     public byte[] generateExcel(List<FuelEfficiencyModel> data) throws IOException {
+        // Zona horaria del servidor
+        ZoneId serverZoneId = ZoneId.of("America/Lima"); // Cambia según la zona horaria del servidor.
+
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Fuel Efficiency");
 
@@ -48,10 +52,10 @@ public class FuelEfficiencyService {
             Row headerRow = sheet.createRow(0);
             String[] headers = {"Estado", "Placa", "Día", "Hora de inicio", "Hora de fin", "Horas acumuladas",
                     "Combustible inicial", "Combustible final", "Combustible Consumido",
-                    "Rendimiendo Combustible (x KM)", "Rendimiendo Combustible (gal/h)", "Coordenadas Final"};
+                    "Rendimiento Combustible (x KM)", "Rendimiento Combustible (gal/h)", "Coordenadas Final"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
+                cell.setCellValue(headers[i]); // Encabezados son siempre cadenas
                 cell.setCellStyle(createHeaderCellStyle(workbook));
             }
 
@@ -60,18 +64,22 @@ public class FuelEfficiencyService {
             for (FuelEfficiencyModel model : data) {
                 Row row = sheet.createRow(rowIdx++);
 
-                // Convertir la fecha creada (createdAt) a epoch timestamp con nanosegundos
-                ZonedDateTime createdAt = model.getCreatedAt();
-                String formattedTimestamp = createdAt.toEpochSecond() + "." + createdAt.getNano();
+                // Ajustar las fechas a la zona horaria del servidor
+                ZonedDateTime startTime = model.getStartTime().withZoneSameInstant(serverZoneId);
+                ZonedDateTime endTime = model.getEndTime() != null ? model.getEndTime().withZoneSameInstant(serverZoneId) : null;
 
-                // Extraer el día y la hora de inicio a partir de la fecha
-                String day = createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                String time = createdAt.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-
-                row.createCell(0).setCellValue(model.getFuelEfficiencyStatus().toString()); // Estado
-                row.createCell(1).setCellValue(model.getVehicleModel().getLicensePlate().toString()); // Placa
-                row.createCell(2).setCellValue(model.getCreatedAt().toLocalDateTime()); // Día
-                row.createCell(3).setCellValue(time); // Hora de inicio
+                row.createCell(0).setCellValue(model.getFuelEfficiencyStatus() != null ? model.getFuelEfficiencyStatus().toString() : "Aún no disponible");
+                row.createCell(1).setCellValue(model.getVehicleModel() != null ? model.getVehicleModel().getLicensePlate() : "Aún no disponible");
+                row.createCell(2).setCellValue(startTime != null ? startTime.toLocalDate().toString() : "Aún no disponible");
+                row.createCell(3).setCellValue(startTime != null ? startTime.toLocalTime().toString() : "Aún no disponible");
+                row.createCell(4).setCellValue(endTime != null ? endTime.toLocalTime().toString() : "Aún no disponible");
+                row.createCell(5).setCellValue(model.getAccumulatedHours() != null ? model.getAccumulatedHours().toString() : "Aún no disponible");
+                row.createCell(6).setCellValue(model.getInitialFuel() != null ? model.getInitialFuel() : 0);
+                row.createCell(7).setCellValue(model.getFinalFuel() != null ? model.getFinalFuel() : 0);
+                row.createCell(8).setCellValue(model.getFinalFuel() != null ? model.getInitialFuel() - model.getFinalFuel() : 0);
+                row.createCell(9).setCellValue(model.getFuelEfficiency() != null ? model.getFuelEfficiency() : 0);
+                row.createCell(10).setCellValue(model.getFuelConsumptionPerHour() != null ? model.getFuelConsumptionPerHour() : 0);
+                row.createCell(11).setCellValue(model.getCoordinates() != null ? model.getCoordinates() : "Aún no disponible");
             }
 
             workbook.write(out);
