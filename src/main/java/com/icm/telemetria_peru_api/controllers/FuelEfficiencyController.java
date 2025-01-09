@@ -11,10 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -38,14 +35,27 @@ public class FuelEfficiencyController {
     }
 
     @GetMapping("/download-excel/{vehicleModelId}")
-    public ResponseEntity<byte[]> downloadExcel(@PathVariable Long vehicleModelId) throws IOException {
-        List<FuelEfficiencyModel> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId);
-        byte[] excelData = fuelEfficiencyService.generateExcel(data);
+    public ResponseEntity<byte[]> exportFuelEfficiencyToExcel(@PathVariable Long vehicleModelId) {
+        try {
+            // Obtener los datos necesarios para el Excel
+            List<FuelEfficiencyModel> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=fuel_efficiency.xlsx")
-                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(excelData);
+            // Generar el archivo Excel
+            byte[] excelFile = fuelEfficiencyService.generateExcel(data);
+
+            // Configurar los encabezados de respuesta HTTP
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDisposition(ContentDisposition.builder("attachment")
+                    .filename("fuel_efficiency.xlsx")
+                    .build());
+
+            return new ResponseEntity<>(excelFile, headers, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // Manejo de errores: devolver una respuesta adecuada
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @GetMapping("/findByVehicle/{vehicleModelId}")
