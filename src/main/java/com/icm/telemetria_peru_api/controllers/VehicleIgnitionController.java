@@ -53,21 +53,40 @@ public class VehicleIgnitionController {
         return vehicleIgnitionService.findByVehicleModelId(vehicleId, pageable);
     }
 
+    @Deprecated
     @GetMapping("/active-durations/{vehicleId}")
     public List<IgnitionDuration> getActiveDurations(@PathVariable Long vehicleId) {
         return vehicleIgnitionService.calculateActiveDurations(vehicleId);
     }
 
+    /**
+     * Endpoint to retrieve the ignition counts for a specific vehicle.
+     *
+     * @param vehicleId the ID of the vehicle.
+     * @return a ResponseEntity containing the ignition counts for the vehicle, or an error message if an exception occurs.
+     * */
     @GetMapping("/count/{vehicleId}")
     public ResponseEntity<Map<String, Object>> getCounts(@PathVariable Long vehicleId) {
         try {
             Map<String, Object> data = vehicleIgnitionService.getCounts(vehicleId);
+
+            if (data.isEmpty()) {
+                return new ResponseEntity<>(Map.of(), HttpStatus.NOT_FOUND);
+            }
+
             return ResponseEntity.ok(data);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 
+    /**
+     * Endpoint to retrieve the ignition counts for all months for a specific vehicle.
+     *
+     * @param vehicleId the ID of the vehicle.
+     * @param year      the year for which to retrieve the ignition count.
+     * @return a ResponseEntity containing a list of ignition counts per month, or NOT_FOUND if no data is found.
+     */
     @GetMapping("/counts-all-months/{vehicleId}")
     public ResponseEntity<List<Map<String, Object>>> getCountsByMonth(@PathVariable Long vehicleId,
                                                                       @RequestParam(value = "year", required = false) Integer year) {
@@ -85,7 +104,7 @@ public class VehicleIgnitionController {
     }
 
     /**
-     * Endpoint to retrieve ignition count for a specific month and year for a given vehicle.
+     * Endpoint to retrieve ignition days count for a specific month and year for a given vehicle.
      *
      * @param vehicleId the ID of the vehicle.
      * @param year      the year for which to retrieve the ignition count.
@@ -98,9 +117,13 @@ public class VehicleIgnitionController {
                                                                                 @RequestParam(required = false) Integer month) {
         try {
             List<Map<String, Object>> records = vehicleIgnitionService.getCountByMonth(vehicleId, year, month);
+
+            if (records.isEmpty()) {
+                return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
+            }
+
             return ResponseEntity.ok(records);
         } catch (Exception e) {
-            // Manejo de errores
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList(Map.of("error", e.getMessage())));
         }
     }

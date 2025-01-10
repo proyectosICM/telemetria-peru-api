@@ -52,7 +52,7 @@ public class VehicleIgnitionService {
      *             when processing large datasets. Consider implementing a more
      *             efficient solution or a database query to handle this logic.
      */
-    @Deprecated
+    @Deprecated(since = "v1.2.1", forRemoval = false)
     public List<IgnitionDuration> calculateActiveDurations(Long vehicleId) {
         List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdOrderByCreatedAt(vehicleId);
 
@@ -79,35 +79,18 @@ public class VehicleIgnitionService {
     }
 
     /**
-     * This class provides the functionality to retrieve ignition counts for a specific vehicle
-     * over different time periods: day, week, month, and year.
+     * Retrieves the ignition counts for a vehicle over different time periods.
      *
-     * The method `getCounts(Long vehicleId)` fetches ignition event counts from the `vehicleIgnitionRepository`
-     * for the given vehicle and aggregates the results into a consolidated map. The counts for each
-     * time period (day, week, month, year) are computed and returned in a single map. If no data is available
-     * for a given period, the count will default to 0.
+     * This method fetches and aggregates ignition event counts for a given vehicle
+     * across day, week, month, and year. If no data is available for a period,
+     * the count defaults to 0.
      *
-     * <p>
-     * The consolidated result map returned by the method will have keys for each time period with their
-     * corresponding ignition counts:
-     * <ul>
-     *   <li>"day": Contains the ignition count for the current day.</li>
-     *   <li>"week": Contains the sum of counts for the current week.</li>
-     *   <li>"month": Contains the sum of counts for the current month.</li>
-     *   <li>"year": Contains the sum of counts for the current year.</li>
-     * </ul>
-     * </p>
-     *
-     * <p>
-     * If no ignition events are recorded for any of these periods, the respective counts will be set to 0.
-     * </p>
-     *
-     * @param vehicleId the ID of the vehicle for which the ignition counts are to be retrieved.
-     * @return a map with consolidated ignition counts for the specified vehicle:
-     *         - "day": A map containing the count for the current day.
-     *         - "week": A map containing the sum of counts for the current week.
-     *         - "month": A map containing the sum of counts for the current month.
-     *         - "year": A map containing the sum of counts for the current year.
+     * @param vehicleId the ID of the vehicle to retrieve ignition counts for.
+     * @return a map with ignition counts:
+     *         - "day": Count for the current day.
+     *         - "week": Sum of counts for the current week.
+     *         - "month": Sum of counts for the current month.
+     *         - "year": Sum of counts for the current year.
      */
     public Map<String, Object> getCounts(Long vehicleId) {
         List<Map<String, Object>> countsDay = vehicleIgnitionRepository.countsDay(vehicleId);
@@ -115,10 +98,10 @@ public class VehicleIgnitionService {
         List<Map<String, Object>> countsMonth = vehicleIgnitionRepository.countsMonth(vehicleId);
         List<Map<String, Object>> countsYear = vehicleIgnitionRepository.countsYear(vehicleId);
 
-        // Crear un mapa para almacenar todos los resultados
+        // Create a map to store all results
         Map<String, Object> consolidatedData = new HashMap<>();
 
-        // Método auxiliar para calcular la suma de contadores
+        // Auxiliary method for calculating the sum of counters
         consolidatedData.put("day", calculateCount(countsDay));
         consolidatedData.put("week", calculateCount(countsWeek));
         consolidatedData.put("month", calculateCount(countsMonth));
@@ -148,11 +131,26 @@ public class VehicleIgnitionService {
         }
     }
 
+    /**
+     * Retrives the ignition counts for all months for a specific vehicle.
+     *
+     * @param vehicleId the ID of the vehicle.
+     * @param year      the year for which to retrieve the ignition count.
+     * @return a list of ignition counts per month, or an empty list if no data is found.
+     * */
     public List<Map<String, Object>> getIgnitionCountsByMonth(Long vehicleId, Integer year) {
         int yearToQuery = (year != null) ? year : Year.now().getValue();
         return vehicleIgnitionRepository.countsAllMonths(vehicleId, yearToQuery);
     }
 
+    /**
+     * Returns the ignition counts for specific days in a given month and year for a specified vehicle.
+     *
+     * @param vehicleId the ID of the vehicle.
+     * @param year      the year for which to retrieve the ignition count.
+     * @param month     the month for which to retrieve the ignition count.
+     * @return a list of ignition counts for that month, or an empty list if no data is found.
+     */
     public List<Map<String, Object>> getCountByMonth(Long vehicleId, Integer year, Integer month) {
         // Obtener los timestamps de inicio y fin del mes
         List<Map<String, Object>> timestamps = dateUtils.getMonthTimestamps(year, month);
