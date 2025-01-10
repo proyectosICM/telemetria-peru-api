@@ -21,10 +21,6 @@ import java.util.stream.Collectors;
 public class VehicleIgnitionService {
     private final VehicleIgnitionRepository vehicleIgnitionRepository;
 
-    public List<VehicleIgnitionModel> getRecordsBetweenTimestamps(ZonedDateTime startTimestamp, ZonedDateTime endTimestamp) {
-        return vehicleIgnitionRepository.findByCreatedAtBetween(startTimestamp, endTimestamp);
-    }
-
     public Optional<VehicleIgnitionModel> findById(Long id) {
         return vehicleIgnitionRepository.findById(id);
     }
@@ -201,6 +197,39 @@ public class VehicleIgnitionService {
         return List.of(
                 Map.of("startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
         );
+    }
+
+    public List<VehicleIgnitionModel> getRecordsBetweenTimestamps(Long vehicleModelId, ZonedDateTime startTimestamp, ZonedDateTime endTimestamp) {
+        return vehicleIgnitionRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleModelId, startTimestamp, endTimestamp);
+    }
+
+    public List<Map<String, Object>> getfet2(Long vehicleId, Integer year, Integer month) {
+        // Obtener los timestamps de inicio y fin del mes
+        List<Map<String, Object>> timestamps = getfet(vehicleId, year, month);
+
+        // Extraer los valores de los timestamps
+        long startTimestampSeconds = (long) timestamps.get(0).get("startTimestamp");
+        long endTimestampSeconds = (long) timestamps.get(0).get("endTimestamp");
+
+        // Convertir los timestamps de segundos a ZonedDateTime en la zona horaria adecuada
+        ZonedDateTime startTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(startTimestampSeconds), ZoneId.of("America/Lima"));
+        ZonedDateTime endTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(endTimestampSeconds), ZoneId.of("America/Lima"));
+
+        // Llamar a getRecordsBetweenTimestamps para obtener los datos en el rango de tiempo
+        List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
+
+        // Transformar los resultados en una lista de mapas si deseas devolverlos como tal
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (VehicleIgnitionModel record : records) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("vehicleId", record.getVehicleModel().getId());
+            result.put("createdAt", record.getCreatedAt());
+            result.put("status", record.getStatus());
+            // Agregar otros campos del modelo si es necesario
+            results.add(result);
+        }
+
+        return results;
     }
 
     public VehicleIgnitionModel save(VehicleIgnitionModel vehicleIgnitionModel){

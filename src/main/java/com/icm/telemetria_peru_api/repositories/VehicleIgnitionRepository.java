@@ -17,7 +17,7 @@ import com.icm.telemetria_peru_api.integration.mqtt.handlers.IgnitionHandler;
 
 @Repository
 public interface VehicleIgnitionRepository extends JpaRepository<VehicleIgnitionModel, Long> {
-    List<VehicleIgnitionModel> findByCreatedAtBetween(ZonedDateTime startTimestamp, ZonedDateTime endTimestamp);
+    List<VehicleIgnitionModel> findByVehicleModelIdAndCreatedAtBetween(Long vehicleModelId, ZonedDateTime startTimestamp, ZonedDateTime endTimestamp);
     List<VehicleIgnitionModel> findByVehicleModelId(Long vehicleId);
 
     Page<VehicleIgnitionModel> findByVehicleModelId(Long vehicleId, Pageable pageable);

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -125,6 +126,22 @@ public class VehicleIgnitionController {
         }
 
         return vehicleIgnitionService.getfet(vehicleId, year, month);
+    }
+
+    @GetMapping("/records")
+    public ResponseEntity<List<Map<String, Object>>> getVehicleIgnitionRecords(
+            @RequestParam Long vehicleId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
+        try {
+            // Llama al método getfet2 para obtener los datos
+            List<Map<String, Object>> records = vehicleIgnitionService.getfet2(vehicleId, year, month);
+            return ResponseEntity.ok(records);
+        } catch (Exception e) {
+            // Manejo de errores
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonList(Map.of("error", e.getMessage())));
+        }
     }
 
     @PostMapping
