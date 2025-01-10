@@ -225,6 +225,7 @@ public class VehicleIgnitionService {
                         record -> record.getCreatedAt()
                                 .withZoneSameInstant(ZoneId.of("America/Lima")) // Ajustar la zona horaria correctamente
                                 .toLocalDate(), // Convertir a LocalDate para agrupar por día
+                        TreeMap::new, // Mantener ordenado por fechas (orden natural)
                         Collectors.counting() // Contar los registros en cada día
                 ));
 
