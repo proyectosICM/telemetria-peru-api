@@ -128,9 +128,9 @@ public class VehicleIgnitionController {
         return vehicleIgnitionService.getfet(vehicleId, year, month);
     }
 
-    @GetMapping("/records")
+    @GetMapping("/records/{vehicleId}")
     public ResponseEntity<List<Map<String, Object>>> getVehicleIgnitionRecords(
-            @RequestParam Long vehicleId,
+            @PathVariable Long vehicleId,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month) {
         try {

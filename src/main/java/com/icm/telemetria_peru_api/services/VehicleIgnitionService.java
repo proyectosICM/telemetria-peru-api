@@ -221,12 +221,14 @@ public class VehicleIgnitionService {
         // Transformar los resultados en una lista de mapas si deseas devolverlos como tal
         List<Map<String, Object>> results = new ArrayList<>();
         for (VehicleIgnitionModel record : records) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("vehicleId", record.getVehicleModel().getId());
-            result.put("createdAt", record.getCreatedAt());
-            result.put("status", record.getStatus());
-            // Agregar otros campos del modelo si es necesario
-            results.add(result);
+            if (Boolean.TRUE.equals(record.getStatus())) { // Filtrar solo los registros con estado 'true'
+                Map<String, Object> result = new HashMap<>();
+                result.put("vehicleId", record.getVehicleModel().getId());
+                result.put("createdAt", record.getCreatedAt());
+                result.put("status", record.getStatus());
+                // Agregar otros campos del modelo si es necesario
+                results.add(result);
+            }
         }
 
         return results;
