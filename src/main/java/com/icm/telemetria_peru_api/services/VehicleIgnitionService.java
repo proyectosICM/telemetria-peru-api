@@ -111,48 +111,27 @@ public class VehicleIgnitionService {
         List<Map<String, Object>> countsMonth = vehicleIgnitionRepository.countsMonth(vehicleId);
         List<Map<String, Object>> countsYear = vehicleIgnitionRepository.countsYear(vehicleId);
 
-        // Create a map to return all results
+        // Crear un mapa para almacenar todos los resultados
         Map<String, Object> consolidatedData = new HashMap<>();
 
-        // Día actual
-        if (!countsDay.isEmpty()) {
-            Map<String, Object> dayData = countsDay.get(0);
-            consolidatedData.put("day", Map.of("counts", dayData.get("count")));
-        } else {
-            consolidatedData.put("day", Map.of("counts", 0));
-        }
-
-        // Semana
-        if (!countsWeek.isEmpty()) {
-            long weekCount = countsWeek.stream()
-                    .mapToLong(item -> Long.parseLong(item.get("count").toString()))
-                    .sum();
-            consolidatedData.put("week", Map.of("counts", weekCount));
-        } else {
-            consolidatedData.put("week", Map.of("counts", 0));
-        }
-
-        // Mes
-        if (!countsMonth.isEmpty()) {
-            long monthCount = countsMonth.stream()
-                    .mapToLong(item -> Long.parseLong(item.get("count").toString()))
-                    .sum();
-            consolidatedData.put("month", Map.of("counts", monthCount));
-        } else {
-            consolidatedData.put("month", Map.of("counts", 0));
-        }
-
-        // Año
-        if (!countsYear.isEmpty()) {
-            long yearCount = countsYear.stream()
-                    .mapToLong(item -> Long.parseLong(item.get("count").toString()))
-                    .sum();
-            consolidatedData.put("year", Map.of("counts", yearCount));
-        } else {
-            consolidatedData.put("year", Map.of("counts", 0));
-        }
+        // Método auxiliar para calcular la suma de contadores
+        consolidatedData.put("day", calculateCount(countsDay));
+        consolidatedData.put("week", calculateCount(countsWeek));
+        consolidatedData.put("month", calculateCount(countsMonth));
+        consolidatedData.put("year", calculateCount(countsYear));
 
         return consolidatedData;
+    }
+
+    private Map<String, Object> calculateCount(List<Map<String, Object>> counts) {
+        if (!counts.isEmpty()) {
+            long totalCount = counts.stream()
+                    .mapToLong(item -> Long.parseLong(item.get("count").toString()))
+                    .sum();
+            return Map.of("counts", totalCount);
+        } else {
+            return Map.of("counts", 0);
+        }
     }
 
     public List<Map<String, Object>> getIgnitionCountsByMonth(Long vehicleId, Integer year) {
@@ -160,29 +139,8 @@ public class VehicleIgnitionService {
         return vehicleIgnitionRepository.countsAllMonths(vehicleId, yearToQuery);
     }
 
-    public List<Map<String, Object>> getMonthTimestamps(Integer year, Integer month) {
-        // Verificar si se proporcionaron mes y año, si no, usar el mes y año actual por defecto
-        int yearToQuery = (year != null) ? year : LocalDateTime.now().getYear();
-        int monthToQuery = (month != null) ? month : LocalDateTime.now().getMonthValue();
-
-        // Calculamos el inicio del mes
-        LocalDateTime startOfMonth = LocalDateTime.of(yearToQuery, monthToQuery, 1, 0, 0);
-        ZonedDateTime startOfMonthWithZone = startOfMonth.atZone(ZoneId.of("America/Lima"));
-        long startTimestamp = startOfMonthWithZone.toEpochSecond();
-
-        // Calculamos el fin del mes
-        LocalDateTime endOfMonth = LocalDateTime.of(yearToQuery, monthToQuery, startOfMonth.toLocalDate().lengthOfMonth(), 23, 59, 59);
-        ZonedDateTime endOfMonthWithZone = endOfMonth.atZone(ZoneId.of("America/Lima"));
-        long endTimestamp = endOfMonthWithZone.toEpochSecond();
-
-        return List.of(
-                Map.of("startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
-        );
-    }
-
     public List<Map<String, Object>> getCountByMonth(Long vehicleId, Integer year, Integer month) {
         // Obtener los timestamps de inicio y fin del mes
-        //List<Map<String, Object>> timestamps = getMonthTimestamps(year, month);
         List<Map<String, Object>> timestamps = dateUtils.getMonthTimestamps(year, month);
         // Extraer los valores de los timestamps
         long startTimestampSeconds = (long) timestamps.get(0).get("startTimestamp");
