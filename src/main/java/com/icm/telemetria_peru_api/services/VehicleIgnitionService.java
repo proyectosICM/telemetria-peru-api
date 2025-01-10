@@ -218,21 +218,17 @@ public class VehicleIgnitionService {
         // Llamar a getRecordsBetweenTimestamps para obtener los datos en el rango de tiempo
         List<VehicleIgnitionModel> records = vehicleIgnitionRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
 
-        // Agrupar los registros por día y contar los que tienen estado 'true'
-        Map<LocalDate, Long> groupedByDay = records.stream()
-                .filter(record -> Boolean.TRUE.equals(record.getStatus())) // Filtrar solo los registros con estado 'true'
-                .collect(Collectors.groupingBy(
-                        record -> record.getCreatedAt().toLocalDate(), // Agrupar por día
-                        Collectors.counting() // Contar los registros en cada día
-                ));
-
-        // Transformar el resultado en la estructura deseada
+        // Transformar los resultados en una lista de mapas si deseas devolverlos como tal
         List<Map<String, Object>> results = new ArrayList<>();
-        for (Map.Entry<LocalDate, Long> entry : groupedByDay.entrySet()) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("day", entry.getKey().atStartOfDay(ZoneId.of("America/Lima")).toEpochSecond()); // Timestamp del día
-            result.put("counts", entry.getValue()); // Cantidad de registros con estado 'true'
-            results.add(result);
+        for (VehicleIgnitionModel record : records) {
+            if (Boolean.TRUE.equals(record.getStatus())) { // Filtrar solo los registros con estado 'true'
+                Map<String, Object> result = new HashMap<>();
+                result.put("vehicleId", record.getVehicleModel().getId());
+                result.put("createdAt", record.getCreatedAt());
+                result.put("status", record.getStatus());
+                // Agregar otros campos del modelo si es necesario
+                results.add(result);
+            }
         }
 
         return results;
