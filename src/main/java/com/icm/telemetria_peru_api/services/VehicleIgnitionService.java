@@ -6,6 +6,7 @@ import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleIgnitionModel;
 import com.icm.telemetria_peru_api.repositories.AlarmRecordRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleIgnitionRepository;
+import com.icm.telemetria_peru_api.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class VehicleIgnitionService {
     private final VehicleIgnitionRepository vehicleIgnitionRepository;
+    private final DateUtils dateUtils;
 
     public Optional<VehicleIgnitionModel> findById(Long id) {
         return vehicleIgnitionRepository.findById(id);
@@ -158,23 +160,7 @@ public class VehicleIgnitionService {
         return vehicleIgnitionRepository.countsAllMonths(vehicleId, yearToQuery);
     }
 
-    /**
-     * Retrieves ignition count for a specific month and year for a given vehicle.
-     *
-     * @param vehicleId the ID of the vehicle for which to retrieve the ignition count.
-     * @param year the year for which to retrieve the ignition count.
-     * @param month the month for which to retrieve the ignition count (1 = January, 12 = December).
-     * @return a map containing:
-     *         - "month": the number of the month (1 = January, 12 = December).
-     *         - "count": the number of ignition events for that month.
-     */
-    public List<Map<String, Object>> getCountByMonth(Long vehicleId, Integer year, Integer month) {
-        int yearToQuery = (year != null) ? year : Year.now().getValue();
-        int monthToQuery = (month != null) ? month : LocalDate.now().getMonthValue();
-        return vehicleIgnitionRepository.countsAllDays(vehicleId, yearToQuery, monthToQuery);
-    }
-
-    public List<Map<String, Object>> getfet(Long vehicleId, Integer year, Integer month) {
+    public List<Map<String, Object>> getMonthTimestamps(Integer year, Integer month) {
         // Verificar si se proporcionaron mes y año, si no, usar el mes y año actual por defecto
         int yearToQuery = (year != null) ? year : LocalDateTime.now().getYear();
         int monthToQuery = (month != null) ? month : LocalDateTime.now().getMonthValue();
@@ -189,24 +175,15 @@ public class VehicleIgnitionService {
         ZonedDateTime endOfMonthWithZone = endOfMonth.atZone(ZoneId.of("America/Lima"));
         long endTimestamp = endOfMonthWithZone.toEpochSecond();
 
-        System.out.println("Start of month timestamp: " + startTimestamp);
-        System.out.println("End of month timestamp: " + endTimestamp);
-
-        // Aquí puedes retornar o utilizar esos timestamps como necesites
-        // Devuelve una lista con los datos en formato de timestamps
         return List.of(
                 Map.of("startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
         );
     }
 
-    public List<VehicleIgnitionModel> getRecordsBetweenTimestamps(Long vehicleModelId, ZonedDateTime startTimestamp, ZonedDateTime endTimestamp) {
-        return vehicleIgnitionRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleModelId, startTimestamp, endTimestamp);
-    }
-
-    public List<Map<String, Object>> getfet2(Long vehicleId, Integer year, Integer month) {
+    public List<Map<String, Object>> getCountByMonth(Long vehicleId, Integer year, Integer month) {
         // Obtener los timestamps de inicio y fin del mes
-        List<Map<String, Object>> timestamps = getfet(vehicleId, year, month);
-
+        //List<Map<String, Object>> timestamps = getMonthTimestamps(year, month);
+        List<Map<String, Object>> timestamps = dateUtils.getMonthTimestamps(year, month);
         // Extraer los valores de los timestamps
         long startTimestampSeconds = (long) timestamps.get(0).get("startTimestamp");
         long endTimestampSeconds = (long) timestamps.get(0).get("endTimestamp");

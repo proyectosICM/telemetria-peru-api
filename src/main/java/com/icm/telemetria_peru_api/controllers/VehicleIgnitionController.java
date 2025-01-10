@@ -94,39 +94,8 @@ public class VehicleIgnitionController {
      * @param month the month for which to retrieve the ignition count.
      * @return a ResponseEntity containing the ignition count for that month, or NOT_FOUND if no data is found.
      */
-    @GetMapping("/counts-all-days/{vehicleId}")
-    public ResponseEntity<List<Map<String, Object>>> getCountByMonth(
-            @PathVariable Long vehicleId,
-            @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "month", required = false) Integer month) {
-        try {
-            List<Map<String, Object>> countData = vehicleIgnitionService.getCountByMonth(vehicleId, year, month);
-            if (countData == null || countData.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(countData, HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    //@GetMapping("/counts-all-days/{vehicleId}")
 
-    @GetMapping("/getfet/{vehicleId}")
-    public List<Map<String, Object>> getfet(
-            @PathVariable Long vehicleId,
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month) {
-
-        if (year != null && (year < 1 || year > 9999)) {
-            throw new IllegalArgumentException("Invalid year.");
-        }
-
-        if (month != null && (month < 1 || month > 12)) {
-            throw new IllegalArgumentException("Invalid month.");
-        }
-
-        return vehicleIgnitionService.getfet(vehicleId, year, month);
-    }
 
     @GetMapping("/records/{vehicleId}")
     public ResponseEntity<List<Map<String, Object>>> getVehicleIgnitionRecords(
@@ -135,7 +104,7 @@ public class VehicleIgnitionController {
             @RequestParam(required = false) Integer month) {
         try {
             // Llama al método getfet2 para obtener los datos
-            List<Map<String, Object>> records = vehicleIgnitionService.getfet2(vehicleId, year, month);
+            List<Map<String, Object>> records = vehicleIgnitionService.getCountByMonth(vehicleId, year, month);
             return ResponseEntity.ok(records);
         } catch (Exception e) {
             // Manejo de errores
