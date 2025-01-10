@@ -1,11 +1,13 @@
 package com.icm.telemetria_peru_api.utils;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-
+@Component
 public class DateUtils {
 
     public static List<Map<String, Object>> getMonthTimestamps(Integer year, Integer month) {
