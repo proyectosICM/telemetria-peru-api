@@ -24,7 +24,7 @@ public class VehicleTypeModel {
     private Long id;
 
     @NotEmpty(message = "Name is required")
-    @Pattern(regexp = "^[a-zA-Z0-9\\sÁÉÍÓÚáéíóúñÑ\\-]{1,100}$", message = "Name must be less than 100 characters and contain only letters, spaces, or dashes")
+    @Pattern(regexp = "^[a-zA-Z\\\\s\\\\u00E1\\\\u00E9\\\\u00ED\\\\u00F3\\\\u00FA\\\\u00F1\\\\u00D1]{1,100}$", message = "Name must be less than 100 characters and contain only letters, spaces, or dashes")
     @Column(nullable = false, length = 100)
     private String name;
 

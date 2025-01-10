@@ -1,14 +1,10 @@
 package com.icm.telemetria_peru_api.services;
 
-import com.icm.telemetria_peru_api.dto.IgnitionCountByDate;
 import com.icm.telemetria_peru_api.dto.IgnitionDuration;
-import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleIgnitionModel;
-import com.icm.telemetria_peru_api.repositories.AlarmRecordRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleIgnitionRepository;
 import com.icm.telemetria_peru_api.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,9 +23,7 @@ public class VehicleIgnitionService {
         return vehicleIgnitionRepository.findById(id);
     }
 
-    public List<VehicleIgnitionModel> findAll(){
-        return vehicleIgnitionRepository.findAll();
-    }
+    public List<VehicleIgnitionModel> findAll(){ return vehicleIgnitionRepository.findAll(); }
 
     public Page<VehicleIgnitionModel> findAll(Pageable pageable){
         return vehicleIgnitionRepository.findAll(pageable);
@@ -67,18 +61,14 @@ public class VehicleIgnitionService {
 
         for (VehicleIgnitionModel record : records) {
             if (record.getStatus()) {
-                // Encendido: guardar la hora de inicio
                 lastStart = record.getCreatedAt();
             } else if (lastStart != null) {
-                // Apagado: calcular la duración y agregar a la lista
                 Duration duration = Duration.between(lastStart, record.getCreatedAt());
                 long hours = duration.toHours();
                 long minutes = duration.toMinutesPart();
 
-                // Formatear duración como HH:MM
-                String durationFormatted = String.format("%02d:%02d", hours, minutes);
+                    String durationFormatted = String.format("%02d:%02d", hours, minutes);
 
-                // Convertir duración a formato decimal
                 double durationInDecimal = hours + (minutes / 60.0);
 
                 durations.add(new IgnitionDuration(lastStart, record.getCreatedAt(), durationFormatted, durationInDecimal));
@@ -89,17 +79,31 @@ public class VehicleIgnitionService {
     }
 
     /**
-     * Retrieves the consolidated ignition counts for a given vehicle across different time periods:
-     * day, week, month, and year.
-     * This method fetches ignition event counts for the current day, week, month, and year,
-     * then consolidates them into a single map that is returned.
+     * This class provides the functionality to retrieve ignition counts for a specific vehicle
+     * over different time periods: day, week, month, and year.
      *
-     * The returned map contains keys for each time period ("day", "week", "month", "year")
-     * with their respective ignition counts.
-     * If no data is available for a given period, the count will be set to 0.
+     * The method `getCounts(Long vehicleId)` fetches ignition event counts from the `vehicleIgnitionRepository`
+     * for the given vehicle and aggregates the results into a consolidated map. The counts for each
+     * time period (day, week, month, year) are computed and returned in a single map. If no data is available
+     * for a given period, the count will default to 0.
+     *
+     * <p>
+     * The consolidated result map returned by the method will have keys for each time period with their
+     * corresponding ignition counts:
+     * <ul>
+     *   <li>"day": Contains the ignition count for the current day.</li>
+     *   <li>"week": Contains the sum of counts for the current week.</li>
+     *   <li>"month": Contains the sum of counts for the current month.</li>
+     *   <li>"year": Contains the sum of counts for the current year.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * If no ignition events are recorded for any of these periods, the respective counts will be set to 0.
+     * </p>
      *
      * @param vehicleId the ID of the vehicle for which the ignition counts are to be retrieved.
-     * @return a map with consolidated ignition counts for the vehicle:
+     * @return a map with consolidated ignition counts for the specified vehicle:
      *         - "day": A map containing the count for the current day.
      *         - "week": A map containing the sum of counts for the current week.
      *         - "month": A map containing the sum of counts for the current month.
@@ -123,6 +127,16 @@ public class VehicleIgnitionService {
         return consolidatedData;
     }
 
+    /**
+     * Helper method to calculate the total ignition count from a list of count maps.
+     *
+     * This method takes a list of maps containing ignition counts and sums them up.
+     * If there are no counts, it returns 0.
+     *
+     * @param counts a list of maps containing the ignition counts.
+     * @return a map with the total ignition counts:
+     *         - "counts": the aggregated total count for the provided period.
+     */
     private Map<String, Object> calculateCount(List<Map<String, Object>> counts) {
         if (!counts.isEmpty()) {
             long totalCount = counts.stream()

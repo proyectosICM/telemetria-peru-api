@@ -29,12 +29,12 @@ public class DriverModel {
     private Boolean status = true;
 
     @NotBlank(message = "Name is required")
-    @Pattern(regexp = "^[a-zA-Z\\sÁÉÍÓÚáéíóúñÑ]{1,100}$", message = "Name must be less than 100 characters" )
+    @Pattern(regexp = "^[a-zA-Z\\\\s\\\\u00E1\\\\u00E9\\\\u00ED\\\\u00F3\\\\u00FA\\\\u00F1\\\\u00D1]{1,100}$", message = "Name must be less than 100 characters" )
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     @NotBlank(message = "Last name is required")
-    @Pattern(regexp = "^[a-zA-Z\\sÁÉÍÓÚáéíóúñÑ]{1,100}$", message = "Last name must be less than 100 characters")
+    @Pattern(regexp = "^[a-zA-Z\\\\s\\\\u00E1\\\\u00E9\\\\u00ED\\\\u00F3\\\\u00FA\\\\u00F1\\\\u00D1]{1,100}$", message = "Last name must be less than 100 characters")
     @Column(name = "lastName", nullable = false, length = 100)
     private String lastName;
 

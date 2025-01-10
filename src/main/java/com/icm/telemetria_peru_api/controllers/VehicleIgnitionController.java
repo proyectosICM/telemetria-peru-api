@@ -22,17 +22,16 @@ import java.util.Map;
 public class VehicleIgnitionController {
     private final VehicleIgnitionService vehicleIgnitionService;
 
-    
-
     @GetMapping("/{id}")
     public ResponseEntity<VehicleIgnitionModel> findById(@PathVariable Long id) {
-        return vehicleIgnitionService.findById(id)
-                .map(ResponseEntity::ok)
+        return vehicleIgnitionService.findById(id).map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public List<VehicleIgnitionModel> findAll() {return vehicleIgnitionService.findAll();}
+    public List<VehicleIgnitionModel> findAll() {
+        return vehicleIgnitionService.findAll();
+    }
 
     @GetMapping("/paged")
     public Page<VehicleIgnitionModel> findAll(@RequestParam(defaultValue = "0") int page,
@@ -70,9 +69,8 @@ public class VehicleIgnitionController {
     }
 
     @GetMapping("/counts-all-months/{vehicleId}")
-    public ResponseEntity<List<Map<String, Object>>> getCountsByMonth(
-            @PathVariable Long vehicleId,
-            @RequestParam(value = "year", required = false) Integer year) {
+    public ResponseEntity<List<Map<String, Object>>> getCountsByMonth(@PathVariable Long vehicleId,
+                                                                      @RequestParam(value = "year", required = false) Integer year) {
         try {
             List<Map<String, Object>> counts = vehicleIgnitionService.getIgnitionCountsByMonth(vehicleId, year);
 
@@ -90,26 +88,20 @@ public class VehicleIgnitionController {
      * Endpoint to retrieve ignition count for a specific month and year for a given vehicle.
      *
      * @param vehicleId the ID of the vehicle.
-     * @param year the year for which to retrieve the ignition count.
-     * @param month the month for which to retrieve the ignition count.
+     * @param year      the year for which to retrieve the ignition count.
+     * @param month     the month for which to retrieve the ignition count.
      * @return a ResponseEntity containing the ignition count for that month, or NOT_FOUND if no data is found.
      */
-    //@GetMapping("/counts-all-days/{vehicleId}")
-
-
-    @GetMapping("/records/{vehicleId}")
-    public ResponseEntity<List<Map<String, Object>>> getVehicleIgnitionRecords(
-            @PathVariable Long vehicleId,
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month) {
+    @GetMapping("/counts-all-days/{vehicleId}")
+    public ResponseEntity<List<Map<String, Object>>> getVehicleIgnitionRecords(@PathVariable Long vehicleId,
+                                                                               @RequestParam(required = false) Integer year,
+                                                                                @RequestParam(required = false) Integer month) {
         try {
-            // Llama al método getfet2 para obtener los datos
             List<Map<String, Object>> records = vehicleIgnitionService.getCountByMonth(vehicleId, year, month);
             return ResponseEntity.ok(records);
         } catch (Exception e) {
             // Manejo de errores
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonList(Map.of("error", e.getMessage())));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList(Map.of("error", e.getMessage())));
         }
     }
 

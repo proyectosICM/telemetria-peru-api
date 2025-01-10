@@ -10,6 +10,16 @@ import java.util.Map;
 @Component
 public class DateUtils {
 
+    /**
+     * Returns a list containing a map with the start and end timestamps for the given month and year.
+     *
+     * <p> If no year or month is provided, the current year and month will be used by default. </p>
+     *
+     * @param year  the year for which timestamps are to be calculated (can be {@code null}).
+     * @param month the month for which timestamps are to be calculated (can be {@code null}).
+     * @return a list containing a single map with keys "startTimestamp" and "endTimestamp" representing the
+     *         start and end timestamps of the month in seconds since epoch.
+     */
     public static List<Map<String, Object>> getMonthTimestamps(Integer year, Integer month) {
         // Verificar si se proporcionaron mes y año, si no, usar el mes y año actual por defecto
         int yearToQuery = (year != null) ? year : LocalDateTime.now().getYear();
@@ -29,5 +39,4 @@ public class DateUtils {
                 Map.of("startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
         );
     }
-
 }
