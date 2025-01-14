@@ -116,7 +116,7 @@ public class BatteryRecordController {
                                                                                    @RequestParam(defaultValue = "0") int page,
                                                                                    @RequestParam(defaultValue = "10") int size){
         try {
-            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC));
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
             Page<BatteryRecordDTO> data = batteryRecordService.findByBatteryModelVehicleModelIdAndBatteryModelId(vehicleId,batteryId, pageable);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
