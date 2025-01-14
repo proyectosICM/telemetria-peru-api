@@ -14,8 +14,11 @@ import java.util.List;
 
 @Repository
 public interface BatteryRecordRepository extends JpaRepository<BatteryRecordModel, Long> {
-    List<BatteryRecordModel> findByBatteryModelId(Long vehicleId);
-    Page<BatteryRecordModel> findByBatteryModelId(Long vehicleId, Pageable pageable);
+    List<BatteryRecordModel> findByBatteryModelId(Long batteryId);
+    Page<BatteryRecordModel> findByBatteryModelId(Long batteryId, Pageable pageable);
+
+    List<BatteryRecordModel> findByBatteryModelVehicleModelId(Long vehicleId);
+    Page<BatteryRecordModel> findByBatteryVehicleModelModelId(Long vehicleId, Pageable pageable);
 
     /**
      * Deletes all BatteryRecordModel entries associated with the specified battery ID.
