@@ -15,7 +15,8 @@ public class BatteryRecordMapper {
                 batteryRecordModel.getId(),
                 batteryRecordModel.getVoltage(),
                 batteryId,
-                nameBattery
+                nameBattery,
+                batteryRecordModel.getCreatedAt()
         );
     }
 }

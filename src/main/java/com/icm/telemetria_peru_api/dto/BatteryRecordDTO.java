@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.ZonedDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,4 +14,5 @@ public class BatteryRecordDTO {
     private Double voltage;
     private Long batteryId;
     private String nameBattery;
+    private ZonedDateTime createdAt;
 }
