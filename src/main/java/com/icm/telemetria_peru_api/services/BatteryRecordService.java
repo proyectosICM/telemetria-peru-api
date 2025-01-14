@@ -71,6 +71,21 @@ public class BatteryRecordService {
         return new PageImpl<>(batteryRecordDTOs, pageable, batteryRecordModelsPage.getTotalElements());
     }
 
+    public List<BatteryRecordDTO> findByBatteryModelVehicleModelIdAndBatteryModelId(Long vehicleId, Long batteryId){
+        List<BatteryRecordModel> batteryRecordModels = batteryRecordRepository.findByBatteryModelVehicleModelIdAndBatteryModelId(vehicleId, batteryId);
+        return batteryRecordModels.stream()
+                .map(batteryRecordMapper::mapToDTO)
+                .toList();
+    }
+
+    public Page<BatteryRecordDTO> findByBatteryModelVehicleModelIdAndBatteryModelId(Long vehicleId, Long batteryId, Pageable pageable){
+        Page<BatteryRecordModel> batteryRecordModelsPage = batteryRecordRepository.findByBatteryModelVehicleModelIdAndBatteryModelId(vehicleId, batteryId, pageable);
+        List<BatteryRecordDTO> batteryRecordDTOs = batteryRecordModelsPage.stream()
+                .map(batteryRecordMapper::mapToDTO)
+                .toList();
+        return new PageImpl<>(batteryRecordDTOs, pageable, batteryRecordModelsPage.getTotalElements());
+    }
+
     public BatteryRecordModel save(BatteryRecordModel batteryRecordModel){
         return batteryRecordRepository.save(batteryRecordModel);
     }

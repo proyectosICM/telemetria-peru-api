@@ -20,6 +20,9 @@ public interface BatteryRecordRepository extends JpaRepository<BatteryRecordMode
     List<BatteryRecordModel> findByBatteryModelVehicleModelId(Long vehicleId);
     Page<BatteryRecordModel> findByBatteryModelVehicleModelId(Long vehicleId, Pageable pageable);
 
+    List<BatteryRecordModel> findByBatteryModelVehicleModelIdAndBatteryModelId(Long vehicleId,Long batteryId);
+    Page<BatteryRecordModel> findByBatteryModelVehicleModelIdAndBatteryModelId(Long vehicleId,Long batteryId, Pageable pageable);
+
     /**
      * Deletes all BatteryRecordModel entries associated with the specified battery ID.
      * This operation is transactional, meaning that it will be executed within a transaction

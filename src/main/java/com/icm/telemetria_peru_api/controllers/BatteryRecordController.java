@@ -96,6 +96,33 @@ public class BatteryRecordController {
         }
     }
 
+    @GetMapping("/vehicle&battery/{vehicleId}")
+    public ResponseEntity<List<BatteryRecordDTO>> findByBatteryModelVehicleModelIdAndBatteryModelId(@PathVariable Long vehicleId, @RequestParam Long batteryId){
+        try {
+            List<BatteryRecordDTO> data = batteryRecordService.findByBatteryModelVehicleModelIdAndBatteryModelId(vehicleId, batteryId);
+            if (data.isEmpty()) {
+                return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping ("/vehicle&battery-page/{vehicleId}")
+    public ResponseEntity<Page<BatteryRecordDTO>> findByBatteryModelVehicleModelIdAndBatteryModelId(@PathVariable Long vehicleId,
+                                                                                   @RequestParam Long batteryId,
+                                                                                   @RequestParam(defaultValue = "0") int page,
+                                                                                   @RequestParam(defaultValue = "10") int size){
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<BatteryRecordDTO> data = batteryRecordService.findByBatteryModelVehicleModelIdAndBatteryModelId(vehicleId,batteryId, pageable);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody BatteryRecordModel batteryRecordModel){
         try {
