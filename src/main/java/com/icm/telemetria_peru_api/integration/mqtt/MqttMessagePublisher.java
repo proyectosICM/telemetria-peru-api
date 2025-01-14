@@ -137,6 +137,7 @@ public class MqttMessagePublisher {
             System.out.println("Error sending mapData message: " + e.getMessage());
         }
     }
+
     /**
      * @deprecated
      * This method is deprecated and should no longer be used.
