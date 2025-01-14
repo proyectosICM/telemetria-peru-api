@@ -110,7 +110,7 @@ public class BatteryRecordController {
         }
     }
 
-    @GetMapping ("/vehicle&battery-page/{vehicleId}")
+    @GetMapping ("/vehicle&battery-paged/{vehicleId}")
     public ResponseEntity<Page<BatteryRecordDTO>> findByBatteryModelVehicleModelIdAndBatteryModelId(@PathVariable Long vehicleId,
                                                                                    @RequestParam Long batteryId,
                                                                                    @RequestParam(defaultValue = "0") int page,
