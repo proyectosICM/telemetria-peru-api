@@ -30,18 +30,6 @@ import java.util.Optional;
 public class TruckLoadRecordController {
     private final TruckLoadRecordService truckLoadRecordService;
 
-    @GetMapping("/count-day/{vehicleId}")
-    public long countRecordsByVehicleAndToday(@PathVariable Long vehicleId) {
-        LocalDate today = LocalDate.now();
-        return truckLoadRecordService.countRecordsByVehicleAndDate(vehicleId, today);
-    }
-
-    @GetMapping("/daily-load-counts/{vehicleId}")
-    public Page<Map<String, Object>> getDailyLoadCountsByVehicle(@PathVariable Long vehicleId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return truckLoadRecordService.getDailyLoadCountsByVehicle(vehicleId, pageable);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Optional<TruckLoadRecordModel>> findById(@PathVariable @NotNull Long id) {
         try {
@@ -57,21 +45,33 @@ public class TruckLoadRecordController {
         return truckLoadRecordService.findAll();
     }
 
-    @GetMapping("/page")
+    @GetMapping("/paged")
     public Page<TruckLoadRecordModel> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return truckLoadRecordService.findAll(pageable);
     }
 
-    @GetMapping("/findByVehicle/{vehicleId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public List<TruckLoadRecordModel> findByvehicleId(@PathVariable Long vehicleId) {
         return truckLoadRecordService.findByVehicleId(vehicleId);
     }
 
-    @GetMapping("/findByVehicle-paged/{vehicleId}")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public Page<TruckLoadRecordModel> findByvehicleId(@PathVariable Long vehicleId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return truckLoadRecordService.findByVehicleId(vehicleId, pageable);
+    }
+
+    @GetMapping("/count-day/{vehicleId}")
+    public long countRecordsByVehicleAndToday(@PathVariable Long vehicleId) {
+        LocalDate today = LocalDate.now();
+        return truckLoadRecordService.countRecordsByVehicleAndDate(vehicleId, today);
+    }
+
+    @GetMapping("/daily-load-counts/{vehicleId}")
+    public Page<Map<String, Object>> getDailyLoadCountsByVehicle(@PathVariable Long vehicleId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return truckLoadRecordService.getDailyLoadCountsByVehicle(vehicleId, pageable);
     }
 
     @PostMapping
