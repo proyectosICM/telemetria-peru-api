@@ -38,7 +38,7 @@ public class BatteryController {
         return batteryService.findAll(pageable);
     }
 
-    @GetMapping("/findByVehicleId/{vehicleId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<BatteryDTO>> findByVehicleId(@PathVariable Long vehicleId) {
         try {
             List<BatteryDTO> data = batteryService.findByVehicleId(vehicleId);
@@ -53,7 +53,7 @@ public class BatteryController {
         }
     }
 
-    @GetMapping("/findByVehicleId-paged/{vehicleId}")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<BatteryDTO>> findByVehicleIdPage(@PathVariable Long vehicleId,
                                                                 @RequestParam(defaultValue = "0") int page,
                                                                 @RequestParam(defaultValue = "10") int size){
@@ -71,7 +71,7 @@ public class BatteryController {
         }
     }
 
-    @GetMapping("/findByCompanyId/{companyId}")
+    @GetMapping("/by-company/{companyId}")
     public ResponseEntity<List<BatteryDTO>> findByCompanyId(@PathVariable Long companyId) {
         try {
             List<BatteryDTO> data = batteryService.findByCompanyId(companyId);
@@ -86,7 +86,7 @@ public class BatteryController {
         }
     }
 
-    @GetMapping("/findByCompanyId-paged/{companyId}")
+    @GetMapping("/by-company-paged/{companyId}")
     public ResponseEntity<Page<BatteryDTO>> findByCompanyId(@PathVariable Long companyId,
                                                                 @RequestParam(defaultValue = "0") int page,
                                                                 @RequestParam(defaultValue = "10") int size){
