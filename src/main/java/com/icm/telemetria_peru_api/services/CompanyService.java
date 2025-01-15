@@ -4,7 +4,6 @@ import com.icm.telemetria_peru_api.models.CompanyModel;
 import com.icm.telemetria_peru_api.repositories.CompanyRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

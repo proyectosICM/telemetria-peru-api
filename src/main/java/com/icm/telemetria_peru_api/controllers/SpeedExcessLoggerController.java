@@ -1,8 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.models.ImpactIncidentLoggingModel;
 import com.icm.telemetria_peru_api.models.SpeedExcessLoggerModel;
-import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
 import com.icm.telemetria_peru_api.services.SpeedExcessLoggerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;

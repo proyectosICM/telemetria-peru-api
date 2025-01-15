@@ -1,14 +1,11 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.models.CompanyModel;
 import com.icm.telemetria_peru_api.models.ImagesCLModel;
-import com.icm.telemetria_peru_api.services.CompanyService;
 import com.icm.telemetria_peru_api.services.ImagesCLService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -24,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/images-cl")

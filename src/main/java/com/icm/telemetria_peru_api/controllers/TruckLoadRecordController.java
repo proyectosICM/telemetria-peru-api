@@ -1,20 +1,14 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.dto.BatteryRecordDTO;
-import com.icm.telemetria_peru_api.dto.DailyLoadCountDTO;
-import com.icm.telemetria_peru_api.models.BatteryRecordModel;
 import com.icm.telemetria_peru_api.models.TruckLoadRecordModel;
-import com.icm.telemetria_peru_api.repositories.TruckLoadRecordRepository;
 import com.icm.telemetria_peru_api.services.TruckLoadRecordService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

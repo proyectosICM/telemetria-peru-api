@@ -4,11 +4,9 @@ import com.icm.telemetria_peru_api.models.PositioningModel;
 import com.icm.telemetria_peru_api.repositories.PositioningRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

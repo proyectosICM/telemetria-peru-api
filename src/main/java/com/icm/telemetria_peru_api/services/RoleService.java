@@ -3,7 +3,6 @@ package com.icm.telemetria_peru_api.services;
 import com.icm.telemetria_peru_api.models.RoleModel;
 import com.icm.telemetria_peru_api.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
