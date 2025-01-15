@@ -22,17 +22,6 @@ import java.util.List;
 public class ImpactIncidentLoggingController {
     private final ImpactIncidentLoggingService impactIncidentLoggingService;
 
-    @GetMapping
-    public List<ImpactIncidentLoggingModel> findAll(){
-        return impactIncidentLoggingService.findAll();
-    }
-    @GetMapping("/page")
-    public Page<ImpactIncidentLoggingModel> findAll(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        return impactIncidentLoggingService.findAll(pageable);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ImpactIncidentLoggingModel> findById(@PathVariable @NotNull Long id) {
         try {
@@ -43,7 +32,18 @@ public class ImpactIncidentLoggingController {
         }
     }
 
-    @GetMapping("/findByVehicleId/{vehicleId}")
+    @GetMapping
+    public List<ImpactIncidentLoggingModel> findAll(){
+        return impactIncidentLoggingService.findAll();
+    }
+    @GetMapping("/paged")
+    public Page<ImpactIncidentLoggingModel> findAll(@RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return impactIncidentLoggingService.findAll(pageable);
+    }
+
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<?> findByVehicleId(@PathVariable Long vehicleId){
         try {
             List<ImpactIncidentLoggingModel> data = impactIncidentLoggingService.findByVehicleId(vehicleId);
@@ -57,7 +57,7 @@ public class ImpactIncidentLoggingController {
 
     }
 
-    @GetMapping ("/findByVehicleId-page/{vehicleId}")
+    @GetMapping ("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<?> findByVehicleIdPage(@PathVariable Long vehicleId,
                                                  @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "10") int size){
