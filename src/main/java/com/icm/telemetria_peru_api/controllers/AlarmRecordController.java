@@ -31,7 +31,7 @@ public class AlarmRecordController {
         return alarmRecordService.findAll(pageable);
     }
 
-    @GetMapping("/findByVehicle/{vehicleId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<AlarmRecordModel>> findByVehicleModelId(@PathVariable Long vehicleId){
         try {
             List<AlarmRecordModel> data =  alarmRecordService.findByVehicleModelId(vehicleId);
@@ -46,7 +46,7 @@ public class AlarmRecordController {
         }
     }
 
-    @GetMapping("/findByVehicle-paged/{vehicleId}")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<AlarmRecordModel>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                        @RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "10") int size){
