@@ -37,14 +37,14 @@ public class CompanyController {
         return companyService.findAll();
     }
 
-    @GetMapping("/page")
+    @GetMapping("/paged")
     public Page<CompanyModel> findAll(@RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "8") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return companyService.findAll(pageable);
     }
 
-    @GetMapping("/findByStatus")
+    @GetMapping("/by-status")
     public ResponseEntity<List<CompanyModel>> findByStatus(@RequestParam @NotNull Boolean status){
         try{
             List<CompanyModel> data = companyService.findByStatus(status);
@@ -54,7 +54,7 @@ public class CompanyController {
         }
     }
 
-    @GetMapping("/findByStatus-page")
+    @GetMapping("/by-status-paged")
     public ResponseEntity<Page<CompanyModel>> findByStatusPage(@RequestParam @NotNull Boolean status,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "8") int size){
@@ -87,7 +87,7 @@ public class CompanyController {
         }
     }
 
-    @PutMapping("/changeStatus/{companyId}")
+    @PutMapping("/update-status/{companyId}")
     public ResponseEntity<Object> changeStatus(@PathVariable @NotNull Long companyId){
         try {
             CompanyModel dataModel = companyService.changeStatus(companyId);
