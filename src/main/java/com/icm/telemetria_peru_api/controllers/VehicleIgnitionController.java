@@ -40,12 +40,12 @@ public class VehicleIgnitionController {
         return vehicleIgnitionService.findAll(pageable);
     }
 
-    @GetMapping("/findByVehicle/{vehicleId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public List<VehicleIgnitionModel> findByVehicleModelId(@PathVariable Long vehicleId) {
         return vehicleIgnitionService.findByVehicleModelId(vehicleId);
     }
 
-    @GetMapping("/findByVehicle-paged/{vehicleId}")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public Page<VehicleIgnitionModel> findByVehicleModelId(@PathVariable Long vehicleId,
                                                            @RequestParam(defaultValue = "0") int page,
                                                            @RequestParam(defaultValue = "8") int size) {
