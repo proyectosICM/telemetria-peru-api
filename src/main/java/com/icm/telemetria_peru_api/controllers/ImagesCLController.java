@@ -81,7 +81,7 @@ public class ImagesCLController {
         return imagesCLService.findAll(pageable);
     }
 
-    @GetMapping("/findByChecklistRecord/{id}")
+    @GetMapping("/by-checklist/{id}")
     public ResponseEntity<?> findByChecklistRecord(@PathVariable Long id){
         try {
             List<ImagesCLModel> data = imagesCLService.findByChecklistRecord(id);
@@ -91,7 +91,7 @@ public class ImagesCLController {
         }
     }
 
-    @GetMapping("/findByChecklistRecord-paged/{id}")
+    @GetMapping("/by-checklist-paged/{id}")
     public ResponseEntity<Page<ImagesCLModel>> findByChecklistRecord(@PathVariable Long id,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size){
