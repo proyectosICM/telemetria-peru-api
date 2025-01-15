@@ -69,7 +69,7 @@ public class ChecklistRecordController {
         return checklistRecordService.findAll(pageable);
     }
 
-    @GetMapping("/findByVehicle/{id}")
+    @GetMapping("/by-vehicle/{id}")
     public ResponseEntity<List<ChecklistRecordModel>> findByVehicle(@PathVariable Long id){
         try {
             List<ChecklistRecordModel> data = checklistRecordService.findByVehicleModelId(id);
@@ -79,7 +79,7 @@ public class ChecklistRecordController {
         }
     }
 
-    @GetMapping("/findByVehicle-paged/{id}")
+    @GetMapping("/by-vehicle-paged/{id}")
     public ResponseEntity<Page<ChecklistRecordModel>> findByVehicle(@PathVariable Long id,
                                                                     @RequestParam(defaultValue = "0") int page,
                                                                     @RequestParam(defaultValue = "8") int size){
@@ -92,7 +92,7 @@ public class ChecklistRecordController {
         }
     }
 
-    @GetMapping("/findByCompany/{id}")
+    @GetMapping("/by-company/{id}")
     public ResponseEntity<List<ChecklistRecordModel>> findByCompany(@PathVariable Long id){
         try {
             List<ChecklistRecordModel> data = checklistRecordService.findByCompanyModelId(id);
@@ -102,7 +102,7 @@ public class ChecklistRecordController {
         }
     }
 
-    @GetMapping("/findByCompany-paged/{id}")
+    @GetMapping("/by-company-paged/{id}")
     public ResponseEntity<Page<ChecklistRecordModel>> findByCompany(@PathVariable Long id,
                                            @RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "8") int size){
