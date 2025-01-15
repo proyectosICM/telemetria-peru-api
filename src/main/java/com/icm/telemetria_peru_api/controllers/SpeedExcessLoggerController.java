@@ -23,17 +23,6 @@ import java.util.List;
 public class SpeedExcessLoggerController {
     private final SpeedExcessLoggerService speedExcessLoggerService;
 
-    @GetMapping
-    public List<SpeedExcessLoggerModel> findAll(){
-        return speedExcessLoggerService.findAll();
-    }
-    @GetMapping("/page")
-    public Page<SpeedExcessLoggerModel> findAll(@RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        return speedExcessLoggerService.findAll(pageable);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<SpeedExcessLoggerModel> findById(@PathVariable @NotNull Long id) {
         try {
@@ -44,7 +33,18 @@ public class SpeedExcessLoggerController {
         }
     }
 
-    @GetMapping("/findByVehicleId/{vehicleId}")
+    @GetMapping
+    public List<SpeedExcessLoggerModel> findAll(){
+        return speedExcessLoggerService.findAll();
+    }
+    @GetMapping("/paged")
+    public Page<SpeedExcessLoggerModel> findAll(@RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return speedExcessLoggerService.findAll(pageable);
+    }
+
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<?> findByVehicleId(@PathVariable Long vehicleId){
         try {
             List<SpeedExcessLoggerModel> data = speedExcessLoggerService.findByVehicleId(vehicleId);
@@ -58,7 +58,7 @@ public class SpeedExcessLoggerController {
 
     }
 
-    @GetMapping ("/findByVehicleId-page/{vehicleId}")
+    @GetMapping ("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<?> findByVehicleIdPage(@PathVariable Long vehicleId,
                                                  @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "10") int size){
