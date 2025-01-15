@@ -37,14 +37,14 @@ public class BatteryRecordController {
         return batteryRecordService.findAll();
     }
 
-    @GetMapping("/page")
+    @GetMapping("/paged")
     public Page<BatteryRecordDTO> findAll(@RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return batteryRecordService.findAll(pageable);
     }
 
-    @GetMapping("/findByBatteryId/{batteryId}")
+    @GetMapping("/by-battery/{batteryId}")
     public ResponseEntity<List<BatteryRecordDTO>> findByVehicleId(@PathVariable Long batteryId){
         try {
             List<BatteryRecordDTO> data = batteryRecordService.findByBatteryId(batteryId);
@@ -57,7 +57,7 @@ public class BatteryRecordController {
         }
     }
 
-    @GetMapping ("/findByBatteryId-page/{batteryId}")
+    @GetMapping ("/by-battery-paged/{batteryId}")
     public ResponseEntity<Page<BatteryRecordDTO>> findByVehicleIdPage(@PathVariable Long batteryId,
                                                  @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "10") int size){
@@ -71,7 +71,7 @@ public class BatteryRecordController {
     }
 
 
-    @GetMapping("/findByVehicleId/{vehicleId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<BatteryRecordDTO>> findByBatteryModelVehicleModelId(@PathVariable Long vehicleId){
         try {
             List<BatteryRecordDTO> data = batteryRecordService.findByBatteryModelVehicleModelId(vehicleId);
@@ -84,7 +84,7 @@ public class BatteryRecordController {
         }
     }
 
-    @GetMapping ("/findByVehicleId-paged/{vehicleId}")
+    @GetMapping ("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<BatteryRecordDTO>> findByBatteryModelVehicleModelId(@PathVariable Long vehicleId,
                                                                       @RequestParam(defaultValue = "0") int page,
                                                                       @RequestParam(defaultValue = "10") int size){
@@ -97,7 +97,7 @@ public class BatteryRecordController {
         }
     }
 
-    @GetMapping("/vehicle&battery/{vehicleId}")
+    @GetMapping("/by-vehicle-battery/{vehicleId}")
     public ResponseEntity<List<BatteryRecordDTO>> findByBatteryModelVehicleModelIdAndBatteryModelId(@PathVariable Long vehicleId, @RequestParam Long batteryId){
         try {
             List<BatteryRecordDTO> data = batteryRecordService.findByBatteryModelVehicleModelIdAndBatteryModelId(vehicleId, batteryId);
@@ -110,7 +110,7 @@ public class BatteryRecordController {
         }
     }
 
-    @GetMapping ("/vehicle&battery-paged/{vehicleId}")
+    @GetMapping ("/by-vehicle-battery-paged/{vehicleId}")
     public ResponseEntity<Page<BatteryRecordDTO>> findByBatteryModelVehicleModelIdAndBatteryModelId(@PathVariable Long vehicleId,
                                                                                    @RequestParam Long batteryId,
                                                                                    @RequestParam(defaultValue = "0") int page,
