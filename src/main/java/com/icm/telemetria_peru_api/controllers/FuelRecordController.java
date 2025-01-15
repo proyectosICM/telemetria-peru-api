@@ -70,7 +70,7 @@ public class FuelRecordController {
         return fuelRecordService.findAll(pageable);
     }
 
-    @GetMapping("/findByVehicleId/{vehicleId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<FuelRecordModel>> findByVehicleId(@PathVariable Long vehicleId){
         try {
             List<FuelRecordModel> data = fuelRecordService.findByVehicleId(vehicleId);
@@ -80,7 +80,7 @@ public class FuelRecordController {
         }
     }
 
-    @GetMapping ("/findByVehicleId-page/{vehicleId}")
+    @GetMapping ("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<FuelRecordModel>> findByVehicleIdPage(@PathVariable Long vehicleId,
                                                                      @RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "8") int size){
