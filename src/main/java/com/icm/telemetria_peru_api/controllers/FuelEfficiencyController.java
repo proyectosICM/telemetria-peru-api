@@ -58,14 +58,14 @@ public class FuelEfficiencyController {
         }
     }
 
-    @GetMapping("/findByVehicle/{vehicleModelId}")
+    @GetMapping("/by-vehicle/{vehicleModelId}")
     public ResponseEntity<List<FuelEfficiencyModel>> findByVehicleModelId(
             @PathVariable Long vehicleModelId) {
         List<FuelEfficiencyModel> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @GetMapping("/findByVehicle-paged/{vehicleModelId}")
+    @GetMapping("/by-vehicle-paged/{vehicleModelId}")
     public ResponseEntity<Page<FuelEfficiencyDTO>> findByVehicleModelId(
             @PathVariable Long vehicleModelId,
             @RequestParam(defaultValue = "0") int page,
