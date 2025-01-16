@@ -110,7 +110,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
 
     @Query(value = """
                 SELECT 
-                    fe.status AS status,
+                    fe.status AS status,    
                     SUM(fe.accumulated_hours) AS totalHours,
                     SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
                     AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
