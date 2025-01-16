@@ -106,6 +106,7 @@ public class FuelEfficiencyController {
         List<FuelEfficiencySummaryDTO> summary = fuelEfficiencyService.getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(vehicleId, year, month, day);
         return ResponseEntity.ok(summary);
     }
+
     /** STAST */
     @PostMapping
     public ResponseEntity<FuelEfficiencyModel> save(@RequestBody FuelEfficiencyModel fuelEfficiencyModel){

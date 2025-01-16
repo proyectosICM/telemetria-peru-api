@@ -209,7 +209,8 @@ public class FuelEfficiencyService {
         }
 
         Optional<VehicleModel> vehicleModel = vehicleRepository.findById(vehicleId);
-
+        System.out.println(year);
+        System.out.println(results);
         if (results != null && !results.isEmpty()) {
             List<FuelEfficiencySummaryDTO> summaries = results.stream().map(result -> {
                 FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
@@ -225,10 +226,8 @@ public class FuelEfficiencyService {
                             break;
                     }
                 }
-
                 return new FuelEfficiencySummaryDTO(status, totalHours, totalFuelConsumed, avgFuelEfficiency);
             }).collect(Collectors.toList());
-
             return summaries;
         } else {
             return getDefaultSummary();
