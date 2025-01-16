@@ -13,15 +13,12 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "battery_records")
-public class BatteryRecordModel {
+@Table(name = "engine_starter")
+public class EngineStarterModel {
     @Id
     @Column(unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private Double voltage;
 
     private Double current;
 

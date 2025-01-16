@@ -13,17 +13,14 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "battery_records")
-public class BatteryRecordModel {
+@Table(name = "alternator")
+public class AlternatorModel {
     @Id
     @Column(unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private Double voltage;
-
-    private Double current;
 
     @ManyToOne
     @JoinColumn(name = "battery_id", referencedColumnName = "id", nullable = false)
