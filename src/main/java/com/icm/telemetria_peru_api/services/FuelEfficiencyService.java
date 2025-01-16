@@ -210,7 +210,7 @@ public class FuelEfficiencyService {
 
         Optional<VehicleModel> vehicleModel = vehicleRepository.findById(vehicleId);
         System.out.println(year);
-        System.out.println(results);
+        System.out.println(results.stream());
         if (results != null && !results.isEmpty()) {
             List<FuelEfficiencySummaryDTO> summaries = results.stream().map(result -> {
                 FuelEfficiencyStatus status = FuelEfficiencyStatus.valueOf(result[0].toString());
