@@ -1,7 +1,7 @@
 package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.models.AlternatorModel;
-import com.icm.telemetria_peru_api.models.EngineStarterModel;
+import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.services.AlternatorService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/alternator")
@@ -72,6 +70,16 @@ public class AlternatorController {
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(Page.empty(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<AlternatorModel> save(@RequestBody AlternatorModel alternatorModel){
+        try {
+            AlternatorModel data = alternatorService.save(alternatorModel);
+            return new ResponseEntity<>(data, HttpStatus.CREATED);
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
