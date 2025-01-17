@@ -1,12 +1,8 @@
 package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.dto.EngineStarterDTO;
-import com.icm.telemetria_peru_api.models.AlarmRecordModel;
-import com.icm.telemetria_peru_api.models.AlternatorModel;
-import com.icm.telemetria_peru_api.models.DriverModel;
 import com.icm.telemetria_peru_api.models.EngineStarterModel;
 import com.icm.telemetria_peru_api.services.EngineStarterService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
