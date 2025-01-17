@@ -1,9 +1,12 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.dto.EngineStarterDTO;
+import com.icm.telemetria_peru_api.mappers.EngineStarterMapper;
 import com.icm.telemetria_peru_api.models.EngineStarterModel;
 import com.icm.telemetria_peru_api.repositories.EngineStarterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -14,25 +17,36 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EngineStarterService {
     private final EngineStarterRepository engineStarterRepository;
+    private final EngineStarterMapper engineStarterMapper;
 
-    public Optional<EngineStarterModel> findById(Long id) {
-        return engineStarterRepository.findById(id);
+    public List<EngineStarterDTO> findAll(){
+        List<EngineStarterModel> engineStarterModels = engineStarterRepository.findAll();
+        return engineStarterModels.stream()
+                .map(engineStarterMapper::mapToDTO)
+                .toList();
     }
 
-    public List<EngineStarterModel> findAll(){
-        return engineStarterRepository.findAll();
+    public Page<EngineStarterDTO> findAll(Pageable pageable){
+        Page<EngineStarterModel> engineStarterModelPage = engineStarterRepository.findAll(pageable);
+        List<EngineStarterDTO> engineStarterDTOs = engineStarterModelPage.stream()
+                .map(engineStarterMapper::mapToDTO)
+                .toList();
+        return new PageImpl<>(engineStarterDTOs, pageable, engineStarterModelPage.getTotalElements());
     }
 
-    public Page<EngineStarterModel> findAll(Pageable pageable){
-        return engineStarterRepository.findAll(pageable);
+    public List<EngineStarterDTO> findByVehicleModelId(Long vehicleId) {
+        List<EngineStarterModel> engineStarterModels = engineStarterRepository.findByVehicleModelId(vehicleId);
+        return engineStarterModels.stream()
+                .map(engineStarterMapper::mapToDTO)
+                .toList();
     }
 
-    public List<EngineStarterModel> findByVehicleModelId(Long vehicleId) {
-        return engineStarterRepository.findByVehicleModelId(vehicleId);
-    }
-
-    public Page<EngineStarterModel> findByVehicleModelId(Long vehicleId, Pageable pageable) {
-        return engineStarterRepository.findByVehicleModelId(vehicleId, pageable);
+    public Page<EngineStarterDTO> findByVehicleModelId(Long vehicleId, Pageable pageable) {
+        Page<EngineStarterModel> engineStarterModels = engineStarterRepository.findByVehicleModelId(vehicleId, pageable);
+        List<EngineStarterDTO> engineStarterDTOS = engineStarterModels.stream()
+                .map(engineStarterMapper::mapToDTO)
+                .toList();
+        return new PageImpl<>(engineStarterDTOS, pageable, engineStarterModels.getTotalElements());
     }
 
     public EngineStarterModel save(EngineStarterModel alternatorModel){

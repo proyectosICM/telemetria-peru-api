@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.EngineStarterDTO;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.AlternatorModel;
 import com.icm.telemetria_peru_api.models.DriverModel;
@@ -23,29 +24,22 @@ import java.util.List;
 public class EngineStarterController {
     private final EngineStarterService engineStarterService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<EngineStarterModel> findById(@PathVariable @NotNull Long id) {
-        return engineStarterService.findById(id)
-                .map(data -> new ResponseEntity<>(data, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
     @GetMapping
-    public List<EngineStarterModel> findAll(){
+    public List<EngineStarterDTO> findAll(){
         return engineStarterService.findAll();
     }
 
     @GetMapping("/paged")
-    public Page<EngineStarterModel> findAll(@RequestParam(defaultValue = "0") int page,
+    public Page<EngineStarterDTO> findAll(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return engineStarterService.findAll(pageable);
     }
 
     @GetMapping("/by-vehicle/{vehicleId}")
-    public ResponseEntity<List<EngineStarterModel>> findByVehicleModelId(@PathVariable Long vehicleId){
+    public ResponseEntity<List<EngineStarterDTO>> findByVehicleModelId(@PathVariable Long vehicleId){
         try {
-            List<EngineStarterModel> data =  engineStarterService.findByVehicleModelId(vehicleId);
+            List<EngineStarterDTO> data =  engineStarterService.findByVehicleModelId(vehicleId);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
@@ -58,12 +52,12 @@ public class EngineStarterController {
     }
 
     @GetMapping("/by-vehicle-paged/{vehicleId}")
-    public ResponseEntity<Page<EngineStarterModel>> findByVehicleModelId(@PathVariable Long vehicleId,
+    public ResponseEntity<Page<EngineStarterDTO>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                        @RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "3") int size){
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<EngineStarterModel> data = engineStarterService.findByVehicleModelId(vehicleId, pageable);
+            Page<EngineStarterDTO> data = engineStarterService.findByVehicleModelId(vehicleId, pageable);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
