@@ -1,13 +1,16 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.dto.AlarmRecordDTO;
 import com.icm.telemetria_peru_api.dto.ChecklistRecordDTO;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.mappers.ChecklistRecordMapper;
+import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.ChecklistRecordModel;
 import com.icm.telemetria_peru_api.repositories.ChecklistRecordRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -62,20 +65,34 @@ public class ChecklistRecordService {
         return checklistRecordRepository.findAll(pageable);
     }
 
-    public List<ChecklistRecordModel> findByVehicleModelId(Long vehicleId){
-        return checklistRecordRepository.findByVehicleModelId(vehicleId);
+    public List<ChecklistRecordDTO> findByVehicleModelId(Long vehicleId){
+        List<ChecklistRecordModel> checklistRecordModels = checklistRecordRepository.findByVehicleModelId(vehicleId);
+        return checklistRecordModels.stream()
+                .map(checklistRecordMapper::mapToDTO)
+                .toList();
     }
 
-    public Page<ChecklistRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable){
-        return checklistRecordRepository.findByVehicleModelId(vehicleId, pageable);
+    public Page<ChecklistRecordDTO> findByVehicleModelId(Long vehicleId, Pageable pageable){
+        Page<ChecklistRecordModel> checklistRecordModels =  checklistRecordRepository.findByVehicleModelId(vehicleId, pageable);
+        List<ChecklistRecordDTO> checklistRecordDTOS =  checklistRecordModels.stream()
+                .map(checklistRecordMapper::mapToDTO)
+                .toList();
+        return new PageImpl<>(checklistRecordDTOS, pageable, checklistRecordModels.getTotalElements());
     }
 
-    public List<ChecklistRecordModel> findByCompanyModelId(Long companyId){
-        return checklistRecordRepository.findByCompanyModelId(companyId);
+    public List<ChecklistRecordDTO> findByCompanyModelId(Long companyId){
+        List<ChecklistRecordModel> checklistRecordModels = checklistRecordRepository.findByCompanyModelId(companyId);
+        return checklistRecordModels.stream()
+                .map(checklistRecordMapper::mapToDTO)
+                .toList();
     }
 
-    public Page<ChecklistRecordModel> findByCompanyModelId(Long companyId, Pageable pageable){
-        return checklistRecordRepository.findByCompanyModelId(companyId, pageable);
+    public Page<ChecklistRecordDTO> findByCompanyModelId(Long companyId, Pageable pageable){
+        Page<ChecklistRecordModel> checklistRecordModels =   checklistRecordRepository.findByCompanyModelId(companyId, pageable);
+        List<ChecklistRecordDTO> checklistRecordDTOS =  checklistRecordModels.stream()
+                .map(checklistRecordMapper::mapToDTO)
+                .toList();
+        return new PageImpl<>(checklistRecordDTOS, pageable, checklistRecordModels.getTotalElements());
     }
 
     /**

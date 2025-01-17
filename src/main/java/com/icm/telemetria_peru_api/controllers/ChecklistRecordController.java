@@ -71,9 +71,9 @@ public class ChecklistRecordController {
     }
 
     @GetMapping("/by-vehicle/{id}")
-    public ResponseEntity<List<ChecklistRecordModel>> findByVehicle(@PathVariable Long id){
+    public ResponseEntity<List<ChecklistRecordDTO>> findByVehicle(@PathVariable Long id){
         try {
-            List<ChecklistRecordModel> data = checklistRecordService.findByVehicleModelId(id);
+            List<ChecklistRecordDTO> data = checklistRecordService.findByVehicleModelId(id);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -81,12 +81,12 @@ public class ChecklistRecordController {
     }
 
     @GetMapping("/by-vehicle-paged/{id}")
-    public ResponseEntity<Page<ChecklistRecordModel>> findByVehicle(@PathVariable Long id,
+    public ResponseEntity<Page<ChecklistRecordDTO>> findByVehicle(@PathVariable Long id,
                                                                     @RequestParam(defaultValue = "0") int page,
                                                                     @RequestParam(defaultValue = "8") int size){
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<ChecklistRecordModel> data = checklistRecordService.findByVehicleModelId(id, pageable );
+            Page<ChecklistRecordDTO> data = checklistRecordService.findByVehicleModelId(id, pageable );
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -94,9 +94,9 @@ public class ChecklistRecordController {
     }
 
     @GetMapping("/by-company/{id}")
-    public ResponseEntity<List<ChecklistRecordModel>> findByCompany(@PathVariable Long id){
+    public ResponseEntity<List<ChecklistRecordDTO>> findByCompany(@PathVariable Long id){
         try {
-            List<ChecklistRecordModel> data = checklistRecordService.findByCompanyModelId(id);
+            List<ChecklistRecordDTO> data = checklistRecordService.findByCompanyModelId(id);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -104,12 +104,12 @@ public class ChecklistRecordController {
     }
 
     @GetMapping("/by-company-paged/{id}")
-    public ResponseEntity<Page<ChecklistRecordModel>> findByCompany(@PathVariable Long id,
+    public ResponseEntity<Page<ChecklistRecordDTO>> findByCompany(@PathVariable Long id,
                                            @RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "8") int size){
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<ChecklistRecordModel> data = checklistRecordService.findByCompanyModelId(id, pageable );
+            Page<ChecklistRecordDTO> data = checklistRecordService.findByCompanyModelId(id, pageable );
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
