@@ -23,8 +23,8 @@ public class AlternatorModel {
     private Double voltage;
 
     @ManyToOne
-    @JoinColumn(name = "battery_id", referencedColumnName = "id", nullable = false)
-    private BatteryModel batteryModel;
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
+    private VehicleModel vehicleModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

@@ -27,12 +27,12 @@ public class EngineStarterService {
         return engineStarterRepository.findAll(pageable);
     }
 
-    public List<EngineStarterModel> findByBatteryModelId(Long batteryId) {
-        return engineStarterRepository.findByBatteryModelId(batteryId);
+    public List<EngineStarterModel> findByVehicleModelId(Long vehicleId) {
+        return engineStarterRepository.findByVehicleModelId(vehicleId);
     }
 
-    public Page<EngineStarterModel> findByBatteryModelId(Long batteryId, Pageable pageable) {
-        return engineStarterRepository.findByBatteryModelId(batteryId, pageable);
+    public Page<EngineStarterModel> findByVehicleModelId(Long vehicleId, Pageable pageable) {
+        return engineStarterRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
     public EngineStarterModel save(EngineStarterModel alternatorModel){

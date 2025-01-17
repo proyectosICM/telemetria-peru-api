@@ -27,12 +27,12 @@ public class AlternatorService {
         return alternatorRepository.findAll(pageable);
     }
 
-    public List<AlternatorModel> findByBatteryModelId(Long batteryId) {
-        return alternatorRepository.findByBatteryModelId(batteryId);
+    public List<AlternatorModel> findByVehicleModelId(Long vehicleId) {
+        return alternatorRepository.findByVehicleModelId(vehicleId);
     }
 
-    public Page<AlternatorModel> findByBatteryModelId(Long batteryId, Pageable pageable) {
-        return alternatorRepository.findByBatteryModelId(batteryId, pageable);
+    public Page<AlternatorModel> findByVehicleModelId(Long vehicleId, Pageable pageable) {
+        return alternatorRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
     public AlternatorModel save(AlternatorModel alternatorModel){

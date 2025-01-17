@@ -23,8 +23,8 @@ public class EngineStarterModel {
     private Double current;
 
     @ManyToOne
-    @JoinColumn(name = "battery_id", referencedColumnName = "id", nullable = false)
-    private BatteryModel batteryModel;
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
+    private VehicleModel vehicleModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

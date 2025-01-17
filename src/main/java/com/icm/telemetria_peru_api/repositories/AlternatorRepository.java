@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface AlternatorRepository extends JpaRepository<AlternatorModel, Long> {
-    List<AlternatorModel> findByBatteryModelId(Long batteryId);
-    Page<AlternatorModel> findByBatteryModelId(Long batteryId, Pageable pageable);
+    List<AlternatorModel> findByVehicleModelId(Long vehicleId);
+    Page<AlternatorModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 }

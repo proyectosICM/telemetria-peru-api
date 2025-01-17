@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface EngineStarterRepository extends JpaRepository<EngineStarterModel, Long> {
-    List<EngineStarterModel> findByBatteryModelId(Long batteryId);
-    Page<EngineStarterModel> findByBatteryModelId(Long batteryId, Pageable pageable);
+    List<EngineStarterModel> findByVehicleModelId(Long vehicleId);
+    Page<EngineStarterModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 }
