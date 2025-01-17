@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.dto.ChecklistRecordDTO;
+import com.icm.telemetria_peru_api.dto.SaveChecklistRecordDTO;
 import com.icm.telemetria_peru_api.models.ChecklistRecordModel;
 import com.icm.telemetria_peru_api.services.ChecklistRecordService;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,9 +25,9 @@ public class ChecklistRecordController {
     private final ChecklistRecordService checklistRecordService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ChecklistRecordModel> findById(@PathVariable Long id) {
+    public ResponseEntity<ChecklistRecordDTO> findById(@PathVariable Long id) {
         try {
-            ChecklistRecordModel data = checklistRecordService.findById(id);
+            ChecklistRecordDTO data = checklistRecordService.findById(id);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -142,16 +143,16 @@ public class ChecklistRecordController {
      * is successful, it returns the saved ChecklistRecordModel. If an error occurs, appropriate
      * HTTP status codes and messages are returned.
      *
-     * @param checklistRecordDTO A DTO containing the ChecklistRecordModel and its associated JSON data.
+     * @param saveChecklistRecordDTO A DTO containing the ChecklistRecordModel and its associated JSON data.
      * @return A ResponseEntity containing the saved ChecklistRecordModel if successful, or an error response if not.
      * @throws EntityNotFoundException If a related entity is not found during the save operation.
      * @throws IOException If an error occurs while saving the JSON file.
      */
     @PostMapping
-    public ResponseEntity<ChecklistRecordModel> save(@RequestBody ChecklistRecordDTO checklistRecordDTO) {
+    public ResponseEntity<ChecklistRecordModel> save(@RequestBody SaveChecklistRecordDTO saveChecklistRecordDTO) {
         try {
-            ChecklistRecordModel checklistRecordModel = checklistRecordDTO.getChecklistRecordModel();
-            Map<String, Object> jsonData = checklistRecordDTO.getJsonData();
+            ChecklistRecordModel checklistRecordModel = saveChecklistRecordDTO.getChecklistRecordModel();
+            Map<String, Object> jsonData = saveChecklistRecordDTO.getJsonData();
 
             ChecklistRecordModel data = checklistRecordService.saveWithJson(checklistRecordModel, jsonData);
             return new ResponseEntity<>(data, HttpStatus.OK);

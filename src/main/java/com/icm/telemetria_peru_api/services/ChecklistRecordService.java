@@ -1,6 +1,8 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.dto.ChecklistRecordDTO;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
+import com.icm.telemetria_peru_api.mappers.ChecklistRecordMapper;
 import com.icm.telemetria_peru_api.models.ChecklistRecordModel;
 import com.icm.telemetria_peru_api.repositories.ChecklistRecordRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,12 +28,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ChecklistRecordService {
     private final ChecklistRecordRepository checklistRecordRepository;
     private final MqttMessagePublisher mqttMessagePublisher;
+    private final ChecklistRecordMapper checklistRecordMapper;
 
     // Object to convert the Map to a JSON file
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public ChecklistRecordModel findById(Long id){
+    public ChecklistRecordDTO findById(Long id) {
         return checklistRecordRepository.findById(id)
+                .map(checklistRecordMapper::mapToDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
     }
 
