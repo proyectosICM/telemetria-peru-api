@@ -43,9 +43,9 @@ public class EngineStarterController {
     }
 
     @GetMapping("/by-battery/{batteryId}")
-    public ResponseEntity<List<EngineStarterModel>> findByVehicleModelId(@PathVariable Long batteryId){
+    public ResponseEntity<List<EngineStarterModel>> findByVehicleModelId(@PathVariable Long vehicleId){
         try {
-            List<EngineStarterModel> data =  engineStarterService.findByBatteryModelId(batteryId);
+            List<EngineStarterModel> data =  engineStarterService.findByVehicleModelId(vehicleId);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
@@ -58,12 +58,12 @@ public class EngineStarterController {
     }
 
     @GetMapping("/by-battery-paged/{batteryId}")
-    public ResponseEntity<Page<EngineStarterModel>> findByVehicleModelId(@PathVariable Long batteryId,
+    public ResponseEntity<Page<EngineStarterModel>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                        @RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "10") int size){
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<EngineStarterModel> data = engineStarterService.findByBatteryModelId(batteryId, pageable);
+            Page<EngineStarterModel> data = engineStarterService.findByVehicleModelId(vehicleId, pageable);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

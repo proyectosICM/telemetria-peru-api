@@ -40,10 +40,10 @@ public class AlternatorController {
         return alternatorService.findAll(pageable);
     }
 
-    @GetMapping("/by-battery/{batteryId}")
-    public ResponseEntity<List<AlternatorModel>> findByVehicleModelId(@PathVariable Long batteryId){
+    @GetMapping("/by-battery/{vehicleId}")
+    public ResponseEntity<List<AlternatorModel>> findByVehicleModelId(@PathVariable Long vehicleId){
         try {
-            List<AlternatorModel> data =  alternatorService.findByBatteryModelId(batteryId);
+            List<AlternatorModel> data =  alternatorService.findByVehicleModelId(vehicleId);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
@@ -55,13 +55,13 @@ public class AlternatorController {
         }
     }
 
-    @GetMapping("/by-battery-paged/{batteryId}")
-    public ResponseEntity<Page<AlternatorModel>> findByVehicleModelId(@PathVariable Long batteryId,
+    @GetMapping("/by-battery-paged/{vehicleId}")
+    public ResponseEntity<Page<AlternatorModel>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                          @RequestParam(defaultValue = "0") int page,
                                                                          @RequestParam(defaultValue = "10") int size){
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<AlternatorModel> data = alternatorService.findByBatteryModelId(batteryId, pageable);
+            Page<AlternatorModel> data = alternatorService.findByVehicleModelId(vehicleId, pageable);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
