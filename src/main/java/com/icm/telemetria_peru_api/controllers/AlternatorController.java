@@ -22,20 +22,13 @@ import java.util.List;
 public class AlternatorController {
     private final AlternatorService alternatorService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AlternatorModel> findById(@PathVariable @NotNull Long id) {
-        return alternatorService.findById(id)
-                .map(data -> new ResponseEntity<>(data, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
     @GetMapping
-    public List<AlternatorModel> findAll(){
+    public List<AlternatorDTO> findAll(){
         return alternatorService.findAll();
     }
 
     @GetMapping("/paged")
-    public Page<AlternatorModel> findAll(@RequestParam(defaultValue = "0") int page,
+    public Page<AlternatorDTO> findAll(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return alternatorService.findAll(pageable);
@@ -52,7 +45,6 @@ public class AlternatorController {
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
             return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
