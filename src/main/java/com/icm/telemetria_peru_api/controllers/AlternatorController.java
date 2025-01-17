@@ -40,7 +40,7 @@ public class AlternatorController {
         return alternatorService.findAll(pageable);
     }
 
-    @GetMapping("/by-battery/{vehicleId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<AlternatorModel>> findByVehicleModelId(@PathVariable Long vehicleId){
         try {
             List<AlternatorModel> data =  alternatorService.findByVehicleModelId(vehicleId);
@@ -55,7 +55,7 @@ public class AlternatorController {
         }
     }
 
-    @GetMapping("/by-battery-paged/{vehicleId}")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<AlternatorModel>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                          @RequestParam(defaultValue = "0") int page,
                                                                          @RequestParam(defaultValue = "10") int size){
