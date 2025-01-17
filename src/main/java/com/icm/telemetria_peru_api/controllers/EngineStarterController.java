@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
+import com.icm.telemetria_peru_api.models.AlternatorModel;
 import com.icm.telemetria_peru_api.models.DriverModel;
 import com.icm.telemetria_peru_api.models.EngineStarterModel;
 import com.icm.telemetria_peru_api.services.EngineStarterService;
@@ -71,6 +72,16 @@ public class EngineStarterController {
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(Page.empty(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<EngineStarterModel> save(@RequestBody EngineStarterModel engineStarterModel){
+        try {
+            EngineStarterModel data = engineStarterService.save(engineStarterModel);
+            return new ResponseEntity<>(data, HttpStatus.CREATED);
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
