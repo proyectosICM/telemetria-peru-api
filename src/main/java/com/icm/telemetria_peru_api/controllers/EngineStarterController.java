@@ -42,7 +42,7 @@ public class EngineStarterController {
         return engineStarterService.findAll(pageable);
     }
 
-    @GetMapping("/by-vehicle/{batteryId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<EngineStarterModel>> findByVehicleModelId(@PathVariable Long vehicleId){
         try {
             List<EngineStarterModel> data =  engineStarterService.findByVehicleModelId(vehicleId);
@@ -57,7 +57,7 @@ public class EngineStarterController {
         }
     }
 
-    @GetMapping("/by-vehicle-paged/{batteryId}")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<EngineStarterModel>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                        @RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "10") int size){
