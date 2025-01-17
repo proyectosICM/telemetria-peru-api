@@ -12,6 +12,7 @@ import java.time.ZonedDateTime;
 public class BatteryRecordDTO {
     private Long id;
     private Double voltage;
+    private Double current;
     private Long batteryId;
     private String nameBattery;
     private ZonedDateTime createdAt;

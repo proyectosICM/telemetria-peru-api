@@ -14,6 +14,7 @@ public class BatteryRecordMapper {
         return new BatteryRecordDTO(
                 batteryRecordModel.getId(),
                 batteryRecordModel.getVoltage(),
+                batteryRecordModel.getCurrent(),
                 batteryId,
                 nameBattery,
                 batteryRecordModel.getCreatedAt()
