@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.AlarmRecordDTO;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.services.AlarmRecordService;
 import lombok.RequiredArgsConstructor;
@@ -20,21 +21,21 @@ public class AlarmRecordController {
     private final AlarmRecordService alarmRecordService;
 
     @GetMapping
-    public List<AlarmRecordModel> findAll(){
+    public List<AlarmRecordDTO> findAll(){
         return alarmRecordService.findAll();
     }
 
     @GetMapping("/paged")
-    public Page<AlarmRecordModel> findAll(@RequestParam(defaultValue = "0") int page,
+    public Page<AlarmRecordDTO> findAll(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return alarmRecordService.findAll(pageable);
     }
 
     @GetMapping("/by-vehicle/{vehicleId}")
-    public ResponseEntity<List<AlarmRecordModel>> findByVehicleModelId(@PathVariable Long vehicleId){
+    public ResponseEntity<List<AlarmRecordDTO>> findByVehicleModelId(@PathVariable Long vehicleId){
         try {
-            List<AlarmRecordModel> data =  alarmRecordService.findByVehicleModelId(vehicleId);
+            List<AlarmRecordDTO> data =  alarmRecordService.findByVehicleModelId(vehicleId);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
@@ -47,12 +48,12 @@ public class AlarmRecordController {
     }
 
     @GetMapping("/by-vehicle-paged/{vehicleId}")
-    public ResponseEntity<Page<AlarmRecordModel>> findByVehicleModelId(@PathVariable Long vehicleId,
+    public ResponseEntity<Page<AlarmRecordDTO>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                        @RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "10") int size){
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<AlarmRecordModel> data = alarmRecordService.findByVehicleModelId(vehicleId, pageable);
+            Page<AlarmRecordDTO> data = alarmRecordService.findByVehicleModelId(vehicleId, pageable);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
