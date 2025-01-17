@@ -60,7 +60,7 @@ public class EngineStarterController {
     @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<EngineStarterModel>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                        @RequestParam(defaultValue = "0") int page,
-                                                                       @RequestParam(defaultValue = "10") int size){
+                                                                       @RequestParam(defaultValue = "3") int size){
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
             Page<EngineStarterModel> data = engineStarterService.findByVehicleModelId(vehicleId, pageable);

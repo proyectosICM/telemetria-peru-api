@@ -59,7 +59,7 @@ public class BatteryRecordController {
     @GetMapping ("/by-battery-paged/{batteryId}")
     public ResponseEntity<Page<BatteryRecordDTO>> findByVehicleIdPage(@PathVariable Long batteryId,
                                                  @RequestParam(defaultValue = "0") int page,
-                                                 @RequestParam(defaultValue = "10") int size){
+                                                 @RequestParam(defaultValue = "3") int size){
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<BatteryRecordDTO> data = batteryRecordService.findByBatteryId(batteryId, pageable);
