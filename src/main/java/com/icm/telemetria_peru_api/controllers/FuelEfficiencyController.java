@@ -64,13 +64,13 @@ public class FuelEfficiencyController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @GetMapping("/by-vehicle-paged/{vehicleModelId}")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<FuelEfficiencyDTO>> findByVehicleModelId(
-            @PathVariable Long vehicleModelId,
+            @PathVariable Long vehicleId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<FuelEfficiencyDTO> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId, pageable);
+        Page<FuelEfficiencyDTO> data = fuelEfficiencyService.findByVehicleModelId(vehicleId, pageable);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 

@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.AlternatorDTO;
 import com.icm.telemetria_peru_api.models.AlternatorModel;
 import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.services.AlternatorService;
@@ -41,9 +42,9 @@ public class AlternatorController {
     }
 
     @GetMapping("/by-vehicle/{vehicleId}")
-    public ResponseEntity<List<AlternatorModel>> findByVehicleModelId(@PathVariable Long vehicleId){
+    public ResponseEntity<List<AlternatorDTO>> findByVehicleModelId(@PathVariable Long vehicleId){
         try {
-            List<AlternatorModel> data =  alternatorService.findByVehicleModelId(vehicleId);
+            List<AlternatorDTO> data =  alternatorService.findByVehicleModelId(vehicleId);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
@@ -56,12 +57,12 @@ public class AlternatorController {
     }
 
     @GetMapping("/by-vehicle-paged/{vehicleId}")
-    public ResponseEntity<Page<AlternatorModel>> findByVehicleModelId(@PathVariable Long vehicleId,
+    public ResponseEntity<Page<AlternatorDTO>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                          @RequestParam(defaultValue = "0") int page,
                                                                          @RequestParam(defaultValue = "3") int size){
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<AlternatorModel> data = alternatorService.findByVehicleModelId(vehicleId, pageable);
+            Page<AlternatorDTO> data = alternatorService.findByVehicleModelId(vehicleId, pageable);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.dto.AlternatorDTO;
 import com.icm.telemetria_peru_api.models.AlternatorModel;
 import com.icm.telemetria_peru_api.repositories.AlternatorRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,11 @@ public class AlternatorService {
         return alternatorRepository.findAll(pageable);
     }
 
-    public List<AlternatorModel> findByVehicleModelId(Long vehicleId) {
+    public List<AlternatorDTO> findByVehicleModelId(Long vehicleId) {
         return alternatorRepository.findByVehicleModelId(vehicleId);
     }
 
-    public Page<AlternatorModel> findByVehicleModelId(Long vehicleId, Pageable pageable) {
+    public Page<AlternatorDTO> findByVehicleModelId(Long vehicleId, Pageable pageable) {
         return alternatorRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
