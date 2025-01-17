@@ -52,6 +52,7 @@ public class AlternatorController {
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e);
             return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
