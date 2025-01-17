@@ -1,10 +1,8 @@
 package com.icm.telemetria_peru_api.services;
 
-import com.icm.telemetria_peru_api.dto.AlarmRecordDTO;
 import com.icm.telemetria_peru_api.dto.ChecklistRecordDTO;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.mappers.ChecklistRecordMapper;
-import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.ChecklistRecordModel;
 import com.icm.telemetria_peru_api.repositories.ChecklistRecordRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -57,12 +55,20 @@ public class ChecklistRecordService {
         return new String(Files.readAllBytes(Paths.get(filePath)));
     }
 
-    public List<ChecklistRecordModel> findAll(){
-        return checklistRecordRepository.findAll();
+    public List<ChecklistRecordDTO> findAll(){
+        List<ChecklistRecordModel> checklistRecordModels = checklistRecordRepository.findAll();
+        return checklistRecordModels.stream()
+                .map(checklistRecordMapper::mapToDTO)
+                .toList();
+
     }
 
-    public Page<ChecklistRecordModel> findAll(Pageable pageable){
-        return checklistRecordRepository.findAll(pageable);
+    public Page<ChecklistRecordDTO> findAll(Pageable pageable){
+        Page<ChecklistRecordModel> checklistRecordModels =  checklistRecordRepository.findAll(pageable);
+        List<ChecklistRecordDTO> checklistRecordDTOS =  checklistRecordModels.stream()
+                .map(checklistRecordMapper::mapToDTO)
+                .toList();
+        return new PageImpl<>(checklistRecordDTOS, pageable, checklistRecordModels.getTotalElements());
     }
 
     public List<ChecklistRecordDTO> findByVehicleModelId(Long vehicleId){
@@ -115,7 +121,6 @@ public class ChecklistRecordService {
 
         if (optionalChecklist.isEmpty()) {
             mqttMessagePublisher.CheckListShutDown(vehicleId);
-
             throw new RuntimeException("No checklist record found for today for vehicle ID: " + vehicleId);
         }
 

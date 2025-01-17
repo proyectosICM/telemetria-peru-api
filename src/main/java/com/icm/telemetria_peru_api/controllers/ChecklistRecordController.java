@@ -59,12 +59,12 @@ public class ChecklistRecordController {
     }
 
     @GetMapping
-    public List<ChecklistRecordModel> findAll(){
+    public List<ChecklistRecordDTO> findAll(){
         return checklistRecordService.findAll();
     }
 
     @GetMapping("/paged")
-    public Page<ChecklistRecordModel> findAll(@RequestParam(defaultValue = "0") int page,
+    public Page<ChecklistRecordDTO> findAll(@RequestParam(defaultValue = "0") int page,
                                               @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
         return checklistRecordService.findAll(pageable);

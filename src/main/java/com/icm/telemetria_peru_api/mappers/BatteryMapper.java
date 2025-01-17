@@ -1,7 +1,6 @@
 package com.icm.telemetria_peru_api.mappers;
 
 import com.icm.telemetria_peru_api.dto.BatteryDTO;
-import com.icm.telemetria_peru_api.dto.CompanyDTO;
 import com.icm.telemetria_peru_api.models.BatteryModel;
 import org.springframework.stereotype.Component;
 

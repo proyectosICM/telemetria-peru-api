@@ -60,6 +60,33 @@ public class MqttHandler {
         }
     }
 
+    /**
+     * Validates and extracts relevant fields from a given JSON node, converting them into a
+     * VehiclePayloadMqttDTO object. Fields are checked for existence before retrieval,
+     * and default values are assigned if they are missing.
+     *
+     * @param jsonNode The input JSON node containing vehicle data.
+     * @return A VehiclePayloadMqttDTO object populated with the extracted data.
+     */
+    private VehiclePayloadMqttDTO validateJson(JsonNode jsonNode) {
+        Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
+        Long companyId = jsonNode.has("companyId") ? jsonNode.get("companyId").asLong() : null;
+        String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
+        String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
+        Double speed = jsonNode.has("speed") ? jsonNode.get("speed").asDouble() : 0;
+        String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
+        Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
+        Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
+        Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
+        Double latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asDouble() : null;
+        Double longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asDouble() : null;
+
+
+        String coordinates = (latitude != null && longitude != null) ? latitude + "," + longitude : null;
+
+        return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, coordinates);
+    }
+
     private void processHandlersWithErrorHandling(VehiclePayloadMqttDTO data, VehicleModel vehicle) {
         executeSafely(() -> fuelRecordHandler.analyzeFuelTimestamp(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
         executeSafely(() -> alarmHandler.saveAlarmRecord(vehicle, data.getAlarmInfo()), "alarmHandler.saveAlarmRecord");
@@ -89,23 +116,5 @@ public class MqttHandler {
         }
     }
 
-    private VehiclePayloadMqttDTO validateJson(JsonNode jsonNode) {
-        Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
-        Long companyId = jsonNode.has("companyId") ? jsonNode.get("companyId").asLong() : null;
-        String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
-        String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
-        Double speed = jsonNode.has("speed") ? jsonNode.get("speed").asDouble() : 0;
-        String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
-        Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
-        Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
-        Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
-        // Obtener latitud y longitud
-        Double latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asDouble() : null;
-        Double longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asDouble() : null;
 
-        // Combinar las coordenadas en un solo string
-        String coordinates = (latitude != null && longitude != null) ? latitude + "," + longitude : null;
-
-        return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, coordinates);
-    }
 }
