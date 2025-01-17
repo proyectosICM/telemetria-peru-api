@@ -13,8 +13,12 @@ public class ChecklistRecordMapper {
         String name = checklistRecordModel.getName();
         String fileName = checklistRecordModel.getFileName();
         int timer = checklistRecordModel.getTimer();
-        Long driverId = checklistRecordModel.getDriverModel().getId();
-        String driverName = checklistRecordModel.getDriverModel().getName() + " " + checklistRecordModel.getDriverModel().getLastName();
+        Long driverId = checklistRecordModel.getDriverModel() != null
+                ? checklistRecordModel.getDriverModel().getId()
+                : null;
+        String driverName = checklistRecordModel.getDriverModel() != null
+                ? checklistRecordModel.getDriverModel().getName() + " " + checklistRecordModel.getDriverModel().getLastName()
+                : null;
         Long vehicleId = checklistRecordModel.getVehicleModel().getId();
         String licensePlate = checklistRecordModel.getVehicleModel().getLicensePlate();
         Long type = checklistRecordModel.getChecklistTypeModel().getId();
