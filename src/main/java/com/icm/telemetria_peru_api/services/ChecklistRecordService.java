@@ -48,8 +48,8 @@ public class ChecklistRecordService {
      * @throws EntityNotFoundException If no ChecklistRecord is found with the given ID.
      */
     public String getJsonFileContentById(Long id) throws IOException {
-        ChecklistRecordModel checklistRecordModel = findById(id);
-        String filePath = "CL/" + checklistRecordModel.getId() + ".json";
+        ChecklistRecordDTO checklistRecordDTO = findById(id);
+        String filePath = "CL/" + checklistRecordDTO.getId() + ".json";
 
         return new String(Files.readAllBytes(Paths.get(filePath)));
     }
