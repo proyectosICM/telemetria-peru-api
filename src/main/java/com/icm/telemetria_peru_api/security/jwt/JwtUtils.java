@@ -22,13 +22,13 @@ public class JwtUtils {
     @Value("${jwt.time.expiration}")
     private String timeExpiration;
 
-    // Obtener firma del token
+    // Get token signature
     public Key getSignatureKey(){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Validar el token de acceso
+    // Validate the access token
     public boolean isTokenValid(String token){
         try{
             Jwts.parserBuilder()
@@ -45,7 +45,7 @@ public class JwtUtils {
         }
     }
 
-    // Obtener todos los claims del token
+    // Get all the claims of the token
     public Claims extractAllClaims(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(getSignatureKey())
@@ -54,18 +54,18 @@ public class JwtUtils {
                 .getBody();
     }
 
-    // Obtener un solo claim
+    // Get a single claim
     public <T> T getClaim(String token, Function<Claims, T> claimsTFunction){
-        Claims claims = extractAllClaims(token);  // Extrae todos los claims
-        return claimsTFunction.apply(claims);     // Obtiene el claim solicitado
+        Claims claims = extractAllClaims(token);
+        return claimsTFunction.apply(claims);
     }
 
-    // Obtener el username del token
+    // Get the username of the token
     public String getUsernameFromToken(String token){
         return getClaim(token, Claims::getSubject);
     }
 
-    // Generar token de acceso
+    // Generate access token<
     public String generateAccesToken(String username){
         return Jwts.builder()
                 .setSubject(username)

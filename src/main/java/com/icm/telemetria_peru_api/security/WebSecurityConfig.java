@@ -64,7 +64,7 @@ public class WebSecurityConfig {
         jwtAuthenticationFilter.setFilterProcessesUrl("/login");
 
         HeaderWriter headerWriter = new StaticHeadersWriter("Access-Control-Allow-Origin", "http://telemetriaperu.com:3010", "http://localhost:3000", "http://192.168.1.232:3000");
-        //  .headers(headers -> headers.addHeaderWriter(headerWriter))  // Agregar el encabezado Access-Control-Allow-Origin
+
         return httpSecurity
                 .cors()
                 .and()
@@ -72,22 +72,18 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilter(jwtAuthenticationFilter)
-                .headers(headers -> headers.addHeaderWriter(headerWriter))  // Agregar el encabezado Access-Control-Allow-Origin
+                .headers(headers -> headers.addHeaderWriter(headerWriter))
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable()
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/hello").permitAll();
+                    auth.requestMatchers("/login").permitAll();
+                    auth.requestMatchers("/api/fuel-efficiency/download-excel/**").permitAll();
                     auth.requestMatchers("/api/role").permitAll();
                     auth.requestMatchers("/api/users").permitAll();
-                    auth.requestMatchers("/api/fuel-efficiency/download-excel/**").permitAll();
                     auth.requestMatchers("/api/companies").permitAll();
-                    auth.requestMatchers("/api/checklist-records").permitAll();
                     auth.requestMatchers("/api/images-cl/**").permitAll();
                            // .hasRole("ADMINISTRATOR");
-                    auth.requestMatchers("/api/example").permitAll();
-                    auth.requestMatchers("/unprotected").permitAll();
-                    auth.requestMatchers("/login").permitAll();
                     auth.requestMatchers("/swagger-ui/**").permitAll();
                     auth.requestMatchers("/doc/**").permitAll();
                     auth.requestMatchers("/swagger-ui.html").permitAll();
