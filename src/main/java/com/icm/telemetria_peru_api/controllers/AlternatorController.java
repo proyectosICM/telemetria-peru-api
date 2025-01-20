@@ -69,7 +69,7 @@ public class AlternatorController {
         }
     }
 
-    @GetMapping("/counts-all-days/{vehicleId}")
+    @GetMapping("/counts-by-days/{vehicleId}")
     public ResponseEntity<List<Map<String, Object>>> getVehicleIgnitionRecords(@PathVariable Long vehicleId,
                                                                                @RequestParam(required = false) Integer year,
                                                                                @RequestParam(required = false) Integer month) {

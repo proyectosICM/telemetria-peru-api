@@ -67,7 +67,7 @@ public class AlternatorService {
 
         // Llamar a findByVehicleModelIdAndCreatedAtBetween para obtener los datos en el rango de tiempo
         List<AlternatorModel> records = alternatorRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
-        System.out.println("records: " + records);
+
         // Agrupar los registros por día y contar los que tienen estado 'true'
         Map<LocalDate, Long> groupedByDay = records.stream()
                 .collect(Collectors.groupingBy(
