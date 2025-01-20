@@ -64,7 +64,7 @@ public class AlternatorService {
         // Convertir los timestamps de segundos a ZonedDateTime en la zona horaria adecuada
         ZonedDateTime startTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(startTimestampSeconds), ZoneId.of("America/Lima"));
         ZonedDateTime endTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(endTimestampSeconds), ZoneId.of("America/Lima"));
-
+        System.out.println("Start Timestamp: " + startTimestamp);
         // Llamar a findByVehicleModelIdAndCreatedAtBetween para obtener los datos en el rango de tiempo
         List<AlternatorModel> records = alternatorRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
 
