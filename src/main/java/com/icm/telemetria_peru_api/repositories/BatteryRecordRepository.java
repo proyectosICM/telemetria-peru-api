@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Repository
@@ -22,6 +23,8 @@ public interface BatteryRecordRepository extends JpaRepository<BatteryRecordMode
 
     List<BatteryRecordModel> findByBatteryModelVehicleModelIdAndBatteryModelId(Long vehicleId,Long batteryId);
     Page<BatteryRecordModel> findByBatteryModelVehicleModelIdAndBatteryModelId(Long vehicleId,Long batteryId, Pageable pageable);
+
+    List<BatteryRecordModel> findByVehicleModelIdAndCreatedAtBetween(Long vehicleModelId, ZonedDateTime startTimestamp, ZonedDateTime endTimestamp);
 
     /**
      * Deletes all BatteryRecordModel entries associated with the specified battery ID.

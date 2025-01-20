@@ -75,7 +75,7 @@ public class AlternatorService {
                                 .withZoneSameInstant(ZoneId.of("America/Lima")) // Ajustar la zona horaria correctamente
                                 .toLocalDate(), // Convertir a LocalDate para agrupar por día
                         TreeMap::new, // Mantener ordenado por fechas (orden natural)
-                        Collectors.averagingDouble(AlternatorModel::getVoltage) // Calcular el promedio de voltaje
+                        Collectors.averagingDouble(record -> record.getVoltage() != null ? record.getVoltage() : 0.0)
                 ));
 
         // Transformar el resultado en la estructura deseada

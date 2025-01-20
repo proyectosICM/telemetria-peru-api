@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/batteries-records")
@@ -121,6 +123,23 @@ public class BatteryRecordController {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/counts-by-days/{vehicleId}")
+    public ResponseEntity<List<Map<String, Object>>> getVehicleIgnitionRecords(@PathVariable Long vehicleId,
+                                                                               @RequestParam(required = false) Integer year,
+                                                                               @RequestParam(required = false) Integer month) {
+        try {
+            List<Map<String, Object>> records = batteryRecordService.getDataMonth(vehicleId, year, month);
+
+            if (records.isEmpty()) {
+                return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
+            }
+
+            return ResponseEntity.ok(records);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList(Map.of("error", e.getMessage())));
         }
     }
 
