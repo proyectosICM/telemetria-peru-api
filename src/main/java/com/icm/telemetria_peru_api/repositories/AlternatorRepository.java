@@ -6,10 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Repository
 public interface AlternatorRepository extends JpaRepository<AlternatorModel, Long> {
     List<AlternatorModel> findByVehicleModelId(Long vehicleId);
     Page<AlternatorModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
+    List<AlternatorModel> findByVehicleModelIdAndCreatedAtBetween(Long vehicleModelId, ZonedDateTime startTimestamp, ZonedDateTime endTimestamp);
 }
