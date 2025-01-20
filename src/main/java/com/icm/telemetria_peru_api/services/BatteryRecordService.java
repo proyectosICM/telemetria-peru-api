@@ -103,7 +103,7 @@ public class BatteryRecordService {
         ZonedDateTime endTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(endTimestampSeconds), ZoneId.of("America/Lima"));
 
         // Llamar a findByVehicleModelIdAndCreatedAtBetween para obtener los datos en el rango de tiempo
-        List<BatteryRecordModel> records = batteryRecordRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
+        List<BatteryRecordModel> records = batteryRecordRepository.findByBatteryModelVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
 
         // Agrupar los registros por día y calcular los promedios de voltaje y corriente
         Map<LocalDate, Map<String, Double>> groupedByDay = records.stream()

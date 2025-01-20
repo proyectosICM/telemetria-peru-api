@@ -24,7 +24,7 @@ public interface BatteryRecordRepository extends JpaRepository<BatteryRecordMode
     List<BatteryRecordModel> findByBatteryModelVehicleModelIdAndBatteryModelId(Long vehicleId,Long batteryId);
     Page<BatteryRecordModel> findByBatteryModelVehicleModelIdAndBatteryModelId(Long vehicleId,Long batteryId, Pageable pageable);
 
-    List<BatteryRecordModel> findByVehicleModelIdAndCreatedAtBetween(Long vehicleModelId, ZonedDateTime startTimestamp, ZonedDateTime endTimestamp);
+    List<BatteryRecordModel> findByBatteryModelVehicleModelIdAndCreatedAtBetween(Long vehicleModelId, ZonedDateTime startTimestamp, ZonedDateTime endTimestamp);
 
     /**
      * Deletes all BatteryRecordModel entries associated with the specified battery ID.
