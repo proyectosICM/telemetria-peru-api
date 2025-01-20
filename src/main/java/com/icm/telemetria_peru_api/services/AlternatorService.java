@@ -56,7 +56,7 @@ public class AlternatorService {
         return new PageImpl<>(alternatorDTOs, pageable, alternatorModelPage.getTotalElements());
     }
 
-    public List<Map<String, Object>> getDataMonth(Long vehicleId, Integer year, Integer month){
+    public List<Map<String, Object>> getDataMonth(Long vehicleId, Integer year, Integer month) {
         List<Map<String, Object>> timestamps = dateUtils.getMonthTimestamps(year, month);
         long startTimestampSeconds = (long) timestamps.get(0).get("startTimestamp");
         long endTimestampSeconds = (long) timestamps.get(0).get("endTimestamp");
@@ -68,22 +68,22 @@ public class AlternatorService {
         // Llamar a findByVehicleModelIdAndCreatedAtBetween para obtener los datos en el rango de tiempo
         List<AlternatorModel> records = alternatorRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
 
-        // Agrupar los registros por día y contar los que tienen estado 'true'
-        Map<LocalDate, Long> groupedByDay = records.stream()
+        // Agrupar los registros por día y calcular el promedio de voltaje
+        Map<LocalDate, Double> groupedByDay = records.stream()
                 .collect(Collectors.groupingBy(
                         record -> record.getCreatedAt()
                                 .withZoneSameInstant(ZoneId.of("America/Lima")) // Ajustar la zona horaria correctamente
                                 .toLocalDate(), // Convertir a LocalDate para agrupar por día
                         TreeMap::new, // Mantener ordenado por fechas (orden natural)
-                        Collectors.counting() // Contar los registros en cada día
+                        Collectors.averagingDouble(AlternatorModel::getVoltage) // Calcular el promedio de voltaje
                 ));
 
         // Transformar el resultado en la estructura deseada
         List<Map<String, Object>> results = new ArrayList<>();
-        for (Map.Entry<LocalDate, Long> entry : groupedByDay.entrySet()) {
+        for (Map.Entry<LocalDate, Double> entry : groupedByDay.entrySet()) {
             Map<String, Object> result = new HashMap<>();
             result.put("day", entry.getKey().atStartOfDay(ZoneId.of("America/Lima")).toEpochSecond()); // Timestamp del día
-            result.put("counts", entry.getValue()); // Cantidad de registros con estado 'true'
+            result.put("averageVoltage", entry.getValue()); // Promedio de voltaje
             results.add(result);
         }
 
