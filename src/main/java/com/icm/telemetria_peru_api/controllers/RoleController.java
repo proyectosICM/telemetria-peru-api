@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.services.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,12 +30,14 @@ public class RoleController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<RoleModel> createRole(@RequestBody RoleModel roleModel) {
         RoleModel createdRole = roleService.createRole(roleModel);
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<RoleModel> updateRole(@RequestBody RoleModel roleModel, @PathVariable Long id) {
         RoleModel updatedRole = roleService.updateRole(roleModel, id);
         return updatedRole != null ? new ResponseEntity<>(updatedRole, HttpStatus.OK) : ResponseEntity.notFound().build();

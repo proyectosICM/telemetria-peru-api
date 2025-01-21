@@ -8,7 +8,6 @@ import com.icm.telemetria_peru_api.models.CompanyModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.*;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -26,7 +25,6 @@ public class MqttHandler {
 
     private final MqttMessagePublisher mqttMessagePublisher;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
 
     /**
      * Processes the JSON message received via MQTT, extracting relevant information
