@@ -34,6 +34,7 @@ public class DriverController {
     public List<DriverModel> findAll() {
         return driverService.findAll();
     }
+
     @GetMapping("/paged")
     public ResponseEntity<Page<DriverModel>> findAll(@RequestParam(defaultValue = "0") int page,
                                                         @RequestParam(defaultValue = "8") int size) {
@@ -43,12 +44,13 @@ public class DriverController {
     }
 
     /** Retrieves drivers by status, as a list and paginated. */
-    @GetMapping("/findByStatus")
+    @GetMapping("/by-status")
     public ResponseEntity<List<DriverModel>> findByStatus(@RequestParam @NotNull Boolean status){
         List<DriverModel> dataModel = driverService.findByStatus(status);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
-    @GetMapping("/findByStatus-page")
+
+    @GetMapping("/by-status-paged")
     public ResponseEntity<Page<DriverModel>> findByStatusPage(@RequestParam @NotNull Boolean status,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "8") int size){
@@ -58,13 +60,13 @@ public class DriverController {
     }
 
     /** Retrieves drivers by company, as a list and paginated. */
-    @GetMapping("/findByCompany/{companyId}")
+    @GetMapping("/by-company/{companyId}")
     public ResponseEntity<List<DriverModel>> findByCompanyModelId(@PathVariable @NotNull Long companyId){
         List<DriverModel> dataModel = driverService.findByCompanyModelId(companyId);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
-    @GetMapping("/findByCompany-page/{companyId}")
+    @GetMapping("/by-company-paged/{companyId}")
     public ResponseEntity<Page<DriverModel>> findByCompanyModelId(@PathVariable @NotNull Long companyId,
                                                                   @RequestParam(defaultValue = "0") int page,
                                                                   @RequestParam(defaultValue = "8") int size){
@@ -74,13 +76,13 @@ public class DriverController {
     }
 
     /** Retrieves drivers by company and status, as a list and paginated. */
-    @GetMapping("/findByCompanyAndStatus/{companyId}")
+    @GetMapping("/by-company-and-status/{companyId}")
     public ResponseEntity<List<DriverModel>> findByCompanyModelIdAndStatus(@PathVariable @NotNull Long companyId, @RequestParam Boolean status){
         List<DriverModel> dataModel = driverService.findByCompanyModelIdAndStatus(companyId, status);
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
-    @GetMapping("/findByCompanyAndStatus-paged/{companyId}")
+    @GetMapping("/by-company-and-status-paged/{companyId}")
     public ResponseEntity<Page<DriverModel>> findByCompanyModelIdAndStatus(@PathVariable @NotNull Long companyId,
                                                                   @RequestParam @NotNull Boolean status,
                                                                   @RequestParam(defaultValue = "0") int page,
@@ -124,10 +126,10 @@ public class DriverController {
     }
 
     /**  status update */
-    @PutMapping("/changeStatus/{driverId}")
-    public ResponseEntity<DriverModel> changeStatus(@PathVariable @NotNull Long driverId){
+    @PutMapping("/status-toggle/{driverId}")
+    public ResponseEntity<DriverModel> statusToggle(@PathVariable @NotNull Long driverId){
         try {
-            DriverModel dataModel = driverService.changeStatus(driverId);
+            DriverModel dataModel = driverService.statusToggle(driverId);
             return new ResponseEntity<>(dataModel, HttpStatus.OK);
         } catch (EntityNotFoundException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

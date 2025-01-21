@@ -87,7 +87,7 @@ public class DriverService {
     }
 
     /**  status update */
-    public DriverModel changeStatus(Long driverId){
+    public DriverModel statusToggle(Long driverId){
         DriverModel existing = getDriverById(driverId);
         existing.setStatus(!existing.getStatus());
         return driverRepository.save(existing);
