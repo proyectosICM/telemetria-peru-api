@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,6 +68,7 @@ public class CompanyController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('SA')")
     public ResponseEntity<Object> save(@RequestBody @Valid CompanyModel companyModel){
         try {
             CompanyModel dataModel = companyService.save(companyModel);
@@ -77,6 +79,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{companyId}")
+    @PreAuthorize("hasRole('SA')")
     public ResponseEntity<Object> update(@PathVariable @NotNull Long companyId,@RequestBody @Valid CompanyModel companyModel){
         try {
             CompanyModel dataModel = companyService.update(companyId, companyModel);
@@ -87,6 +90,7 @@ public class CompanyController {
     }
 
     @PutMapping("/update-status/{companyId}")
+    @PreAuthorize("hasRole('SA')")
     public ResponseEntity<Object> changeStatus(@PathVariable @NotNull Long companyId){
         try {
             CompanyModel dataModel = companyService.changeStatus(companyId);
@@ -97,6 +101,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{companyId}")
+    @PreAuthorize("hasRole('SA')")
     public ResponseEntity<Object> delete(@PathVariable @NotNull Long companyId){
         companyService.deleteById(companyId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
