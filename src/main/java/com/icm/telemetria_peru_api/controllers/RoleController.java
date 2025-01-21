@@ -30,14 +30,14 @@ public class RoleController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('SA')")
     public ResponseEntity<RoleModel> createRole(@RequestBody RoleModel roleModel) {
         RoleModel createdRole = roleService.createRole(roleModel);
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('SA')")
     public ResponseEntity<RoleModel> updateRole(@RequestBody RoleModel roleModel, @PathVariable Long id) {
         RoleModel updatedRole = roleService.updateRole(roleModel, id);
         return updatedRole != null ? new ResponseEntity<>(updatedRole, HttpStatus.OK) : ResponseEntity.notFound().build();
