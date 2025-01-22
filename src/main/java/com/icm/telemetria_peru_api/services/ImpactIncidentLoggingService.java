@@ -74,7 +74,7 @@ public class ImpactIncidentLoggingService {
                 String message = "El vehículo con ID " + vehicleId + " A sufrido un incidente de impacto. Por favor, verifique el estado del vehículo.";
 
                 try {
-                    //emailService.sendEmail(emails, subject, message);
+                    emailService.sendEmail(emails, subject, message);
                     System.out.println("Mail sent to: " + Arrays.toString(emails));
                 } catch (Exception e) {
                     System.err.println("Error sending email: " + e.getMessage());
