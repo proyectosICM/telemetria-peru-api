@@ -2,9 +2,7 @@ package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.dto.AlternatorDTO;
 import com.icm.telemetria_peru_api.models.AlternatorModel;
-import com.icm.telemetria_peru_api.models.BatteryModel;
 import com.icm.telemetria_peru_api.services.AlternatorService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,18 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AlternatorController {
     private final AlternatorService alternatorService;
-
-    @GetMapping
-    public List<AlternatorDTO> findAll(){
-        return alternatorService.findAll();
-    }
-
-    @GetMapping("/paged")
-    public Page<AlternatorDTO> findAll(@RequestParam(defaultValue = "0") int page,
-                                            @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        return alternatorService.findAll(pageable);
-    }
 
     @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<AlternatorDTO>> findByVehicleModelId(@PathVariable Long vehicleId){

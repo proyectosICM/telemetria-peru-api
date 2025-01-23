@@ -26,21 +26,6 @@ public class AlternatorService {
     private final AlternatorMapper alternatorMapper;
     private final DateUtils dateUtils;
 
-    public List<AlternatorDTO> findAll(){
-        List<AlternatorModel> alternatorModels =  alternatorRepository.findAll();
-        return alternatorModels.stream()
-                .map(alternatorMapper::mapToDTO)
-                .toList();
-    }
-
-    public Page<AlternatorDTO> findAll(Pageable pageable){
-        Page<AlternatorModel> alternatorPage = alternatorRepository.findAll(pageable);
-        List<AlternatorDTO> alternatorDTOS = alternatorPage.stream()
-                .map(alternatorMapper::mapToDTO)
-                .toList();
-        return new PageImpl<>(alternatorDTOS, pageable, alternatorPage.getTotalElements());
-    }
-
     public List<AlternatorDTO> findByVehicleModelId(Long vehicleId) {
         List<AlternatorModel> alternatorModels =  alternatorRepository.findByVehicleModelId(vehicleId);
         return alternatorModels.stream()

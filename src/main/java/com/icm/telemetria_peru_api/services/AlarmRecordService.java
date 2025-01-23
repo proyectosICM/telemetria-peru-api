@@ -18,22 +18,6 @@ public class AlarmRecordService {
     private final AlarmRecordRepository alarmRecordRepository;
     private final AlarmRecordMapper alarmRecordMapper;
 
-    public List<AlarmRecordDTO> findAll(){
-        List<AlarmRecordModel> data = alarmRecordRepository.findAll();
-        return data.stream()
-                .map(alarmRecordMapper::mapToDTO)
-                .toList();
-    }
-
-    public Page<AlarmRecordDTO> findAll(Pageable pageable){
-
-        Page<AlarmRecordModel> alarmModelsPage =  alarmRecordRepository.findAll(pageable);
-        List<AlarmRecordDTO> alarmDTOs =  alarmModelsPage.stream()
-                .map(alarmRecordMapper::mapToDTO)
-                .toList();
-        return new PageImpl<>(alarmDTOs, pageable, alarmModelsPage.getTotalElements());
-    }
-
     public List<AlarmRecordDTO> findByVehicleModelId(Long vehicleId){
         List<AlarmRecordModel> data = alarmRecordRepository.findByVehicleModelId(vehicleId);
         return data.stream()

@@ -20,18 +20,6 @@ import java.util.List;
 public class AlarmRecordController {
     private final AlarmRecordService alarmRecordService;
 
-    @GetMapping
-    public List<AlarmRecordDTO> findAll() {
-        return alarmRecordService.findAll();
-    }
-
-    @GetMapping("/paged")
-    public Page<AlarmRecordDTO> findAll(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return alarmRecordService.findAll(pageable);
-    }
-
     @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<AlarmRecordDTO>> findByVehicleModelId(@PathVariable Long vehicleId) {
         try {

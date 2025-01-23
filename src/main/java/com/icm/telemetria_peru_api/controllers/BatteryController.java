@@ -22,8 +22,17 @@ public class BatteryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BatteryDTO> findById(@PathVariable @NotNull Long id) {
-        BatteryDTO gasRecord = batteryService.findById(id);
-        return new ResponseEntity<>(gasRecord, HttpStatus.OK);
+        try {
+            BatteryDTO gasRecord = batteryService.findById(id);
+
+            if (gasRecord == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(gasRecord, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping
