@@ -46,7 +46,7 @@ public class GasRecordController {
         }
     }
 
-    @GetMapping("/by-vehicle-paged/{vehicleId}/")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<GasRecordModel>> findByVehicleId(@PathVariable Long vehicleId,
                                                                 @RequestParam(defaultValue = "0") Integer page,
                                                                 @RequestParam(defaultValue = "10") Integer size) {
