@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.GasChangeRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,29 +15,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class GasChangeService {
     private final GasChangeRepository gasChangeRepository;
     private final VehicleRepository vehicleRepository;
 
-    @Autowired
-    public GasChangeService(GasChangeRepository gasChangeRepository, VehicleRepository vehicleRepository) {
-        this.gasChangeRepository = gasChangeRepository;
-        this.vehicleRepository = vehicleRepository;
-    }
-
-    /*********************************/
-    /** Starting point for find methods **/
-    /*********************************/
     public Optional<GasChangeModel> findById(Long gasChangeId) {
         return gasChangeRepository.findById(gasChangeId);
-    }
-
-    public List<GasChangeModel> findAll() {
-        return gasChangeRepository.findAll();
-    }
-
-    public Page<GasChangeModel> findAll(Pageable pageable) {
-        return gasChangeRepository.findAll(pageable);
     }
 
     public List<GasChangeModel> findByVehicleModelId(Long vehicleId) {
@@ -47,13 +32,6 @@ public class GasChangeService {
         return gasChangeRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
-    /*********************************/
-    /** End of find methods section **/
-    /*********************************/
-
-    /*********************************/
-    /** More CRUD methods **/
-    /*********************************/
     public GasChangeModel saveFromDTO(GasChangeDTO gasChangeDTO) {
         GasChangeModel gasChangeModel = gasChangeDTO.toGasChangeModel();
 

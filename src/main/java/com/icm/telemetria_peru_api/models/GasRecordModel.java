@@ -13,35 +13,18 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "gas_changes")
-public class GasChangeModel {
+@Table(name = "gas_records")
+public class GasRecordModel {
     @Id
     @Column(unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Date of the gas change
     @Column(nullable = false)
-    private ZonedDateTime changeDate;
-
-    // Time when low pressure was detected
-    @Column(nullable = false)
-    private ZonedDateTime lowPressureDetectedAt;
+    private Boolean isVehicleOn;
 
     @Column(nullable = false)
-    private Double pressureBeforeChange;
-
-    // Time when the gas change was performed
-    @Column(nullable = false)
-    private ZonedDateTime changePerformedAt;
-
-    // Pressure after the change (in psi)
-    @Column(nullable = false)
-    private Double pressureAfterChange;
-
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
-    private VehicleModel vehicleModel;
+    private Double lastPressureDetected;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -50,4 +33,3 @@ public class GasChangeModel {
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
 }
-

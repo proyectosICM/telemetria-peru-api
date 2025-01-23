@@ -28,35 +28,43 @@ public class GasChangeController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping
-    public List<GasChangeModel> findAll() {
-        return gasChangeService.findAll();
+    @GetMapping("/by-vehicle")
+    public ResponseEntity<List<GasChangeModel>> findByVehicleModelId(@RequestParam @NotNull Long vehicleId) {
+        try {
+            List<GasChangeModel> dataModel = gasChangeService.findByVehicleModelId(vehicleId);
+
+            if (dataModel.isEmpty()) {
+                return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(dataModel, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @GetMapping("/paged")
-    public ResponseEntity<Page<GasChangeModel>> findById(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<GasChangeModel> dataModel = gasChangeService.findAll(pageable);
-        return new ResponseEntity<>(dataModel, HttpStatus.OK);
-    }
-
-    @GetMapping("/findByVehicleModelId")
-    public ResponseEntity<List<GasChangeModel>> findByVehicleModelId(@RequestParam @NotNull Long vehicleId){
-        List<GasChangeModel> dataModel = gasChangeService.findByVehicleModelId(vehicleId);
-        return new ResponseEntity<>(dataModel, HttpStatus.OK);
-    }
-    @GetMapping("/findByVehicleModelId-paged")
+    @GetMapping("/by-vehicle-paged")
     public ResponseEntity<Page<GasChangeModel>> findByVehicleModelId(@RequestParam @NotNull Long vehicleId,
-                                                              @RequestParam(defaultValue = "0") int page,
-                                                              @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        Page<GasChangeModel> dataModel = gasChangeService.findByVehicleModelId(vehicleId, pageable);
-        return new ResponseEntity<>(dataModel, HttpStatus.OK);
+                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "10") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<GasChangeModel> dataModel = gasChangeService.findByVehicleModelId(vehicleId, pageable);
+
+            if (dataModel.isEmpty()) {
+                return new ResponseEntity<>(Page.empty(), HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(dataModel, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Page.empty(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid GasChangeDTO gasChangeDTO){
+    public ResponseEntity<Object> save(@RequestBody @Valid GasChangeDTO gasChangeDTO) {
         try {
             GasChangeModel dataModel = gasChangeService.saveFromDTO(gasChangeDTO);
             return new ResponseEntity<>(dataModel, HttpStatus.CREATED);
@@ -66,7 +74,7 @@ public class GasChangeController {
     }
 
     @DeleteMapping("/{gasChangeId}")
-    public ResponseEntity<Object> delete(@PathVariable @NotNull Long gasChangeId){
+    public ResponseEntity<Object> delete(@PathVariable @NotNull Long gasChangeId) {
         gasChangeService.deleteById(gasChangeId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
