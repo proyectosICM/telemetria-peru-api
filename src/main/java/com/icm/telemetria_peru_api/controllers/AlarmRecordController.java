@@ -21,21 +21,21 @@ public class AlarmRecordController {
     private final AlarmRecordService alarmRecordService;
 
     @GetMapping
-    public List<AlarmRecordDTO> findAll(){
+    public List<AlarmRecordDTO> findAll() {
         return alarmRecordService.findAll();
     }
 
     @GetMapping("/paged")
     public Page<AlarmRecordDTO> findAll(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size){
+                                        @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return alarmRecordService.findAll(pageable);
     }
 
     @GetMapping("/by-vehicle/{vehicleId}")
-    public ResponseEntity<List<AlarmRecordDTO>> findByVehicleModelId(@PathVariable Long vehicleId){
+    public ResponseEntity<List<AlarmRecordDTO>> findByVehicleModelId(@PathVariable Long vehicleId) {
         try {
-            List<AlarmRecordDTO> data =  alarmRecordService.findByVehicleModelId(vehicleId);
+            List<AlarmRecordDTO> data = alarmRecordService.findByVehicleModelId(vehicleId);
 
             if (data.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
@@ -49,8 +49,8 @@ public class AlarmRecordController {
 
     @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<AlarmRecordDTO>> findByVehicleModelId(@PathVariable Long vehicleId,
-                                                       @RequestParam(defaultValue = "0") int page,
-                                                       @RequestParam(defaultValue = "10") int size){
+                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
             Page<AlarmRecordDTO> data = alarmRecordService.findByVehicleModelId(vehicleId, pageable);
@@ -60,15 +60,15 @@ public class AlarmRecordController {
             }
 
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(Page.empty(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping
-    public ResponseEntity<AlarmRecordModel> save(@RequestBody AlarmRecordModel alarmRecordModel){
+    public ResponseEntity<AlarmRecordModel> save(@RequestBody AlarmRecordModel alarmRecordModel) {
         try {
-            AlarmRecordModel data =  alarmRecordService.save(alarmRecordModel);
+            AlarmRecordModel data = alarmRecordService.save(alarmRecordModel);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,8 +76,12 @@ public class AlarmRecordController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<AlarmRecordModel> delete(@PathVariable Long id){
-        alarmRecordService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<AlarmRecordModel> delete(@PathVariable Long id) {
+        try {
+            alarmRecordService.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
