@@ -23,7 +23,7 @@ public class GasChangeDTO {
 
         // Create GasChangeModel
         GasChangeModel gasChangeModel = new GasChangeModel();
-        gasChangeModel.setChangeDateTime(changeDateTime);
+        //gasChangeModel.setChangeDateTime(changeDateTime);
 
         // Set VehicleModel (you might need to fetch it from the database)
     /*
