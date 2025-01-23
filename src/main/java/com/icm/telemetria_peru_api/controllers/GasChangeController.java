@@ -73,6 +73,16 @@ public class GasChangeController {
         }
     }
 
+    @PostMapping("/save")
+    public ResponseEntity<Object> save(@RequestBody @Valid GasChangeModel gasChangeModel) {
+        try {
+            GasChangeModel dataModel = gasChangeService.save(gasChangeModel);
+            return new ResponseEntity<>(dataModel, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @DeleteMapping("/{gasChangeId}")
     public ResponseEntity<Object> delete(@PathVariable @NotNull Long gasChangeId) {
         gasChangeService.deleteById(gasChangeId);

@@ -45,6 +45,10 @@ public class GasChangeService {
         return gasChangeRepository.save(gasChangeModel);
     }
 
+    public GasChangeModel save(GasChangeModel gasChangeModel){
+        return gasChangeRepository.save(gasChangeModel);
+    }
+
     public void deleteById(Long id){
         gasChangeRepository.deleteById(id);
     }
