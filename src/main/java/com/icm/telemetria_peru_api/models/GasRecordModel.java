@@ -26,6 +26,10 @@ public class GasRecordModel {
     @Column(nullable = false)
     private Double lastPressureDetected;
 
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
+    private VehicleModel vehicleModel;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private ZonedDateTime createdAt;
