@@ -28,8 +28,8 @@ public class GasChangeController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/by-vehicle")
-    public ResponseEntity<List<GasChangeModel>> findByVehicleModelId(@RequestParam @NotNull Long vehicleId) {
+    @GetMapping("/by-vehicle/{vehicleId}")
+    public ResponseEntity<List<GasChangeModel>> findByVehicleModelId(@PathVariable @NotNull Long vehicleId) {
         try {
             List<GasChangeModel> dataModel = gasChangeService.findByVehicleModelId(vehicleId);
 
@@ -44,8 +44,8 @@ public class GasChangeController {
         }
     }
 
-    @GetMapping("/by-vehicle-paged")
-    public ResponseEntity<Page<GasChangeModel>> findByVehicleModelId(@RequestParam @NotNull Long vehicleId,
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
+    public ResponseEntity<Page<GasChangeModel>> findByVehicleModelId(@PathVariable @NotNull Long vehicleId,
                                                                      @RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "10") int size) {
         try {
