@@ -21,6 +21,7 @@ public class MqttHandler {
     private final AlarmHandler alarmHandler;
     private final FuelRecordHandler fuelRecordHandler;
     private final FuelEfficiencyHandler fuelEfficiencyHandler;
+    private final GasChangeHandler gasChangeHandler;
     private final VehicleRepository vehicleRepository;
 
     private final MqttMessagePublisher mqttMessagePublisher;
@@ -50,6 +51,7 @@ public class MqttHandler {
                     publishDataWithErrorHandling(data, jsonNode);
                     processHandlersWithErrorHandling(data, vehicle);
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
+
                 }
             }
         } catch (IOException e) {
@@ -87,6 +89,7 @@ public class MqttHandler {
 
     private void processHandlersWithErrorHandling(VehiclePayloadMqttDTO data, VehicleModel vehicle) {
         executeSafely(() -> fuelRecordHandler.analyzeFuelTimestamp(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
+        //executeSafely(() -> gasChangeHandler.saveGasChangeRecord(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
         executeSafely(() -> alarmHandler.saveAlarmRecord(vehicle, data.getAlarmInfo()), "alarmHandler.saveAlarmRecord");
         executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
         executeSafely(() -> fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicle, data), "fuelEfficiencyHandler.processFuelEfficiencyInfo");

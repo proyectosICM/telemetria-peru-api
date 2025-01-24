@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.repositories;
 
+import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.models.GasChangeModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,4 +13,6 @@ import java.util.List;
 public interface GasChangeRepository extends JpaRepository<GasChangeModel, Long> {
     List<GasChangeModel> findByVehicleModelId(Long vehicleId);
     Page<GasChangeModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
+
+    GasChangeModel findTopByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
 }

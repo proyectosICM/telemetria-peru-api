@@ -3,7 +3,6 @@ package com.icm.telemetria_peru_api.integration.mqtt.handlers;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.AlarmRecordRepository;
-import com.icm.telemetria_peru_api.repositories.VehicleIgnitionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

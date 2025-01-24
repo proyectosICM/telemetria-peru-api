@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.repositories;
 
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
+import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
