@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
 import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.GasChangeRepository;
+import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +13,16 @@ import org.springframework.stereotype.Component;
 public class GasChangeHandler {
 
     private final GasChangeRepository gasChangeRepository;
+    private final VehicleRepository vehicleRepository;
 
     public void saveGasChangeRecord(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         GasChangeModel lastRecord = gasChangeRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
+
+        VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
+
+        if (!dataVehicle.getFuelType().equals("GAS")) {
+            return;
+        }
 
         if (lastRecord == null) {
             createNewGasChangeRecord(vehicleModel.getId(), data.getTimestamp(), data.getGasInfo());
