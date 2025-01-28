@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.GasRecordRepository;
+import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +16,17 @@ import java.time.ZonedDateTime;
 @RequiredArgsConstructor
 public class GasRecordHandler {
     private final GasRecordRepository gasRecordRepository;
+    private final VehicleRepository vehicleRepository;
 
     public void saveGasRecordModel(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         // Buscar el último registro de gas para este vehículo
         GasRecordModel lastRecord = gasRecordRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
+
+        VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
+
+        if (!dataVehicle.getFuelType().equals("GAS")) {
+            return;
+        }
 
         // Si no hay un registro previo, crea uno nuevo
         if (lastRecord == null) {
@@ -37,7 +45,7 @@ public class GasRecordHandler {
 
     public void createNewGasRecord(Long vehicleId, VehiclePayloadMqttDTO data){
         GasRecordModel gasRecordModel = new GasRecordModel();
-        int timestampInt = Integer.parseInt(data.getTimestamp());
+        Long timestampInt = Long.parseInt(data.getTimestamp());
 
         gasRecordModel.getVehicleModel().setId(vehicleId);
         gasRecordModel.setStartTime(timestampInt);

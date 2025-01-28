@@ -22,10 +22,10 @@ public class GasRecordModel {
 
     // HOra de inicio de conteo
     @Column(nullable = false)
-    private Integer startTime;
+    private Long  startTime;
 
     // Hora de fin de conteo
-    private Integer endTime;
+    private Long  endTime;
 
     // Tiempo acumulado
     private ZonedDateTime accumulatedTime;
