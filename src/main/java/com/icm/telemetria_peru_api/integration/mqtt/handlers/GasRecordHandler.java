@@ -57,7 +57,7 @@ public class GasRecordHandler {
 
     public void accumulateGasRecord(GasRecordModel lastRecord, VehiclePayloadMqttDTO data) {
         // Obtener el timestamp actual y convertirlo a ZonedDateTime
-        int currentTimestampInt = Integer.parseInt(data.getTimestamp());
+        Long currentTimestampInt = Long.parseLong(data.getTimestamp());
         ZonedDateTime currentTimestamp = ZonedDateTime.ofInstant(java.time.Instant.ofEpochSecond(currentTimestampInt), java.time.ZoneId.systemDefault());
 
         // Calcular el tiempo transcurrido desde el último registro
