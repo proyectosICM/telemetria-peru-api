@@ -20,20 +20,16 @@ public class GasChangeModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Date of the gas change
-    @Column(nullable = false)
-    private ZonedDateTime changeDate;
-
     // Time when low pressure was detected
     @Column(nullable = false)
-    private ZonedDateTime lowPressureDetectedAt;
+    private String lowPressureDetectedAt;
 
     @Column(nullable = false)
     private Double pressureBeforeChange;
 
     // Time when the gas change was performed
     @Column(nullable = false)
-    private ZonedDateTime changePerformedAt;
+    private String changePerformedAt;
 
     // Pressure after the change (in psi)
     @Column(nullable = false)

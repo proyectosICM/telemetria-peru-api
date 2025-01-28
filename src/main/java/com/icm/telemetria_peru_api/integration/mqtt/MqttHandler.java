@@ -22,6 +22,7 @@ public class MqttHandler {
     private final FuelRecordHandler fuelRecordHandler;
     private final FuelEfficiencyHandler fuelEfficiencyHandler;
     private final GasChangeHandler gasChangeHandler;
+    private final GasRecordHandler gasRecordHandler;
     private final VehicleRepository vehicleRepository;
 
     private final MqttMessagePublisher mqttMessagePublisher;
@@ -80,16 +81,17 @@ public class MqttHandler {
         Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
         Double latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asDouble() : null;
         Double longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asDouble() : null;
-
+        Double gasInfo = jsonNode.has("gasInfo") ? jsonNode.get("gasInfo").asDouble() : null;
 
         String coordinates = (latitude != null && longitude != null) ? latitude + "," + longitude : null;
 
-        return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, coordinates);
+        return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, coordinates, gasInfo);
     }
 
     private void processHandlersWithErrorHandling(VehiclePayloadMqttDTO data, VehicleModel vehicle) {
         executeSafely(() -> fuelRecordHandler.analyzeFuelTimestamp(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
-        //executeSafely(() -> gasChangeHandler.saveGasChangeRecord(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
+        executeSafely(() -> gasChangeHandler.saveGasChangeRecord(data, vehicle), "gasChangeHandler.analyzeFuelTimestamp");
+        executeSafely(() -> gasRecordHandler.saveGasRecordModel(data, vehicle), "gasRecordHandler.analyzeFuelTimestamp");
         executeSafely(() -> alarmHandler.saveAlarmRecord(vehicle, data.getAlarmInfo()), "alarmHandler.saveAlarmRecord");
         executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
         executeSafely(() -> fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicle, data), "fuelEfficiencyHandler.processFuelEfficiencyInfo");

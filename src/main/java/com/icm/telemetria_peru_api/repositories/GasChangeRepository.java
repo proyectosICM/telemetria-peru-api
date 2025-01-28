@@ -1,6 +1,5 @@
 package com.icm.telemetria_peru_api.repositories;
 
-import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.models.GasChangeModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
