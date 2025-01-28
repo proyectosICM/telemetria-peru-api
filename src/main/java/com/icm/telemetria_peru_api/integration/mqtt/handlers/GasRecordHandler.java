@@ -45,7 +45,7 @@ public class GasRecordHandler {
 
     public void createNewGasRecord(Long vehicleId, VehiclePayloadMqttDTO data){
         GasRecordModel gasRecordModel = new GasRecordModel();
-        Long timestampInt = Long.parseInt(data.getTimestamp());
+        Long timestampInt = Long.parseLong(data.getTimestamp());
 
         gasRecordModel.getVehicleModel().setId(vehicleId);
         gasRecordModel.setStartTime(timestampInt);
