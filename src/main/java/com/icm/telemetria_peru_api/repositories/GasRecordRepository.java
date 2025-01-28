@@ -12,4 +12,5 @@ import java.util.List;
 public interface GasRecordRepository extends JpaRepository<GasRecordModel, Long> {
     List<GasRecordModel> findByVehicleModelId(Long vehicleId);
     Page<GasRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
+    GasRecordModel findTopByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
 }

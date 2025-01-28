@@ -20,9 +20,17 @@ public class GasRecordModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // HOra de inicio de conteo
     @Column(nullable = false)
-    private Boolean isVehicleOn;
+    private Integer startTime;
 
+    // Hora de fin de conteo
+    private Integer endTime;
+
+    // Tiempo acumulado
+    private ZonedDateTime accumulatedTime;
+
+    // Ultima presion detectada
     @Column(nullable = false)
     private Double lastPressureDetected;
 
