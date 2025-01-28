@@ -32,11 +32,11 @@ public class FuelRecordHandler {
             if (data.getFuelInfo() == null && data.getTimestamp() == null) {
                 return;
             }
-
+/*
             if (!dataVehicle.getFuelType().equals("DIESEL")) {
                 return;
             }
-
+*/
             long unixTimestamp = Long.parseLong(data.getTimestamp());
 
             LocalTime time = Instant.ofEpochSecond(unixTimestamp).atZone(ZoneId.systemDefault()).toLocalTime();
