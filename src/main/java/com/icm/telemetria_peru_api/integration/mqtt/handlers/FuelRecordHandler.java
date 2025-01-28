@@ -4,6 +4,7 @@ import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
 import com.icm.telemetria_peru_api.models.FuelRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.FuelRecordRepository;
+import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.time.ZoneId;
 @RequiredArgsConstructor
 public class FuelRecordHandler {
     private final FuelRecordRepository fuelRecordRepository;
+    private final VehicleRepository vehicleRepository;
     /**
      * Analyzes the received timestamp to determine if it falls within a specific interval
      * (the first 2 minutes of every tenth of the hour) and, if so, records a fuel data
@@ -25,8 +27,13 @@ public class FuelRecordHandler {
      */
     public void analyzeFuelTimestamp(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         try {
+            VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
 
             if (data.getFuelInfo() == null && data.getTimestamp() == null) {
+                return;
+            }
+
+            if (!dataVehicle.getFuelType().equals("DIESEL")) {
                 return;
             }
 
