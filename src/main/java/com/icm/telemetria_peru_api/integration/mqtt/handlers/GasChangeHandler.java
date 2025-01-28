@@ -23,7 +23,7 @@ public class GasChangeHandler {
         if (!dataVehicle.getFuelType().equals("GAS")) {
             return;
         }
-
+        System.out.println("Entro");
         if (lastRecord == null) {
             createNewGasChangeRecord(vehicleModel.getId(), data.getTimestamp(), data.getGasInfo());
             return;
