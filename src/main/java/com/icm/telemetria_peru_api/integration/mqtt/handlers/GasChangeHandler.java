@@ -21,7 +21,7 @@ public class GasChangeHandler {
 
         VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
 
-        if (dataVehicle.getFuelType().equals(FuelType.GAS)) {
+        if (!dataVehicle.getFuelType().equals(FuelType.GAS)) {
             return;
         }
 
