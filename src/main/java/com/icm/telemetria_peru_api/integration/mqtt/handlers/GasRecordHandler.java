@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.integration.mqtt.handlers;
 
 import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
+import com.icm.telemetria_peru_api.enums.FuelType;
 import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
@@ -24,9 +25,9 @@ public class GasRecordHandler {
 
         VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
 
-        if (!dataVehicle.getFuelType().equals("GAS")) {
-            //System.out.println(dataVehicle.getFuelType());
-            //System.out.println("Entro mal");
+        if (!dataVehicle.getFuelType().equals(FuelType.GAS)) {
+            System.out.println(dataVehicle.getFuelType());
+            System.out.println("Entro mal");
             return;
         }
         System.out.println("Entro");
