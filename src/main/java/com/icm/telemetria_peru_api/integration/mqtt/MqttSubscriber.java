@@ -41,7 +41,7 @@ public class MqttSubscriber {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
-                    //System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
+                    System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
                         mqttHandler.processJsonPayload(payload);
                 }
             });
