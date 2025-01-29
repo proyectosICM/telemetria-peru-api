@@ -32,24 +32,24 @@ public class GasRecordHandler {
         //System.out.println(dataVehicle);
         // Si no hay un registro previo, crea uno nuevo
         if (lastRecord == null) {
-            createNewGasRecord(vehicleModel.getId(), data);
+            createNewGasRecord(vehicleModel, data);
             return;
         }
 
         // Si la presión cambia, crea un nuevo registro
         if (lastRecord.getLastPressureDetected() != data.getGasInfo()) {
-            createNewGasRecord(vehicleModel.getId(), data);
+            createNewGasRecord(vehicleModel, data);
         } else {
             // Si la presión no cambia, acumula el tiempo
             accumulateGasRecord(lastRecord, data);
         }
     }
 
-    public void createNewGasRecord(Long vehicleId, VehiclePayloadMqttDTO data){
+    public void createNewGasRecord(VehicleModel vehicleModel, VehiclePayloadMqttDTO data){
         GasRecordModel gasRecordModel = new GasRecordModel();
         Long timestampInt = Long.parseLong(data.getTimestamp());
 
-        gasRecordModel.getVehicleModel().setId(vehicleId);
+        gasRecordModel.setVehicleModel(vehicleModel);
         gasRecordModel.setStartTime(timestampInt);
         gasRecordModel.setLastPressureDetected(data.getGasInfo());
         gasRecordModel.setAccumulatedTime(ZonedDateTime.now());
