@@ -23,6 +23,7 @@ public class GasRecordHandler {
         // Buscar el último registro de gas para este vehículo
         GasRecordModel lastRecord = gasRecordRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
+
         VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
 
         if (!dataVehicle.getFuelType().equals(FuelType.GAS)) {
@@ -51,22 +52,15 @@ public class GasRecordHandler {
         gasRecordModel.setVehicleModel(vehicleModel);
         gasRecordModel.setStartTime(timestampInt);
         gasRecordModel.setLastPressureDetected(data.getGasInfo());
-        gasRecordModel.setAccumulatedTime(ZonedDateTime.now());
+        gasRecordModel.setAccumulatedTime(0L);
 
         gasRecordRepository.save(gasRecordModel);
     }
 
     public void accumulateGasRecord(GasRecordModel lastRecord, VehiclePayloadMqttDTO data) {
         // Obtener el timestamp actual y convertirlo a ZonedDateTime
+        Long newAccumulatedTime = lastRecord.getEndTime() - lastRecord.getStartTime() + lastRecord.getAccumulatedTime();
         Long currentTimestampInt = Long.parseLong(data.getTimestamp());
-        ZonedDateTime currentTimestamp = ZonedDateTime.ofInstant(java.time.Instant.ofEpochSecond(currentTimestampInt), java.time.ZoneId.systemDefault());
-
-        // Calcular el tiempo transcurrido desde el último registro
-        Duration duration = Duration.between(lastRecord.getAccumulatedTime(), currentTimestamp);
-
-        // Actualizar el tiempo acumulado
-        ZonedDateTime newAccumulatedTime = lastRecord.getAccumulatedTime().plus(duration);
-
         // Actualizar el registro con el nuevo tiempo acumulado
         lastRecord.setAccumulatedTime(newAccumulatedTime);
         lastRecord.setStartTime(currentTimestampInt); // Actualiza el timestamp de inicio

@@ -28,7 +28,7 @@ public class GasRecordModel {
     private Long  endTime;
 
     // Tiempo acumulado
-    private ZonedDateTime accumulatedTime;
+    private Long accumulatedTime = 0L;
 
     // Ultima presion detectada
     @Column(nullable = false)
