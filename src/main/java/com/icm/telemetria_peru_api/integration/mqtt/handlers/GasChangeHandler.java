@@ -26,19 +26,19 @@ public class GasChangeHandler {
         }
 
         if (lastRecord == null) {
-            createNewGasChangeRecord(vehicleModel.getId(), data.getTimestamp(), data.getGasInfo());
+            createNewGasChangeRecord(vehicleModel, data.getTimestamp(), data.getGasInfo());
             return;
         }
 
         if (lastRecord.getPressureBeforeChange() != data.getGasInfo()) {
             closeLastRecord(lastRecord, data.getTimestamp());
-            createNewGasChangeRecord(vehicleModel.getId(), data.getTimestamp(), data.getGasInfo());
+            createNewGasChangeRecord(vehicleModel, data.getTimestamp(), data.getGasInfo());
         }
     }
 
-    public void createNewGasChangeRecord(Long vehicleId, String timestamp, Double pressure) {
+    public void createNewGasChangeRecord(VehicleModel vehicleModel, String timestamp, Double pressure) {
         GasChangeModel gasChangeModel = new GasChangeModel();
-        gasChangeModel.getVehicleModel().setId(vehicleId);
+        gasChangeModel.setVehicleModel(vehicleModel);
         gasChangeModel.setLowPressureDetectedAt(timestamp);
         gasChangeModel.setPressureBeforeChange(pressure);
 
