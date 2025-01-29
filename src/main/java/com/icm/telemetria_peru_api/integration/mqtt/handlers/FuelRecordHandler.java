@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.integration.mqtt.handlers;
 
 import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
+import com.icm.telemetria_peru_api.enums.FuelType;
 import com.icm.telemetria_peru_api.models.FuelRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.FuelRecordRepository;
@@ -32,11 +33,11 @@ public class FuelRecordHandler {
             if (data.getFuelInfo() == null && data.getTimestamp() == null) {
                 return;
             }
-/*
-            if (!dataVehicle.getFuelType().equals("DIESEL")) {
+
+            if (!dataVehicle.getFuelType().equals(FuelType.DIESEL)) {
                 return;
             }
-*/
+
             long unixTimestamp = Long.parseLong(data.getTimestamp());
 
             LocalTime time = Instant.ofEpochSecond(unixTimestamp).atZone(ZoneId.systemDefault()).toLocalTime();

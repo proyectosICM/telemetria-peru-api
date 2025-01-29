@@ -26,11 +26,9 @@ public class GasRecordHandler {
         VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
 
         if (!dataVehicle.getFuelType().equals(FuelType.GAS)) {
-            System.out.println(dataVehicle.getFuelType());
-            System.out.println("Entro mal");
             return;
         }
-        System.out.println("Entro");
+        System.out.println(dataVehicle);
         // Si no hay un registro previo, crea uno nuevo
         if (lastRecord == null) {
             createNewGasRecord(vehicleModel.getId(), data);
