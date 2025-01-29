@@ -34,7 +34,8 @@ public class GasRecordHandler {
             createNewGasRecord(vehicleModel, data);
             return;
         }
-
+        System.out.println(lastRecord.getLastPressureDetected());
+        System.out.println(data.getGasInfo());
         // Si la presión cambia, crea un nuevo registro
         if (lastRecord.getLastPressureDetected() != data.getGasInfo()) {
             createNewGasRecord(vehicleModel, data);
@@ -47,7 +48,6 @@ public class GasRecordHandler {
     public void createNewGasRecord(VehicleModel vehicleModel, VehiclePayloadMqttDTO data){
         GasRecordModel gasRecordModel = new GasRecordModel();
         Long timestampInt = Long.parseLong(data.getTimestamp());
-        System.out.println("Presion Gas: " + data.getGasInfo());
         gasRecordModel.setVehicleModel(vehicleModel);
         gasRecordModel.setStartTime(timestampInt);
         gasRecordModel.setLastPressureDetected(data.getGasInfo());
