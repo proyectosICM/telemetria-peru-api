@@ -78,5 +78,7 @@ public class GasRecordHandler {
     public void closeGasRecord(GasRecordModel lastRecord, VehiclePayloadMqttDTO data){
         Long currentTimestampInt = Long.parseLong(data.getTimestamp());
         lastRecord.setEndTime(currentTimestampInt);
+
+        gasRecordRepository.save(lastRecord);
     }
 }
