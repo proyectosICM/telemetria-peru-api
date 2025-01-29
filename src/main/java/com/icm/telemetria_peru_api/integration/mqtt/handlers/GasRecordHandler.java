@@ -34,18 +34,13 @@ public class GasRecordHandler {
             createNewGasRecord(vehicleModel, data);
             return;
         }
-        System.out.println("Last Record: " + lastRecord.getLastPressureDetected());
-        System.out.println("Data: " + data.getGasInfo());
-        System.out.println(lastRecord.getLastPressureDetected().equals(data.getGasInfo()));
-        System.out.println(!lastRecord.getLastPressureDetected().equals(data.getGasInfo()));
+
         // Si la presión cambia, crea un nuevo registro
         if (!lastRecord.getLastPressureDetected().equals(data.getGasInfo())) {
             createNewGasRecord(vehicleModel, data);
-            System.out.println("Nuevo registro");
         } else {
             // Si la presión no cambia, acumula el tiempo
             accumulateGasRecord(lastRecord, data);
-            System.out.println("Acumulado");
         }
     }
 
