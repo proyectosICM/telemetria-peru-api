@@ -27,12 +27,8 @@ public class GasChangeModel {
     @Column(nullable = false)
     private Double pressureBeforeChange;
 
-    // Time when the gas change was performed
-    @Column(nullable = false)
     private String changePerformedAt;
 
-    // Pressure after the change (in psi)
-    @Column(nullable = false)
     private Double pressureAfterChange;
 
     @ManyToOne
