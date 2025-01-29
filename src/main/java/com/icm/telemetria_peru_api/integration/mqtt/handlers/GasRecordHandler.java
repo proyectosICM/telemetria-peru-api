@@ -28,7 +28,8 @@ public class GasRecordHandler {
         if (!dataVehicle.getFuelType().equals(FuelType.GAS)) {
             return;
         }
-        System.out.println(dataVehicle);
+        System.out.println(vehicleModel);
+        //System.out.println(dataVehicle);
         // Si no hay un registro previo, crea uno nuevo
         if (lastRecord == null) {
             createNewGasRecord(vehicleModel.getId(), data);
