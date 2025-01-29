@@ -59,8 +59,9 @@ public class GasRecordHandler {
 
     public void accumulateGasRecord(GasRecordModel lastRecord, VehiclePayloadMqttDTO data) {
         // Obtener el timestamp actual y convertirlo a ZonedDateTime
-        Long newAccumulatedTime = lastRecord.getEndTime() - lastRecord.getStartTime() + lastRecord.getAccumulatedTime();
+
         Long currentTimestampInt = Long.parseLong(data.getTimestamp());
+        Long newAccumulatedTime = currentTimestampInt - lastRecord.getStartTime() + lastRecord.getAccumulatedTime();
         // Actualizar el registro con el nuevo tiempo acumulado
         lastRecord.setAccumulatedTime(newAccumulatedTime);
         lastRecord.setStartTime(currentTimestampInt); // Actualiza el timestamp de inicio
