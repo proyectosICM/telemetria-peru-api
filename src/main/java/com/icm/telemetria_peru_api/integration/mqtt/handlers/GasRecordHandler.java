@@ -2,7 +2,6 @@ package com.icm.telemetria_peru_api.integration.mqtt.handlers;
 
 import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
 import com.icm.telemetria_peru_api.enums.FuelType;
-import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.GasRecordRepository;
@@ -10,8 +9,6 @@ import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-import java.time.ZonedDateTime;
 
 @Component
 @RequiredArgsConstructor
