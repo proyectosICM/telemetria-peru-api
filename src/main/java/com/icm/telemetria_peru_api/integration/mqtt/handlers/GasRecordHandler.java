@@ -34,7 +34,7 @@ public class GasRecordHandler {
         }
 
         // Si la presión cambia, crea un nuevo registro
-        if (!lastRecord.getLastPressureDetected().equals(data.getGasInfo())) {
+        if (!lastRecord.getLastPressureDetected().equals(data.getGasInfo()) && data.getIgnitionInfo()) {
             closeGasRecord(lastRecord, data);
             createNewGasRecord(vehicleModel, data);
         } else {

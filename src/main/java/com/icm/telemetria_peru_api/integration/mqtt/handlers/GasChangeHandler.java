@@ -31,7 +31,7 @@ public class GasChangeHandler {
         }
 
         if (!lastRecord.getPressureBeforeChange().equals(data.getGasInfo())) {
-            closeLastRecord(lastRecord, data.getTimestamp());
+            closeLastRecord(lastRecord, data);
             createNewGasChangeRecord(vehicleModel, data.getTimestamp(), data.getGasInfo());
         }
     }
@@ -45,9 +45,9 @@ public class GasChangeHandler {
         gasChangeRepository.save(gasChangeModel);
     }
 
-    public void closeLastRecord(GasChangeModel lastRecord, String timestamp) {
-        lastRecord.setChangePerformedAt(timestamp);
-        lastRecord.setPressureAfterChange(lastRecord.getPressureAfterChange());
+    public void closeLastRecord(GasChangeModel lastRecord, VehiclePayloadMqttDTO data) {
+        lastRecord.setChangePerformedAt(data.getTimestamp());
+        lastRecord.setPressureAfterChange(data.getGasInfo());
         gasChangeRepository.save(lastRecord);
     }
 }
