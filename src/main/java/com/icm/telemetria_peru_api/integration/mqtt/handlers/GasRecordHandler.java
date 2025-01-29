@@ -37,6 +37,7 @@ public class GasRecordHandler {
 
         // Si la presión cambia, crea un nuevo registro
         if (!lastRecord.getLastPressureDetected().equals(data.getGasInfo())) {
+            closeGasRecord(lastRecord, data);
             createNewGasRecord(vehicleModel, data);
         } else {
             // Si la presión no cambia, acumula el tiempo
@@ -72,5 +73,10 @@ public class GasRecordHandler {
 
         // Guardar el registro actualizado
         gasRecordRepository.save(lastRecord);
+    }
+
+    public void closeGasRecord(GasRecordModel lastRecord, VehiclePayloadMqttDTO data){
+        Long currentTimestampInt = Long.parseLong(data.getTimestamp());
+        lastRecord.setEndTime(currentTimestampInt);
     }
 }
