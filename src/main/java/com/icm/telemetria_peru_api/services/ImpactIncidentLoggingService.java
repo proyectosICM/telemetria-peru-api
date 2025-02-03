@@ -75,6 +75,7 @@ public class ImpactIncidentLoggingService {
 
                 try {
                     emailService.sendEmail(emails, subject, message);
+                    emailService.sendSms("938443149", message);
                     System.out.println("Mail sent to: " + Arrays.toString(emails));
                 } catch (Exception e) {
                     System.err.println("Error sending email: " + e.getMessage());

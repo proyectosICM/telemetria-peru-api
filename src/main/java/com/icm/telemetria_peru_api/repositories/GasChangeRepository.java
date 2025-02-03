@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Repository
@@ -14,4 +15,5 @@ public interface GasChangeRepository extends JpaRepository<GasChangeModel, Long>
     Page<GasChangeModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 
     GasChangeModel findTopByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
+    List<GasChangeModel> findByVehicleModelIdAndCreatedAtBetween(Long vehicleModelId, ZonedDateTime startTimestamp, ZonedDateTime endTimestamp);
 }

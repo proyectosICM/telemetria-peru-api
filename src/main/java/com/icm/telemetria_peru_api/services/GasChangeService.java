@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.models.GasChangeModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.GasChangeRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
+import com.icm.telemetria_peru_api.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class GasChangeService {
     private final GasChangeRepository gasChangeRepository;
     private final VehicleRepository vehicleRepository;
+    private final DateUtils dateUtils;
 
     public Optional<GasChangeModel> findById(Long gasChangeId) {
         return gasChangeRepository.findById(gasChangeId);
@@ -32,6 +35,12 @@ public class GasChangeService {
         return gasChangeRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
+   /* public List<Map<String, Object>> counts(Long vehicleId,Integer day, Integer month,  Integer year) {
+        List<Map<String, Object>> timestamps = dateUtils.getMonthTimestamps(year, month);
+        long startTimestampSeconds = (long) timestamps.get(0).get("startTimestamp");
+        long endTimestampSeconds = (long) timestamps.get(0).get("endTimestamp");
+    }
+*/
     public GasChangeModel saveFromDTO(GasChangeDTO gasChangeDTO) {
         GasChangeModel gasChangeModel = gasChangeDTO.toGasChangeModel();
 

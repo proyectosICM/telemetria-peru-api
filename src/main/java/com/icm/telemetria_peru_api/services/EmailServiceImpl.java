@@ -33,6 +33,14 @@ public class EmailServiceImpl implements IEmailRepository {
         mailSender.send(mailMessage);
     }
 
+    public void sendSms(String numero, String mensaje) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(numero + "@movistar.pe");
+        mailMessage.setSubject("SMS");
+        mailMessage.setText(mensaje);
+        mailSender.send(mailMessage);
+    }
+
     @Override
     public void sendEmailWithFile(String[] toUser, String subject, String message, File file) {
 

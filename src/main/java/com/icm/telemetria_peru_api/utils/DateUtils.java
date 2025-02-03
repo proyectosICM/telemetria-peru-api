@@ -9,6 +9,27 @@ import java.util.List;
 import java.util.Map;
 @Component
 public class DateUtils {
+    public static List<Map<String, Object>> getDayTimeStamps(Integer day, Integer month, Integer year){
+        int dayToQuery = (month != null) ? month : LocalDateTime.now().getDayOfMonth();
+        int monthToQuery = (month != null) ? month : LocalDateTime.now().getMonthValue();
+        int yearToQuery = (year != null) ? year : LocalDateTime.now().getYear();
+
+        // Inicio del día (00:00:00)
+        LocalDateTime startOfDay = LocalDateTime.of(yearToQuery, monthToQuery, dayToQuery, 0, 0, 0);
+        ZonedDateTime startOfDayWithZone = startOfDay.atZone(ZoneId.of("America/Lima"));
+        long startTimestamp = startOfDayWithZone.toEpochSecond();
+
+        // Fin del día (23:59:59)
+        LocalDateTime endOfDay = LocalDateTime.of(yearToQuery, monthToQuery, dayToQuery, 23, 59, 59);
+        ZonedDateTime endOfDayWithZone = endOfDay.atZone(ZoneId.of("America/Lima"));
+        long endTimestamp = endOfDayWithZone.toEpochSecond();
+
+
+        // Retornar los timestamps en una lista con un mapa
+        return List.of(
+                Map.of("startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
+        );
+    }
 
     /**
      * Returns a list containing a map with the start and end timestamps for the given month and year.
