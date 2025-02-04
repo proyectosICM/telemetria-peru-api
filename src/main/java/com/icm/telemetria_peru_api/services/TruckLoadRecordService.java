@@ -50,7 +50,7 @@ public class TruckLoadRecordService {
         for (Map.Entry<LocalDate, Long> entry : groupedByDay.entrySet()) {
             Map<String, Object> result = new HashMap<>();
             result.put("day", entry.getKey().atStartOfDay(ZoneId.of("America/Lima")).toEpochSecond());
-            result.put("recordCount", entry.getValue());
+            result.put("count", entry.getValue());
             results.add(result);
         }
 
