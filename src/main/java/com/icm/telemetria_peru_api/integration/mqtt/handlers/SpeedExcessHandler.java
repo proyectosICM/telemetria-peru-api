@@ -25,8 +25,8 @@ public class SpeedExcessHandler {
      * @param vehicleId the ID of the vehicle being checked
      * @param speed     the current speed of the vehicle
      */
-    public void logSpeedExcess(Long vehicleId, VehiclePayloadMqttDTO jsonNode) {
-        Optional<VehicleModel> vehicle = vehicleRepository.findById(vehicleId);
+    public void logSpeedExcess(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode) {
+        Optional<VehicleModel> vehicle = vehicleRepository.findById(vehicleModel.getId());
         if (vehicle.isPresent()) {
             if (vehicle.get().getMaxSpeed() < jsonNode.getSpeed()) {
                 SpeedExcessLoggerModel speedExcessLoggerModel = new SpeedExcessLoggerModel();
