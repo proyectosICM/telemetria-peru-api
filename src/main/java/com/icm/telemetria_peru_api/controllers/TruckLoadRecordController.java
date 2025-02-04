@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,10 +57,29 @@ public class TruckLoadRecordController {
         return truckLoadRecordService.findByVehicleId(vehicleId, pageable);
     }
 
+    /** */
     @GetMapping("/count-day/{vehicleId}")
     public long countRecordsByVehicleAndToday(@PathVariable Long vehicleId) {
         LocalDate today = LocalDate.now();
         return truckLoadRecordService.countRecordsByVehicleAndDate(vehicleId, today);
+    }
+
+    /** */
+    @GetMapping("/count-month/{vehicleId}")
+    public ResponseEntity<List<Map<String, Object>>> getDataForMonth(
+            @PathVariable Long vehicleId,
+            @RequestParam Integer year,
+            @RequestParam Integer month) {
+        try {
+            List<Map<String, Object>> data = truckLoadRecordService.getDataMonth(vehicleId, year, month);
+            if (data.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(data);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonList(Collections.singletonMap("error", e.getMessage())));
+        }
     }
 
     @GetMapping("/daily-load-counts/{vehicleId}")
