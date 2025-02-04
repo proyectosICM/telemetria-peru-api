@@ -14,10 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/truck-loads")
@@ -66,19 +64,45 @@ public class TruckLoadRecordController {
 
     /** */
     @GetMapping("/count-month/{vehicleId}")
-    public ResponseEntity<List<Map<String, Object>>> getDataForMonth(
+    public ResponseEntity<Map<String, Object>> getDataForMonth(
             @PathVariable Long vehicleId,
             @RequestParam Integer year,
-            @RequestParam Integer month) {
+            @RequestParam Integer month,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
             List<Map<String, Object>> data = truckLoadRecordService.getDataMonth(vehicleId, year, month);
+
             if (data.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
-            return ResponseEntity.ok(data);
+
+            // Ordenar en orden inverso (último primero)
+            List<Map<String, Object>> sortedData = data.stream()
+                    .sorted((a, b) -> Long.compare((long) b.get("day"), (long) a.get("day")))
+                    .collect(Collectors.toList());
+
+            // Paginación manual
+            int start = page * size;
+            int end = Math.min(start + size, sortedData.size());
+            if (start >= sortedData.size()) {
+                return ResponseEntity.ok(Collections.singletonMap("message", "No more data"));
+            }
+
+            List<Map<String, Object>> paginatedData = sortedData.subList(start, end);
+
+            // Construir la respuesta paginada
+            Map<String, Object> response = new HashMap<>();
+            response.put("data", paginatedData);
+            response.put("currentPage", page);
+            response.put("totalPages", (int) Math.ceil((double) sortedData.size() / size));
+            response.put("totalRecords", sortedData.size());
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonList(Collections.singletonMap("error", e.getMessage())));
+                    .body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 

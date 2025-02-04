@@ -32,27 +32,25 @@ public class TruckLoadRecordService {
         long startTimestampSeconds = (long) timestamps.get(0).get("startTimestamp");
         long endTimestampSeconds = (long) timestamps.get(0).get("endTimestamp");
 
-        // Convertir los timestamps de segundos a ZonedDateTime en la zona horaria adecuada
         ZonedDateTime startTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(startTimestampSeconds), ZoneId.of("America/Lima"));
         ZonedDateTime endTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(endTimestampSeconds), ZoneId.of("America/Lima"));
+
         List<TruckLoadRecordModel> records = truckLoadRecordRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
 
-        // Agrupar los registros por día y contar la cantidad de registros por día
         Map<LocalDate, Long> groupedByDay = records.stream()
                 .collect(Collectors.groupingBy(
                         record -> record.getCreatedAt()
                                 .withZoneSameInstant(ZoneId.of("America/Lima"))
                                 .toLocalDate(),
-                        TreeMap::new, // Mantener ordenado por fechas
-                        Collectors.counting() // Contar la cantidad de registros por día
+                        TreeMap::new,
+                        Collectors.counting()
                 ));
 
-        // Transformar el resultado en la estructura deseada
         List<Map<String, Object>> results = new ArrayList<>();
         for (Map.Entry<LocalDate, Long> entry : groupedByDay.entrySet()) {
             Map<String, Object> result = new HashMap<>();
-            result.put("day", entry.getKey().atStartOfDay(ZoneId.of("America/Lima")).toEpochSecond()); // Timestamp del día
-            result.put("recordCount", entry.getValue()); // Conteo de registros
+            result.put("day", entry.getKey().atStartOfDay(ZoneId.of("America/Lima")).toEpochSecond());
+            result.put("recordCount", entry.getValue());
             results.add(result);
         }
 
