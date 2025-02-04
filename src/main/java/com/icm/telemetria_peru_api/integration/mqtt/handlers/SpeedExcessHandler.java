@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.models.SpeedExcessLoggerModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
+import com.icm.telemetria_peru_api.services.SpeedExcessLoggerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SpeedExcessHandler {
     private final VehicleRepository vehicleRepository;
-    private final SpeedExcessLoggerRepository speedExcessLoggerRepository;
+    private final SpeedExcessLoggerService speedExcessLoggerService;
 
 
     /**
@@ -33,7 +34,7 @@ public class SpeedExcessHandler {
                     SpeedExcessLoggerModel speedExcessLoggerModel = new SpeedExcessLoggerModel();
                     speedExcessLoggerModel.setDescription("Maximum speed exceeded at " + jsonNode.getSpeed() + " km/h");
                     speedExcessLoggerModel.setVehicleModel(vehicle.get());
-                    speedExcessLoggerRepository.save(speedExcessLoggerModel);
+                    speedExcessLoggerService.save(speedExcessLoggerModel);
                 }
             }
         } catch (Exception e) {
