@@ -63,7 +63,7 @@ public class TruckLoadRecordController {
     }
 
     /** */
-    @GetMapping("/count-month/{vehicleId}")
+    @GetMapping("/month-counts/{vehicleId}")
     public ResponseEntity<Map<String, Object>> getDataForMonth(
             @PathVariable Long vehicleId,
             @RequestParam Integer year,
