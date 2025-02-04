@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.integration.mqtt.handlers;
 
+import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
 import com.icm.telemetria_peru_api.models.SpeedExcessLoggerModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
@@ -24,12 +25,12 @@ public class SpeedExcessHandler {
      * @param vehicleId the ID of the vehicle being checked
      * @param speed     the current speed of the vehicle
      */
-    public void logSpeedExcess(Long vehicleId, Double speed) {
+    public void logSpeedExcess(Long vehicleId, VehiclePayloadMqttDTO jsonNode) {
         Optional<VehicleModel> vehicle = vehicleRepository.findById(vehicleId);
         if (vehicle.isPresent()) {
-            if (vehicle.get().getMaxSpeed() < speed) {
+            if (vehicle.get().getMaxSpeed() < jsonNode.getSpeed()) {
                 SpeedExcessLoggerModel speedExcessLoggerModel = new SpeedExcessLoggerModel();
-                speedExcessLoggerModel.setDescription("Maximum speed exceeded at " + speed + " km/h");
+                speedExcessLoggerModel.setDescription("Maximum speed exceeded at " + jsonNode.getSpeed() + " km/h");
                 speedExcessLoggerModel.setVehicleModel(vehicle.get());
                 speedExcessLoggerRepository.save(speedExcessLoggerModel);
             }
