@@ -26,14 +26,21 @@ public class SpeedExcessHandler {
      * @param speed     the current speed of the vehicle
      */
     public void logSpeedExcess(VehicleModel vehicleModel, VehiclePayloadMqttDTO jsonNode) {
-        Optional<VehicleModel> vehicle = vehicleRepository.findById(vehicleModel.getId());
-        if (vehicle.isPresent()) {
-            if (vehicle.get().getMaxSpeed() < jsonNode.getSpeed()) {
-                SpeedExcessLoggerModel speedExcessLoggerModel = new SpeedExcessLoggerModel();
-                speedExcessLoggerModel.setDescription("Maximum speed exceeded at " + jsonNode.getSpeed() + " km/h");
-                speedExcessLoggerModel.setVehicleModel(vehicle.get());
-                speedExcessLoggerRepository.save(speedExcessLoggerModel);
+        try{
+            Optional<VehicleModel> vehicle = vehicleRepository.findById(vehicleModel.getId());
+            if (vehicle.isPresent()) {
+                if (vehicle.get().getMaxSpeed() < jsonNode.getSpeed()) {
+                    SpeedExcessLoggerModel speedExcessLoggerModel = new SpeedExcessLoggerModel();
+                    speedExcessLoggerModel.setDescription("Maximum speed exceeded at " + jsonNode.getSpeed() + " km/h");
+                    speedExcessLoggerModel.setVehicleModel(vehicle.get());
+                    speedExcessLoggerRepository.save(speedExcessLoggerModel);
+                }
             }
+        } catch (Exception e) {
+            // Log the exception (you can use a logger like Logback or SLF4J)
+            System.err.println("Error processing speed excess log: " + e.getMessage());
+            e.printStackTrace(); // Optionally print the full stack trace for debugging
         }
+
     }
 }
