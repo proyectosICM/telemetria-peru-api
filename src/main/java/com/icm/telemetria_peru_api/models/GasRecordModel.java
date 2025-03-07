@@ -30,8 +30,6 @@ public class GasRecordModel {
     // Tiempo acumulado
     private Long accumulatedTime = 0L;
 
-    // Ultima presion detectada
-    @Column(nullable = false)
     private Double lastPressureDetected;
 
     @ManyToOne
