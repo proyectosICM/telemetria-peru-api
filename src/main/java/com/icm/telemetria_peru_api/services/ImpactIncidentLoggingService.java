@@ -71,12 +71,11 @@ public class ImpactIncidentLoggingService {
 
             if (emails.length > 0) {
                 String subject = "Incidente de impacto";
-                String message = "El vehículo con ID " + vehicleId + " A sufrido un incidente de impacto. Por favor, verifique el estado del vehículo.";
+                String message = "El vehículo con placa " + vehicleModel.getLicensePlate() + " A sufrido un incidente de impacto. Por favor, verifique el estado del vehículo.";
 
                 try {
                     emailService.sendEmail(emails, subject, message);
-                    emailService.sendSms("938443149", message);
-                    System.out.println("Mail sent to: " + Arrays.toString(emails));
+                    //System.out.println("Mail sent to: " + Arrays.toString(emails));
                 } catch (Exception e) {
                     System.err.println("Error sending email: " + e.getMessage());
                 }

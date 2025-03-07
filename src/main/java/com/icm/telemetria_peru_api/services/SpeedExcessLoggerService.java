@@ -67,11 +67,11 @@ public class SpeedExcessLoggerService {
 
             if (emails.length > 0) {
                 String subject = "Velocidad maxima exedida ";
-                String message = "El vehículo con ID " + vehicleModelOptional.get().getLicensePlate() + " A excedido la velocidad máxima permitida.";
+                String message = "El vehículo con placa  " + vehicleModel.getLicensePlate() + " a excedido la velocidad máxima permitida.";
 
                 try {
                     emailService.sendEmail(emails, subject, message);
-                    System.out.println("Mail sent to: " + Arrays.toString(emails));
+                    //System.out.println("Mail sent to: " + Arrays.toString(emails));
                 } catch (Exception e) {
                     System.err.println("Error sending email: " + e.getMessage());
                 }

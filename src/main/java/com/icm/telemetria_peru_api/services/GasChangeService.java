@@ -36,9 +36,12 @@ public class GasChangeService {
     }
 
    /* public List<Map<String, Object>> counts(Long vehicleId,Integer day, Integer month,  Integer year) {
-        List<Map<String, Object>> timestamps = dateUtils.getMonthTimestamps(year, month);
+        List<Map<String, Object>> timestamps = dateUtils.getDayTimeStamps(year, month);
         long startTimestampSeconds = (long) timestamps.get(0).get("startTimestamp");
         long endTimestampSeconds = (long) timestamps.get(0).get("endTimestamp");
+
+         List records gasChangeRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestampSeconds, endTimestampSeconds);
+
     }
 */
     public GasChangeModel saveFromDTO(GasChangeDTO gasChangeDTO) {
