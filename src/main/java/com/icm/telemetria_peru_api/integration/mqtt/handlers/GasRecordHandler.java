@@ -49,7 +49,7 @@ public class GasRecordHandler {
         Long timestampInt = Long.parseLong(data.getTimestamp());
         gasRecordModel.setVehicleModel(vehicleModel);
         gasRecordModel.setStartTime(timestampInt);
-        gasRecordModel.setLastPressureDetected(data.getGasInfo());
+        gasRecordModel.setLastPressureDetected(data.getFuelInfo());
         gasRecordModel.setAccumulatedTime(0L);
 
         gasRecordRepository.save(gasRecordModel);
