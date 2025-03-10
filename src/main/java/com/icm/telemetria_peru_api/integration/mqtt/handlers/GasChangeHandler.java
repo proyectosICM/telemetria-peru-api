@@ -30,7 +30,7 @@ public class GasChangeHandler {
             return;
         }
 
-        if (!lastRecord.getPressureBeforeChange().equals(data.getGasInfo())) {
+        if (lastRecord.getPressureBeforeChange() != null && !lastRecord.getPressureBeforeChange().equals(data.getGasInfo())) {
             closeLastRecord(lastRecord, data);
             createNewGasChangeRecord(vehicleModel, data.getTimestamp(), data.getGasInfo());
         }
