@@ -6,6 +6,7 @@ import com.icm.telemetria_peru_api.services.GasChangeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,14 +55,21 @@ public class GasChangeController {
             Page<GasChangeModel> dataModel = gasChangeService.findByVehicleModelId(vehicleId, pageable);
 
             if (dataModel.isEmpty()) {
-                return new ResponseEntity<>(Page.empty(), HttpStatus.NOT_FOUND);
+                return ResponseEntity.noContent().build();
             }
 
-            return new ResponseEntity<>(dataModel, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(Page.empty(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return ResponseEntity.ok(dataModel);
 
+        } catch (DataAccessException e) { // Error en la BD
+            System.out.println("Error de base de datos al obtener registros de cambio de gas para vehicleId: " + vehicleId);
+            e.printStackTrace(); // Para mostrar el error en la consola
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        } catch (Exception e) { // Otros errores inesperados
+            System.out.println("Error inesperado al obtener registros de cambio de gas para vehicleId: " + vehicleId);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping
