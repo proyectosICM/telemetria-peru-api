@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.controllers;
 import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.services.GasRecordService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,13 +57,18 @@ public class GasRecordController {
             Page<GasRecordModel> records = gasRecordService.findByVehicleId(vehicleId, pageable);
 
             if (records.isEmpty()) {
-                return new ResponseEntity<>(Page.empty(), HttpStatus.NOT_FOUND);
+                return ResponseEntity.noContent().build();
             }
 
-            return new ResponseEntity<>(records, HttpStatus.OK);
+            return ResponseEntity.ok(records);
 
-        } catch (Exception e) {
-            return new ResponseEntity<>(Page.empty(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (DataAccessException e) { // Error en la BD
+            System.out.println("Error de base de datos al obtener registros de gas para vehicleId: " + vehicleId);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        } catch (Exception e) { // Otros errores inesperados
+            System.out.println("Error inesperado al obtener registros de gas para vehicleId: " + vehicleId);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
