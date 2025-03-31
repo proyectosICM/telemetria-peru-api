@@ -194,8 +194,7 @@ public class FuelEfficiencyService {
     /**
      * STAST
      */
-
-    public List<FuelEfficiencySummaryDTO> getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(Long vehicleId, Integer year, Integer month, Integer day) {
+    public List<FuelEfficiencySummaryDTO>   getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(Long vehicleId, Integer year, Integer month, Integer day) {
         List<Object[]> results;
 
         if (year != null && month == null && day == null) {
