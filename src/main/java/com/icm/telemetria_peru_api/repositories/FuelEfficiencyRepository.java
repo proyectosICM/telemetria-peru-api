@@ -122,35 +122,35 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
             """, nativeQuery = true)
     List<Object[]> getAggregatedFuelEfficiencyByMonth(@Param("vehicleId") Long vehicleId, @Param("month") Integer month, @Param("year") Integer year);
 
-    /*
-        @Query(value = """
-                    SELECT
-                        fe.status AS status,
-                        SUM(fe.accumulated_hours) AS totalHours,
-                        SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
-                        AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
-                    FROM fuel_efficiency fe
-                    WHERE fe.vehicle_id = :vehicleId
-                    AND DAY(fe.start_time) = :day
-                    AND MONTH(fe.start_time) = :month
-                    AND YEAR(fe.start_time) = :year
-                    GROUP BY fe.status
-                """, nativeQuery = true)
-        List<Object[]> getAggregatedFuelEfficiencyByDay(@Param("vehicleId") Long vehicleId, @Param("day") Integer day, @Param("month") Integer month, @Param("year") Integer year);
-    */
+
+    /**
+
+     SELECTs
+     fe.status AS status,
+     CASE WHEN SUM(fe.accumulated_hours) < 0 THEN 0.0 ELSE SUM(fe.accumulated_hours) END AS totalHours,
+     CASE WHEN SUM(fe.initial_fuel - fe.final_fuel) < 0 THEN 0.0 ELSE SUM(fe.initial_fuel - fe.final_fuel) END AS totalFuelConsumed,
+     CASE WHEN AVG(fe.fuel_consumption_per_hour) < 0 THEN 0.0 ELSE AVG(fe.fuel_consumption_per_hour) END AS avgFuelEfficiency
+     FROM fuel_efficiency fe
+     WHERE fe.vehicle_id = :vehicleId
+     AND DAY(fe.start_time) = :day
+     AND MONTH(fe.start_time) = :month
+     AND YEAR(fe.start_time) = :year
+     AND (fe.initial_fuel >= fe.final_fuel) -- Asegúrate de que no haya valores de combustible erróneos
+     GROUP BY fe.status;
+
+    * */
     @Query(value = """
-            SELECT\s
-                fe.status AS status,
-                CASE WHEN SUM(fe.accumulated_hours) < 0 THEN 0.0 ELSE SUM(fe.accumulated_hours) END AS totalHours,
-                CASE WHEN SUM(fe.initial_fuel - fe.final_fuel) < 0 THEN 0.0 ELSE SUM(fe.initial_fuel - fe.final_fuel) END AS totalFuelConsumed,
-                CASE WHEN AVG(fe.fuel_consumption_per_hour) < 0 THEN 0.0 ELSE AVG(fe.fuel_consumption_per_hour) END AS avgFuelEfficiency
-            FROM fuel_efficiency fe
-            WHERE fe.vehicle_id = :vehicleId
-            AND DAY(fe.start_time) = :day
-            AND MONTH(fe.start_time) = :month
-            AND YEAR(fe.start_time) = :year
-            AND (fe.initial_fuel >= fe.final_fuel) -- Asegúrate de que no haya valores de combustible erróneos
-            GROUP BY fe.status;
+        SELECT
+            fe.status AS status,
+            SUM(fe.accumulated_hours) AS totalHours,
+            SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
+            AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
+        FROM fuel_efficiency fe
+        WHERE fe.vehicle_id = :vehicleId
+        AND DAY(fe.start_time) = :day
+        AND MONTH(fe.start_time) = :month
+        AND YEAR(fe.start_time) = :year
+        GROUP BY fe.status;
             """, nativeQuery = true)
     List<Object[]> getAggregatedFuelEfficiencyByDay(@Param("vehicleId") Long vehicleId, @Param("day") Integer day, @Param("month") Integer month, @Param("year") Integer year);
 }
