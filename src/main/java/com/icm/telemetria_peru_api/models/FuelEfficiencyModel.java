@@ -47,7 +47,7 @@ public class FuelEfficiencyModel {
 
     private String coordinates;
 
-    private Boolean isVisible;
+    private Boolean isVisible = true;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "speeds", joinColumns = @JoinColumn(name = "fuel_efficiency_id"))
