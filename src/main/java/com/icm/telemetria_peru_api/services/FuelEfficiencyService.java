@@ -10,6 +10,7 @@ import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.FuelEfficiencyRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -242,7 +243,6 @@ public class FuelEfficiencyService {
         return defaultSummaries;
     }
 
-
     public FuelEfficiencyModel save(FuelEfficiencyModel fuelEfficiencyModel) {
 
         FuelEfficiencyModel savedData = fuelEfficiencyRepository.save(fuelEfficiencyModel);
@@ -256,5 +256,10 @@ public class FuelEfficiencyService {
 
     public void deleteById(Long id) {
         fuelEfficiencyRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteInvisibleRecords() {
+        fuelEfficiencyRepository.deleteByIsVisibleFalse();
     }
 }

@@ -5,6 +5,7 @@ import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.FuelEfficiencyRepository;
+import com.icm.telemetria_peru_api.services.FuelEfficiencyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FuelEfficiencyHandler {
     private final FuelEfficiencyRepository fuelEfficiencyRepository;
+    private final FuelEfficiencyService fuelEfficiencyService;
 
     /**
      * Processes fuel efficiency information based on the data received.
@@ -104,6 +106,12 @@ public class FuelEfficiencyHandler {
      * @param jsonNode Vehicle telemetry data including fuel information.
      */
     private void closeLastRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
+        if(lastRecord.getFinalFuel() < lastRecord.getInitialFuel()){
+            lastRecord.setIsVisible(false);
+        } else {
+            lastRecord.setIsVisible(true);
+        }
+
         lastRecord.setEndTime(ZonedDateTime.now());
         lastRecord.setFinalFuel(jsonNode.getFuelInfo());
         lastRecord.setCoordinates(jsonNode.getCoordinates());
@@ -113,6 +121,8 @@ public class FuelEfficiencyHandler {
         calculateDistanceAndEfficiency(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
         calculateEfficiencyByHour(lastRecord, accumulatedHours, jsonNode.getFuelInfo());
         fuelEfficiencyRepository.save(lastRecord);
+
+        fuelEfficiencyService.deleteInvisibleRecords();
     }
 
     /**

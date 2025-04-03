@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.repositories;
 
 import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -153,4 +154,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
         GROUP BY fe.status;
             """, nativeQuery = true)
     List<Object[]> getAggregatedFuelEfficiencyByDay(@Param("vehicleId") Long vehicleId, @Param("day") Integer day, @Param("month") Integer month, @Param("year") Integer year);
+
+    @Transactional
+    void deleteByIsVisibleFalse();
 }
