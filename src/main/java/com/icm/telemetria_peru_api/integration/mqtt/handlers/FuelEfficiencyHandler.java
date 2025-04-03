@@ -106,7 +106,7 @@ public class FuelEfficiencyHandler {
      * @param jsonNode Vehicle telemetry data including fuel information.
      */
     private void closeLastRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
-        if(lastRecord.getFinalFuel() < lastRecord.getInitialFuel()){
+        if(jsonNode.getFuelInfo() < lastRecord.getInitialFuel()){
             lastRecord.setIsVisible(false);
         } else {
             lastRecord.setIsVisible(true);
