@@ -101,7 +101,11 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
                     fe.status AS status,
                     SUM(fe.accumulated_hours) AS totalHours,
                     SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
-                    AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
+                    CASE
+                        WHEN SUM(fe.accumulated_hours) > 0
+                        THEN SUM(fe.initial_fuel - fe.final_fuel) / SUM(fe.accumulated_hours)
+                        ELSE 0
+                    END AS realFuelConsumptionPerHour
                 FROM fuel_efficiency fe
                 WHERE fe.vehicle_id = :vehicleId
                 AND YEAR(fe.start_time) = :year
@@ -114,7 +118,11 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
                     fe.status AS status,    
                     SUM(fe.accumulated_hours) AS totalHours,
                     SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
-                    AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
+                    CASE
+                        WHEN SUM(fe.accumulated_hours) > 0
+                        THEN SUM(fe.initial_fuel - fe.final_fuel) / SUM(fe.accumulated_hours)
+                        ELSE 0
+                    END AS realFuelConsumptionPerHour
                 FROM fuel_efficiency fe
                 WHERE fe.vehicle_id = :vehicleId
                 AND MONTH(fe.start_time) = :month
@@ -145,7 +153,11 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
             fe.status AS status,
             SUM(fe.accumulated_hours) AS totalHours,
             SUM(fe.initial_fuel - fe.final_fuel) AS totalFuelConsumed,
-            AVG(fe.fuel_consumption_per_hour) AS avgFuelEfficiency
+            CASE
+                WHEN SUM(fe.accumulated_hours) > 0
+                THEN SUM(fe.initial_fuel - fe.final_fuel) / SUM(fe.accumulated_hours)
+                ELSE 0
+            END AS realFuelConsumptionPerHour
         FROM fuel_efficiency fe
         WHERE fe.vehicle_id = :vehicleId
         AND DAY(fe.start_time) = :day
