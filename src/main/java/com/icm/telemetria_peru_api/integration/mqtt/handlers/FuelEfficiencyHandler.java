@@ -132,7 +132,7 @@ public class FuelEfficiencyHandler {
      * @param jsonNode Vehicle telemetry data including the speed.
      */
     private void addNewSpeedToRecord(FuelEfficiencyModel lastRecord, VehiclePayloadMqttDTO jsonNode) {
-        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 1.0) {
+        if (jsonNode.getSpeed() != null && jsonNode.getSpeed() >= 0.2) {
             if (lastRecord.getSpeeds() == null) {
                 lastRecord.setSpeeds(new ArrayList<>());
             }
