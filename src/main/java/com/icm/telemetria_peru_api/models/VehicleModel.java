@@ -35,11 +35,11 @@ public class VehicleModel {
     @Column(name = "licensePlate", nullable = false, length = 20)
     private String licensePlate;
 
-    private Boolean alarmStatus;
+    private Boolean alarmStatus = false;
 
-    private Boolean engineStatus;
+    private Boolean engineStatus = false;
 
-    private Boolean lockStatus;
+    private Boolean lockStatus = false;
 
     private Long timeOn;
 

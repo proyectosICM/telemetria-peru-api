@@ -21,16 +21,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VehicleController {
     private final VehicleService vehicleService;
+    @GetMapping
+    public List<VehicleDTO> findAll() {
+        return vehicleService.findAll();
+    }
 
     @GetMapping("/{vehicleId}")
     public ResponseEntity<VehicleDTO> findById(@PathVariable @NotNull Long vehicleId) {
         VehicleDTO vehicleModel = vehicleService.findById(vehicleId);
         return new ResponseEntity<>(vehicleModel, HttpStatus.OK);
-    }
-
-    @GetMapping
-    public List<VehicleDTO> findAll() {
-        return vehicleService.findAll();
     }
 
     @GetMapping("/by-company/{companyId}")
