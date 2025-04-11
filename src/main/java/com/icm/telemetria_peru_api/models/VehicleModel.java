@@ -24,16 +24,16 @@ public class VehicleModel {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    private String imei;
-
-    @Column(name = "status", nullable = false)
-    private Boolean status = true;
-
     @NotEmpty(message = "License plate is required")
     @Size(max = 20, message = "License plate must be less than 20 characters")
     @Pattern(regexp = "^[a-zA-Z0-9-_]{1,20}$")
     @Column(name = "licensePlate", nullable = false, length = 20)
     private String licensePlate;
+
+    private String imei;
+
+    @Column(name = "status", nullable = false)
+    private Boolean status = true;
 
     private Boolean alarmStatus = false;
 

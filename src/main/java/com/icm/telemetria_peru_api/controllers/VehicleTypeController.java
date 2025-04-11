@@ -23,14 +23,6 @@ public class VehicleTypeController {
 
     private final VehicleTypeService vehicleTypeService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<VehicleTypeModel> getVehicletypeById(@PathVariable @NotNull Long id) {
-        Optional<VehicleTypeModel> vehicletype = vehicleTypeService.findById(id);
-        return vehicletype
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
     @GetMapping
     public ResponseEntity<List<VehicleTypeModel>> getAllVehicletypes() {
         List<VehicleTypeModel> vehicletypes = vehicleTypeService.findAll();
@@ -43,6 +35,14 @@ public class VehicleTypeController {
         Pageable pageable = PageRequest.of(page, size);
         Page<VehicleTypeModel> vehicletypes = vehicleTypeService.findAll(pageable);
         return ResponseEntity.ok(vehicletypes);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<VehicleTypeModel> getVehicletypeById(@PathVariable @NotNull Long id) {
+        Optional<VehicleTypeModel> vehicletype = vehicleTypeService.findById(id);
+        return vehicletype
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping
