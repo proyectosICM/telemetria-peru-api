@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.dto.VehicleDTO;
 import com.icm.telemetria_peru_api.dto.VehicleOptionsDTO;
+import com.icm.telemetria_peru_api.enums.FuelType;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.services.VehicleService;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -21,6 +23,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VehicleController {
     private final VehicleService vehicleService;
+
+
+    @GetMapping("/fuel-types")
+    public List<String> getTaskPriorities() {
+        return Arrays.asList(FuelType.values())
+                .stream()
+                .map(Enum::name)
+                .toList();
+    }
+
     @GetMapping
     public List<VehicleDTO> findAll() {
         return vehicleService.findAll();
