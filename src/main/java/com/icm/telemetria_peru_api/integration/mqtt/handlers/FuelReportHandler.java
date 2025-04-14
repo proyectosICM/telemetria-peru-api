@@ -30,7 +30,7 @@ public class FuelReportHandler {
                 newReport.setDate(now.toLocalDate());
                 newReport.setOpeningTime(now);
                 newReport.setInitialFuel(data.getFuelInfo());
-                newReport.setFinalFuel(data.getFuelInfo());
+                //newReport.setFinalFuel(data.getFuelInfo());
                 newReport.setIdleTime(Duration.ZERO);
                 newReport.setParkedTime(Duration.ZERO);
                 newReport.setOperatingTime(Duration.ZERO);
