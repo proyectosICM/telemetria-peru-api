@@ -18,7 +18,8 @@ public class FuelReportHandler {
 
     public void saveFuelReport(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         try {
-            LocalDateTime now = LocalDateTime.parse(data.getTimestamp());
+            long epochSeconds = Long.parseLong(data.getTimestamp());
+            LocalDateTime now = LocalDateTime.ofEpochSecond(epochSeconds, 0, java.time.ZoneOffset.UTC);
             Optional<VehicleFuelReportModel> optionalLast = vehicleFuelReportRepositpory
                     .findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
