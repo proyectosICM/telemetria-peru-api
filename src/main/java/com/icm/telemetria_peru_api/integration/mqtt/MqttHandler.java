@@ -25,6 +25,7 @@ public class MqttHandler {
     private final GasRecordHandler gasRecordHandler;
     private final VehicleRepository vehicleRepository;
     private final SpeedExcessHandler speedExcessHandler;
+    private final FuelReportHandler fuelReportHandler;
 
     private final MqttMessagePublisher mqttMessagePublisher;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -90,7 +91,7 @@ public class MqttHandler {
     }
 
     private void processHandlersWithErrorHandling(VehiclePayloadMqttDTO data, VehicleModel vehicle) {
-        //executeSafely(() -> );
+        executeSafely(() -> fuelReportHandler.saveFuelReport(data, vehicle), "fuelReportHandler.saveFuelReport" );
         executeSafely(() -> fuelRecordHandler.analyzeFuelTimestamp(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
         executeSafely(() -> gasChangeHandler.saveGasChangeRecord(data, vehicle), "gasChangeHandler.analyzeFuelTimestamp");
         executeSafely(() -> gasRecordHandler.saveGasRecordModel(data, vehicle), "gasRecordHandler.analyzeFuelTimestamp");
