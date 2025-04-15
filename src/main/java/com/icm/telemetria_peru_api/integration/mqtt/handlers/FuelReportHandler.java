@@ -22,13 +22,7 @@ public class FuelReportHandler {
                     .findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
             if (optionalLast.isEmpty()) {
-                VehicleFuelReportModel newReport = new VehicleFuelReportModel();
-                newReport.setVehicleModel(vehicleModel);
-                newReport.setCurrentFuelDetected(data.getFuelInfo());
-                newReport.setInitialFuel(data.getFuelInfo());
-                newReport.setIdleTime(Duration.ZERO);
-                newReport.setParkedTime(Duration.ZERO);
-                newReport.setOperatingTime(Duration.ZERO);
+                VehicleFuelReportModel newReport = createReport(data, vehicleModel);
                 vehicleFuelReportRepositpory.save(newReport);
             }
 
@@ -82,6 +76,21 @@ public class FuelReportHandler {
             e.printStackTrace();
             System.out.println("❌ Error acumulando tiempo de estado");
         }
+    }
+
+    public void closeReport(VehiclePayloadMqttDTO data, VehicleFuelReportModel report){
+        report.setFinalFuel(data.getFuelInfo());
+    }
+
+    private VehicleFuelReportModel createReport(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
+        VehicleFuelReportModel newReport = new VehicleFuelReportModel();
+        newReport.setVehicleModel(vehicleModel);
+        newReport.setCurrentFuelDetected(data.getFuelInfo());
+        newReport.setInitialFuel(data.getFuelInfo());
+        newReport.setIdleTime(Duration.ZERO);
+        newReport.setParkedTime(Duration.ZERO);
+        newReport.setOperatingTime(Duration.ZERO);
+        return newReport;
     }
 }
 
