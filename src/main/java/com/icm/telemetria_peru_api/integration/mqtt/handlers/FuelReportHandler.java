@@ -32,9 +32,55 @@ public class FuelReportHandler {
                 vehicleFuelReportRepositpory.save(newReport);
             }
 
+            // Si hay un reporte previo, actualizamos tiempos y combustible
+            VehicleFuelReportModel report = optionalLast.get();
+
+            // 👉 Acumulamos el tiempo del nuevo estado
+            accumulateStatusTime(data, report);
+
+            // 👉 Actualizamos el combustible actual
+            report.setCurrentFuelDetected(data.getFuelInfo());
+
+            // 👉 Finalmente, lo guardamos
+            vehicleFuelReportRepositpory.save(report);
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error Saving Fuel Report");
+        }
+    }
+
+    public void accumulateStatusTime(VehiclePayloadMqttDTO data, VehicleFuelReportModel report) {
+        try {
+            // Obtener timestamp actual del mensaje
+            long epochSeconds = Long.parseLong(data.getTimestamp());
+            LocalDateTime now = LocalDateTime.ofEpochSecond(epochSeconds, 0, java.time.ZoneOffset.UTC);
+
+            // Obtener la última hora de actualización del reporte
+            LocalDateTime lastUpdate = report.getUpdatedAt().toLocalDateTime();
+
+            // Calcular cuánto tiempo ha pasado desde la última actualización
+            Duration elapsed = Duration.between(lastUpdate, now);
+            if (elapsed.isNegative() || elapsed.isZero()) return;
+
+            // Evaluar condiciones del vehículo
+            boolean ignitionOn = Boolean.TRUE.equals(data.getIgnitionInfo());
+            double speed = data.getSpeed() != null ? data.getSpeed() : 0.0;
+
+            if (!ignitionOn) {
+                // 🚗 Vehículo apagado
+                report.setParkedTime(report.getParkedTime().plus(elapsed));
+            } else if (speed < 5) {
+                // 🛑 Ralentí
+                report.setIdleTime(report.getIdleTime().plus(elapsed));
+            } else {
+                // 🟢 En movimiento
+                report.setOperatingTime(report.getOperatingTime().plus(elapsed));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("❌ Error acumulando tiempo de estado");
         }
     }
 }
