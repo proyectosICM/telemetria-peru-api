@@ -28,6 +28,14 @@ public class VehicleFuelReportService {
         return vehicleFuelReportRepositpory.findAll(pageable);
     }
 
+    public List<VehicleFuelReportModel> findByVehicleModelId(Long vehicleId){
+        return vehicleFuelReportRepositpory.findByVehicleModelId(vehicleId);
+    }
+
+    public Page<VehicleFuelReportModel> findByVehicleModelId(Long vehicleId, Pageable pageable){
+        return vehicleFuelReportRepositpory.findByVehicleModelId(vehicleId, pageable);
+    }
+
     public VehicleFuelReportModel save(VehicleFuelReportModel vehicleFuelReportModel){
         return vehicleFuelReportRepositpory.save(vehicleFuelReportModel);
     }
