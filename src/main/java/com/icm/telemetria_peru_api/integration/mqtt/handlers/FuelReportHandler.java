@@ -28,6 +28,21 @@ public class FuelReportHandler {
 
             // Si hay un reporte previo, actualizamos tiempos y combustible
             VehicleFuelReportModel report = optionalLast.get();
+            double currentFuel = report.getCurrentFuelDetected();
+            double incomingFuel = data.getFuelInfo();
+
+            // ✅ Verificamos si hay una recarga significativa (>10) y no es un error de sensor (actual == 0)
+            if (currentFuel > 0 && (incomingFuel - currentFuel) > 10) {
+                // 👉 Cerramos el reporte actual
+                closeReport(data, report);
+                vehicleFuelReportRepositpory.save(report);
+
+                // 👉 Creamos uno nuevo con el nuevo valor
+                VehicleFuelReportModel newReport = createReport(data, vehicleModel);
+                vehicleFuelReportRepositpory.save(newReport);
+                return;
+            }
+
 
             // 👉 Acumulamos el tiempo del nuevo estado
             accumulateStatusTime(data, report);
