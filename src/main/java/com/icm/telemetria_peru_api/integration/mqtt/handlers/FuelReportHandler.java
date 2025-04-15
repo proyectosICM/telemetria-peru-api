@@ -21,7 +21,7 @@ public class FuelReportHandler {
             Optional<VehicleFuelReportModel> optionalLast = vehicleFuelReportRepositpory
                     .findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
-            if (optionalLast.isEmpty()){
+            if (optionalLast.isEmpty()) {
                 VehicleFuelReportModel newReport = new VehicleFuelReportModel();
                 newReport.setVehicleModel(vehicleModel);
                 newReport.setCurrentFuelDetected(data.getFuelInfo());
@@ -37,4 +37,5 @@ public class FuelReportHandler {
             System.out.println("Error Saving Fuel Report");
         }
     }
+}
 
