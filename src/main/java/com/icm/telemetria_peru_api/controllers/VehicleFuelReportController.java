@@ -35,13 +35,13 @@ public class VehicleFuelReportController {
         return ResponseEntity.ok(vehicleFuelReportService.findById(id));
     }
 
-    @GetMapping("/by-vehicle")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<VehicleFuelReportModel>> findByVehicleModelId(@PathVariable Long vehicleId){
 
         return ResponseEntity.ok(vehicleFuelReportService.findByVehicleModelId(vehicleId));
     }
 
-    @GetMapping("/by-vehicle-paged")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<VehicleFuelReportModel>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                              @RequestParam(defaultValue = "0") int page,
                                                                              @RequestParam(defaultValue = "10") int size){
