@@ -16,7 +16,7 @@ import java.util.Optional;
 public class FuelReportHandler {
     private final VehicleFuelReportRepositpory vehicleFuelReportRepositpory;
 
-    public void saveFuelReport(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
+        public void saveFuelReport(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         try {
             Optional<VehicleFuelReportModel> optionalLast = vehicleFuelReportRepositpory
                     .findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());

@@ -15,7 +15,7 @@ import java.util.List;
 public class VehicleFuelReportService {
     private final VehicleFuelReportRepositpory vehicleFuelReportRepositpory;
 
-    public VehicleFuelReportModel findById(Long id){
+    public VehicleFuelReportModel   findById(Long id){
         return vehicleFuelReportRepositpory.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + "not found"));
     }
