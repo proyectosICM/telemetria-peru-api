@@ -78,12 +78,15 @@ public class FuelReportHandler {
 
             if (!ignitionOn) {
                 // 🚗 Vehículo apagado
+                System.out.println("Vehiculo Apagado");
                 report.setParkedTime(report.getParkedTime().plus(elapsed));
             } else if (speed < 5) {
                 // 🛑 Ralentí
+                System.out.println("Vehiculo Ralenti");
                 report.setIdleTime(report.getIdleTime().plus(elapsed));
             } else {
                 // 🟢 En movimiento
+                System.out.println("Vehiculo Movimiento");
                 report.setOperatingTime(report.getOperatingTime().plus(elapsed));
             }
 
