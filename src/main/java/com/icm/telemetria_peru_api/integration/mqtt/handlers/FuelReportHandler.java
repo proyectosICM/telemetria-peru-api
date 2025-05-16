@@ -18,6 +18,7 @@ public class FuelReportHandler {
 
         public void saveFuelReport(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         try {
+            System.out.println("Data de : " + data.getImei());
             Optional<VehicleFuelReportModel> optionalLast = vehicleFuelReportRepositpory
                     .findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
