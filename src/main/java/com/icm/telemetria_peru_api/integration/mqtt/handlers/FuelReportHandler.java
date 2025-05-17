@@ -73,7 +73,7 @@ public class FuelReportHandler {
 
             // Calcular cuánto tiempo ha pasado desde la última actualización
             Duration elapsed = Duration.between(lastUpdate, now);
-            //if (elapsed.isNegative() || elapsed.isZero()) return;
+            if (elapsed.isNegative() || elapsed.isZero()) return;
 
             // Evaluar condiciones del vehículo
             boolean ignitionOn = Boolean.TRUE.equals(data.getIgnitionInfo());
