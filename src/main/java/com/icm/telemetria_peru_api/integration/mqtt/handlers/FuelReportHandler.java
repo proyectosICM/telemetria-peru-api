@@ -78,7 +78,7 @@ public class FuelReportHandler {
             // Evaluar condiciones del vehículo
             boolean ignitionOn = Boolean.TRUE.equals(data.getIgnitionInfo());
             double speed = data.getSpeed() != null ? data.getSpeed() : 0.0;
-
+            System.out.println("Estado del vehiculo: " + data.getImei() + " - Encendido: " + ignitionOn + " - Velocidad: " + speed);
             if (!ignitionOn) {
                 // 🚗 Vehículo apagado
                 System.out.println("Vehiculo Apagado " + data.getImei());
