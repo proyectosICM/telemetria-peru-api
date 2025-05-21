@@ -44,7 +44,7 @@ public class VehicleFuelReportController {
     @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<Page<VehicleFuelReportModel>> findByVehicleModelId(@PathVariable Long vehicleId,
                                                                              @RequestParam(defaultValue = "0") int page,
-                                                                             @RequestParam(defaultValue = "10") int size){
+                                                                             @RequestParam(defaultValue = "8") int size){
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return ResponseEntity.ok(vehicleFuelReportService.findByVehicleModelId(vehicleId, pageable));
     }
