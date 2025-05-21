@@ -10,6 +10,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.ZonedDateTime;
 
+/**
+ * CompanyModel represents a company in the system.
+ * It contains information about the company's name, status,
+ * and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

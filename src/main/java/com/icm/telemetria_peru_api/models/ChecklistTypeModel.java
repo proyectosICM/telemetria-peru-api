@@ -9,6 +9,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+/**
+ * ChecklistTypeModel represents the type or category of a checklist.
+ * It contains the name of the checklist type (e.g., daily inspection, maintenance),
+ * and timestamps for creation and last update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -8,12 +8,18 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
+
+/**
+ * AlarmRecordModel represents a log entry each time a vehicle's alarm is triggered.
+ * It stores the associated vehicle, the timestamp of the alarm activation,
+ * and the timestamp of the last update to the record.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "alarm_records")
-public class AlarmRecordModel {
+public class  AlarmRecordModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)

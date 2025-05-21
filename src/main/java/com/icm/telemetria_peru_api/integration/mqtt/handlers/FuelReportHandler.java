@@ -33,7 +33,7 @@ public class FuelReportHandler {
             double incomingFuel = data.getFuelInfo();
 
             // ✅ Verificamos si hay una recarga significativa (>10) y no es un error de sensor (actual == 0)
-            if (currentFuel > 0 && (incomingFuel - currentFuel) > 10) {
+            if (currentFuel > 0 && (incomingFuel - currentFuel) > 18.9271) {
                 System.out.println("Recarga significativa: " + data.getImei());
                 // 👉 Cerramos el reporte actual
                 closeReport(data, report);
@@ -44,7 +44,6 @@ public class FuelReportHandler {
                 vehicleFuelReportRepositpory.save(newReport);
                 return;
             }
-
 
             // 👉 Acumulamos el tiempo del nuevo estado
             accumulateStatusTime(data, report);

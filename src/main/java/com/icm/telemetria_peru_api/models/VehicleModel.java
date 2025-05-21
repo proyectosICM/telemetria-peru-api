@@ -10,9 +10,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.ZonedDateTime;
 
+/**
+ * VehicleModel represents a vehicle in the system.
+ * It contains information about the vehicle's license plate,
+ * status, alarm status, engine status, lock status, time on,
+ * maximum speed, associated driver, vehicle type, company,
+ * fuel type, and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -9,6 +9,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+/**
+ * ChecklistRecordModel represents a log entry for a completed checklist.
+ * It stores metadata such as the checklist name, associated file, duration (timer),
+ * the driver who performed it, the vehicle involved, the checklist type, and the company.
+ * Includes timestamps for creation and last update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

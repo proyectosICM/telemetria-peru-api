@@ -9,6 +9,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+/**
+ * BatteryRecordModel represents a log entry for battery records.
+ * It contains information about the voltage, current, the associated battery,
+ * and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

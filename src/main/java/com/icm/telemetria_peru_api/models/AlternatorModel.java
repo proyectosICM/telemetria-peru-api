@@ -9,6 +9,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+/**
+ * AlternatorModel represents the alternator of a vehicle.
+ * It contains information about the voltage of the alternator,
+ * the associated vehicle, and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

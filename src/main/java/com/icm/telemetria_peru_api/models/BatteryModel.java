@@ -9,6 +9,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.ZonedDateTime;
 
+/**
+ * BatteryModel represents the battery of a vehicle.
+ * It contains information about the battery name, the associated vehicle,
+ * the company that owns the vehicle, and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

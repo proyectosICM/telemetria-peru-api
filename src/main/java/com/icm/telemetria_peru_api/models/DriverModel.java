@@ -12,8 +12,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
-
-
+/**
+ * DriverModel represents a driver in the system.
+ * It contains information about the driver's name, last name,
+ * driver license number, license issue and expiration dates,
+ * phone number, associated company, RFID number, active status,
+ * and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
