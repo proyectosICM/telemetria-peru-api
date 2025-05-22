@@ -39,8 +39,9 @@ public class FuelReportHandler {
             LocalDateTime now = LocalDateTime.ofEpochSecond(epochSeconds, 0, java.time.ZoneOffset.UTC);
 
             // Si cambió de hora, cerrar el reporte actual
-            if (now.getHour() != report.getCreatedAt().toLocalDateTime().getHour()) {
-                System.out.println("⏰ Cambio de hora, cerrando reporte: " + data.getImei());
+            Duration sinceCreation = Duration.between(report.getCreatedAt().toLocalDateTime(), now);
+            if (sinceCreation.toMinutes() >= 60) {
+                System.out.println("⏰ Reporte supera 60 minutos, cerrando: " + data.getImei());
                 closeReport(data, report);
                 vehicleFuelReportRepositpory.save(report);
 
