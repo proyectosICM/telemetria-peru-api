@@ -33,6 +33,23 @@ public class FuelReportHandler {
             double currentFuel = report.getCurrentFuelDetected();
             double incomingFuel = data.getFuelInfo();
 
+            /** Algo */
+            // Obtener timestamp actual del mensaje
+            long epochSeconds = Long.parseLong(data.getTimestamp());
+            LocalDateTime now = LocalDateTime.ofEpochSecond(epochSeconds, 0, java.time.ZoneOffset.UTC);
+
+            // Si cambió de hora, cerrar el reporte actual
+            if (now.getHour() != report.getCreatedAt().toLocalDateTime().getHour()) {
+                System.out.println("⏰ Cambio de hora, cerrando reporte: " + data.getImei());
+                closeReport(data, report);
+                vehicleFuelReportRepositpory.save(report);
+
+                VehicleFuelReportModel newReport = createReport(data, vehicleModel);
+                vehicleFuelReportRepositpory.save(newReport);
+                return;
+            }
+            /** Algo */
+
             // ✅ Verificamos si hay una recarga significativa (>10) y no es un error de sensor (actual == 0)
             if (currentFuel > 0 && incomingFuel >= currentFuel + 20) {
                 System.out.println("Recarga significativa: " + data.getImei());
