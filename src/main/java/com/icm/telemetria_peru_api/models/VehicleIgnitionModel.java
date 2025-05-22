@@ -6,9 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.ZonedDateTime;
 
+/**
+ * Represents the ignition status of a vehicle.
+ * This entity is used to track the ignition status of vehicles in the system.
+ *
+ * @see VehicleModel
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
