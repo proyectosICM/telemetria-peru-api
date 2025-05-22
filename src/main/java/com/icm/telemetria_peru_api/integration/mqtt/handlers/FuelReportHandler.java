@@ -35,6 +35,7 @@ public class FuelReportHandler {
 
             /** Algo */
             // Obtener timestamp actual del mensaje
+            /*
             long epochSeconds = Long.parseLong(data.getTimestamp());
             LocalDateTime now = LocalDateTime.ofEpochSecond(epochSeconds, 0, java.time.ZoneOffset.UTC);
 
@@ -49,6 +50,7 @@ public class FuelReportHandler {
                 vehicleFuelReportRepositpory.save(newReport);
                 return;
             }
+            */
             /** Algo */
 
             // ✅ Verificamos si hay una recarga significativa (>10) y no es un error de sensor (actual == 0)
