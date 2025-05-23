@@ -40,7 +40,8 @@ public class FuelReportHandler {
 
             System.out.println("Ahora: " + now + " | Hora lógica: " + now.getHour());
             System.out.println("Creado: " + report.getCreatedAt().toLocalDateTime() + " | Hora lógica: " + report.getCreatedAt().toLocalDateTime().getHour());
-
+            System.out.println("eepoch: " + epochSeconds);
+            // Si el reporte fue creado hace más de 1 hora, cerramos el reportes
             // Si cambió de hora, cerrar el reporte actual
             /*
             if (now.getHour() != report.getCreatedAt().toLocalDateTime().getHour()) {
