@@ -1,7 +1,5 @@
 package com.icm.telemetria_peru_api.services;
 
-import com.icm.telemetria_peru_api.dto.FuelReportSummaryDTO;
-import com.icm.telemetria_peru_api.dto.FuelReportSummaryDTOImpl;
 import com.icm.telemetria_peru_api.models.FuelReportSummaryDTORecord;
 import com.icm.telemetria_peru_api.models.VehicleFuelReportModel;
 import com.icm.telemetria_peru_api.repositories.VehicleFuelReportRepositpory;
