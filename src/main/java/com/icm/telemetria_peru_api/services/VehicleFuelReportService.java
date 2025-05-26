@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.dto.FuelReportSummaryDTO;
 import com.icm.telemetria_peru_api.models.VehicleFuelReportModel;
 import com.icm.telemetria_peru_api.repositories.VehicleFuelReportRepositpory;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,6 +35,10 @@ public class VehicleFuelReportService {
 
     public Page<VehicleFuelReportModel> findByVehicleModelId(Long vehicleId, Pageable pageable){
         return vehicleFuelReportRepositpory.findByVehicleModelId(vehicleId, pageable);
+    }
+
+    public FuelReportSummaryDTO getSummary(Long vehicleId, Integer year, Integer month, Integer day) {
+        return vehicleFuelReportRepositpory.findFuelReportSummary(vehicleId, year, month, day);
     }
 
     public VehicleFuelReportModel save(VehicleFuelReportModel vehicleFuelReportModel){

@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.FuelReportSummaryDTO;
 import com.icm.telemetria_peru_api.models.VehicleFuelReportModel;
 import com.icm.telemetria_peru_api.services.VehicleFuelReportService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,16 @@ public class VehicleFuelReportController {
                                                                              @RequestParam(defaultValue = "8") int size){
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return ResponseEntity.ok(vehicleFuelReportService.findByVehicleModelId(vehicleId, pageable));
+    }
+
+    @GetMapping("/summary")
+    public FuelReportSummaryDTO getFuelReportSummary(
+            @RequestParam(required = false) Long vehicleId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer day
+    ) {
+        return vehicleFuelReportService.getSummary(vehicleId, year, month, day);
     }
 
     @PostMapping
