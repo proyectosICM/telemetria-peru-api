@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.dto.FuelReportSummaryDTO;
 import com.icm.telemetria_peru_api.dto.FuelReportSummaryDTOImpl;
+import com.icm.telemetria_peru_api.models.FuelReportSummaryDTORecord;
 import com.icm.telemetria_peru_api.models.VehicleFuelReportModel;
 import com.icm.telemetria_peru_api.repositories.VehicleFuelReportRepositpory;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,17 +40,20 @@ public class VehicleFuelReportService {
         return vehicleFuelReportRepositpory.findByVehicleModelId(vehicleId, pageable);
     }
 
-    public FuelReportSummaryDTO getSummary(Long vehicleId, Integer year, Integer month, Integer day) {
-        Object[] row = vehicleFuelReportRepositpory.findFuelReportSummaryRaw(vehicleId, year, month, day);
-        if (row == null || row.length != 4) return null;
+    public FuelReportSummaryDTORecord  getSummary(Long vehicleId, Integer year, Integer month, Integer day) {
+        Object result = vehicleFuelReportRepositpory.findFuelReportSummaryRaw(vehicleId, year, month, day);
+        if (result == null) return null;
+
+        Object[] row = (Object[]) result;
 
         Double averageFuel = row[0] != null ? ((Number) row[0]).doubleValue() : null;
         Duration idle = row[1] != null ? Duration.ofSeconds(((Number) row[1]).longValue()) : null;
         Duration parked = row[2] != null ? Duration.ofSeconds(((Number) row[2]).longValue()) : null;
         Duration operating = row[3] != null ? Duration.ofSeconds(((Number) row[3]).longValue()) : null;
 
-        return new FuelReportSummaryDTOImpl(averageFuel, idle, parked, operating);
+        return new FuelReportSummaryDTORecord(averageFuel, idle, parked, operating);
     }
+
 
     public VehicleFuelReportModel save(VehicleFuelReportModel vehicleFuelReportModel){
         return vehicleFuelReportRepositpory.save(vehicleFuelReportModel);

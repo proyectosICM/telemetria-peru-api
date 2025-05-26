@@ -8,3 +8,4 @@ public interface FuelReportSummaryDTO {
     Duration getTotalParkedTime();
     Duration getTotalOperatingTime();
 }
+
