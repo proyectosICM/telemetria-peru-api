@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Component
@@ -35,7 +37,9 @@ public class FuelReportHandler {
 
             // Obtener timestamp actual del mensaje
             long epochSeconds = Long.parseLong(data.getTimestamp());
-            LocalDateTime now = LocalDateTime.ofEpochSecond(epochSeconds, 0, java.time.ZoneOffset.UTC);
+            Instant instant = Instant.ofEpochSecond(epochSeconds);
+
+            LocalDateTime now = instant.atZone(ZoneId.of("America/Lima")).toLocalDateTime();
             // System.out.println("Timestamp: " + data.getTimestamp());
 
             System.out.println("Ahora: " + now + " | Hora lógica: " + now.getHour());
