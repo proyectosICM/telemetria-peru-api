@@ -41,7 +41,7 @@ public class VehicleFuelReportService {
 
     public FuelReportSummaryDTO getSummary(Long vehicleId, Integer year, Integer month, Integer day) {
         Object[] row = vehicleFuelReportRepositpory.findFuelReportSummaryRaw(vehicleId, year, month, day);
-        if (row == null) return null;
+        if (row == null || row.length != 4) return null;
 
         Double averageFuel = row[0] != null ? ((Number) row[0]).doubleValue() : null;
         Duration idle = row[1] != null ? Duration.ofSeconds(((Number) row[1]).longValue()) : null;

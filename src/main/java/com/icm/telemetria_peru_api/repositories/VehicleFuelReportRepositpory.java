@@ -23,14 +23,14 @@ public interface VehicleFuelReportRepositpory extends JpaRepository<VehicleFuelR
     @Query(value = """
     SELECT 
         AVG(initial_fuel - final_fuel) AS averageFuelConsumption,
-        SUM(EXTRACT(EPOCH FROM idle_time)) AS totalIdleTime,
-        SUM(EXTRACT(EPOCH FROM parked_time)) AS totalParkedTime,
-        SUM(EXTRACT(EPOCH FROM operating_time)) AS totalOperatingTime
+        SUM(TIME_TO_SEC(idle_time)) AS totalIdleTime,
+        SUM(TIME_TO_SEC(parked_time)) AS totalParkedTime,
+        SUM(TIME_TO_SEC(operating_time)) AS totalOperatingTime
     FROM vehicle_fuel_report
     WHERE (:vehicleId IS NULL OR vehicle_model_id = :vehicleId)
-      AND (:year IS NULL OR EXTRACT(YEAR FROM date) = :year)
-      AND (:month IS NULL OR EXTRACT(MONTH FROM date) = :month)
-      AND (:day IS NULL OR EXTRACT(DAY FROM date) = :day)
+      AND (:year IS NULL OR YEAR(date) = :year)
+      AND (:month IS NULL OR MONTH(date) = :month)
+      AND (:day IS NULL OR DAY(date) = :day)
 """, nativeQuery = true)
     Object[] findFuelReportSummaryRaw(
             @Param("vehicleId") Long vehicleId,
