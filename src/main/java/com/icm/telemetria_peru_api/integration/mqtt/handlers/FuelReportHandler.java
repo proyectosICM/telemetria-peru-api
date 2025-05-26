@@ -47,7 +47,7 @@ public class FuelReportHandler {
             System.out.println("eepoch: " + epochSeconds);
             // Si el reporte fue creado hace más de 1 hora, cerramos el reportes
             // Si cambió de hora, cerrar el reporte actual
-/*
+
             if (now.getHour() != report.getCreatedAt().toLocalDateTime().getHour()) {
                 System.out.println("⏰ Cambio de hora lógica, cerrando reporte: " + data.getImei());
                 closeReport(data, report);
@@ -57,7 +57,7 @@ public class FuelReportHandler {
                 vehicleFuelReportRepositpory.save(newReport);
                 return;
             }
-*/
+
             // ✅ Verificamos si hay una recarga significativa (>10) y no es un error de sensor (actual == 0)
             if (currentFuel > 0 && incomingFuel >= currentFuel + 20) {
                 System.out.println("Recarga significativa: " + data.getImei());
