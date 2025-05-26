@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.dto.FuelReportSummaryDTO;
+import com.icm.telemetria_peru_api.dto.FuelReportSummaryDTOImpl;
 import com.icm.telemetria_peru_api.models.VehicleFuelReportModel;
 import com.icm.telemetria_peru_api.repositories.VehicleFuelReportRepositpory;
 import jakarta.persistence.EntityNotFoundException;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -38,7 +40,15 @@ public class VehicleFuelReportService {
     }
 
     public FuelReportSummaryDTO getSummary(Long vehicleId, Integer year, Integer month, Integer day) {
-        return vehicleFuelReportRepositpory.findFuelReportSummary(vehicleId, year, month, day);
+        Object[] row = vehicleFuelReportRepositpory.findFuelReportSummaryRaw(vehicleId, year, month, day);
+        if (row == null) return null;
+
+        Double averageFuel = row[0] != null ? ((Number) row[0]).doubleValue() : null;
+        Duration idle = row[1] != null ? Duration.ofSeconds(((Number) row[1]).longValue()) : null;
+        Duration parked = row[2] != null ? Duration.ofSeconds(((Number) row[2]).longValue()) : null;
+        Duration operating = row[3] != null ? Duration.ofSeconds(((Number) row[3]).longValue()) : null;
+
+        return new FuelReportSummaryDTOImpl(averageFuel, idle, parked, operating);
     }
 
     public VehicleFuelReportModel save(VehicleFuelReportModel vehicleFuelReportModel){

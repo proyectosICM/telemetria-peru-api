@@ -20,19 +20,19 @@ public interface VehicleFuelReportRepositpory extends JpaRepository<VehicleFuelR
     List<VehicleFuelReportModel> findByVehicleModelId(Long vehicleId);
     Page<VehicleFuelReportModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
 
-    @Query("""
-        SELECT 
-            AVG(v.initialFuel - v.finalFuel) AS averageFuelConsumption,
-            SUM(v.idleTime) AS totalIdleTime,
-            SUM(v.parkedTime) AS totalParkedTime,
-            SUM(v.operatingTime) AS totalOperatingTime
-        FROM VehicleFuelReportModel v
-        WHERE (:vehicleId IS NULL OR v.vehicleModel.id = :vehicleId)
-          AND (:year IS NULL OR FUNCTION('YEAR', v.date) = :year)
-          AND (:month IS NULL OR FUNCTION('MONTH', v.date) = :month)
-          AND (:day IS NULL OR FUNCTION('DAY', v.date) = :day)
-    """)
-    FuelReportSummaryDTO findFuelReportSummary(
+    @Query(value = """
+    SELECT 
+        AVG(initial_fuel - final_fuel) AS averageFuelConsumption,
+        SUM(EXTRACT(EPOCH FROM idle_time)) AS totalIdleTime,
+        SUM(EXTRACT(EPOCH FROM parked_time)) AS totalParkedTime,
+        SUM(EXTRACT(EPOCH FROM operating_time)) AS totalOperatingTime
+    FROM vehicle_fuel_report
+    WHERE (:vehicleId IS NULL OR vehicle_model_id = :vehicleId)
+      AND (:year IS NULL OR EXTRACT(YEAR FROM date) = :year)
+      AND (:month IS NULL OR EXTRACT(MONTH FROM date) = :month)
+      AND (:day IS NULL OR EXTRACT(DAY FROM date) = :day)
+""", nativeQuery = true)
+    Object[] findFuelReportSummaryRaw(
             @Param("vehicleId") Long vehicleId,
             @Param("year") Integer year,
             @Param("month") Integer month,
