@@ -28,9 +28,9 @@ public class VehicleFuelReportModel {
 
     private LocalDateTime closingTime;
 
-    private Duration idleTime;       // Tiempo en ralentí
-    private Duration parkedTime;     // Tiempo estacionado
-    private Duration operatingTime;  // Tiempo en operación
+    private Long idleSeconds;       // Tiempo en ralentí, en segundos
+    private Long parkedSeconds;     // Tiempo estacionado, en segundos
+    private Long operatingSeconds;  // Tiempo en operación, en segundos
 
     private Double initialFuel;      // Combustible inicial (litros)
     private Double finalFuel;        // Combustible final (litros)

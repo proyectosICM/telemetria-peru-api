@@ -104,18 +104,18 @@ public class FuelReportHandler {
             boolean ignitionOn = Boolean.TRUE.equals(data.getIgnitionInfo());
             double speed = data.getSpeed() != null ? data.getSpeed() : 0.0;
             System.out.println("Estado del vehiculo: " + data.getImei() + " - Encendido: " + ignitionOn + " - Velocidad: " + speed);
+
+
+            long seconds = elapsed.getSeconds();
+
+            if (seconds <= 0) return;
+
             if (!ignitionOn) {
-                // 🚗 Vehículo apagado
-                System.out.println("Vehiculo Apagado " + data.getImei());
-                report.setParkedTime(report.getParkedTime().plus(elapsed));
+                report.setParkedSeconds(report.getParkedSeconds() + seconds);
             } else if (speed < 5) {
-                // 🛑 Ralentí
-                System.out.println("Vehiculo Ralenti " + data.getImei());
-                report.setIdleTime(report.getIdleTime().plus(elapsed));
+                report.setIdleSeconds(report.getIdleSeconds() + seconds);
             } else {
-                // 🟢 En movimiento
-                System.out.println("Vehiculo Movimiento " + data.getImei());
-                report.setOperatingTime(report.getOperatingTime().plus(elapsed));
+                report.setOperatingSeconds(report.getOperatingSeconds() + seconds);
             }
 
         } catch (Exception e) {
@@ -133,9 +133,9 @@ public class FuelReportHandler {
         newReport.setVehicleModel(vehicleModel);
         newReport.setCurrentFuelDetected(data.getFuelInfo());
         newReport.setInitialFuel(data.getFuelInfo());
-        newReport.setIdleTime(Duration.ZERO);
-        newReport.setParkedTime(Duration.ZERO);
-        newReport.setOperatingTime(Duration.ZERO);
+        newReport.setIdleSeconds(0L);
+        newReport.setParkedSeconds(0L);
+        newReport.setOperatingSeconds(0L);
         return newReport;
     }
 }
