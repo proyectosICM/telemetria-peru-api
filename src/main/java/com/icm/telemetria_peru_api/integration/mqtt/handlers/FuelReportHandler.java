@@ -87,21 +87,20 @@ public class FuelReportHandler {
         try {
             System.out.println("Acumulando tiempo: " + data.getImei());
 
-            long epochSeconds = Long.parseLong(data.getTimestamp());
-            ZonedDateTime now = Instant.ofEpochSecond(epochSeconds).atZone(ZoneId.of("America/Lima"));
-
+            long currentEpoch = Long.parseLong(data.getTimestamp());
+            ZonedDateTime now = Instant.ofEpochSecond(currentEpoch).atZone(ZoneId.of("America/Lima"));
             ZonedDateTime lastUpdate = report.getUpdatedAt();
 
-            Duration elapsed = Duration.between(lastUpdate, now);
-            if (elapsed.isNegative() || elapsed.isZero()) return;
+            long nowInSeconds = now.toEpochSecond();
+            long lastInSeconds = lastUpdate.toEpochSecond();
+
+            long seconds = nowInSeconds - lastInSeconds;
+            if (seconds <= 0) return;
+
+            System.out.println("➡️ Diferencia en segundos: " + seconds);
 
             boolean ignitionOn = Boolean.TRUE.equals(data.getIgnitionInfo());
             double speed = data.getSpeed() != null ? data.getSpeed() : 0.0;
-
-            long seconds = elapsed.getSeconds();
-            System.out.println("➡️ elapsed (s): " + seconds);
-
-            if (seconds <= 0) return;
 
             if (!ignitionOn) {
                 report.setParkedSeconds(report.getParkedSeconds() + seconds);
@@ -111,7 +110,7 @@ public class FuelReportHandler {
                 report.setOperatingSeconds(report.getOperatingSeconds() + seconds);
             }
 
-            // ✅ Actualizamos `updatedAt` con la nueva hora
+            // ✅ Actualizar `updatedAt`
             report.setUpdatedAt(now);
 
         } catch (Exception e) {
