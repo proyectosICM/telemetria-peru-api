@@ -26,9 +26,9 @@ public interface VehicleFuelReportRepositpory extends JpaRepository<VehicleFuelR
         SUM(TIME_TO_SEC(operating_time)) AS totalOperatingTime
     FROM vehicle_fuel_report
     WHERE (:vehicleId IS NULL OR vehicle_model_id = :vehicleId)
-      AND (:year IS NULL OR YEAR(date) = :year)
-      AND (:month IS NULL OR MONTH(date) = :month)
-      AND (:day IS NULL OR DAY(date) = :day)
+      AND (:year IS NULL OR YEAR(created_at) = :year)
+      AND (:month IS NULL OR MONTH(created_at) = :month)
+      AND (:day IS NULL OR DAY(created_at) = :day)
 """, nativeQuery = true)
     Object findFuelReportSummaryRaw(
             @Param("vehicleId") Long vehicleId,
