@@ -107,6 +107,7 @@ public class FuelReportHandler {
 
 
             long seconds = elapsed.getSeconds();
+            System.out.println("➡️ elapsed (s): " + elapsed.getSeconds());
 
             if (seconds <= 0) return;
 
