@@ -88,9 +88,9 @@ public class FuelReportHandler {
             System.out.println("Acumulando tiempo: " + data.getImei());
 
             long epochSeconds = Long.parseLong(data.getTimestamp());
-            LocalDateTime now = LocalDateTime.ofEpochSecond(epochSeconds, 0, java.time.ZoneOffset.UTC);
+            ZonedDateTime now = Instant.ofEpochSecond(epochSeconds).atZone(ZoneId.of("America/Lima"));
 
-            LocalDateTime lastUpdate = report.getUpdatedAt().toLocalDateTime();
+            ZonedDateTime lastUpdate = report.getUpdatedAt();
 
             Duration elapsed = Duration.between(lastUpdate, now);
             if (elapsed.isNegative() || elapsed.isZero()) return;
@@ -111,8 +111,8 @@ public class FuelReportHandler {
                 report.setOperatingSeconds(report.getOperatingSeconds() + seconds);
             }
 
-            // ✅ ACTUALIZAR `updatedAt` para evitar doble conteo
-            report.setUpdatedAt(now.atZone(ZoneId.of("America/Lima")));
+            // ✅ Actualizamos `updatedAt` con la nueva hora
+            report.setUpdatedAt(now);
 
         } catch (Exception e) {
             e.printStackTrace();
