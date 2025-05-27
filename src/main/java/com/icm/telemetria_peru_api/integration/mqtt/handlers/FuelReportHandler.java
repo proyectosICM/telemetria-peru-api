@@ -86,25 +86,20 @@ public class FuelReportHandler {
     public void accumulateStatusTime(VehiclePayloadMqttDTO data, VehicleFuelReportModel report) {
         try {
             System.out.println("Acumulando tiempo: " + data.getImei());
-            // Obtener timestamp actual del mensaje
+
             long epochSeconds = Long.parseLong(data.getTimestamp());
             LocalDateTime now = LocalDateTime.ofEpochSecond(epochSeconds, 0, java.time.ZoneOffset.UTC);
 
-            // Obtener la última hora de actualización del reporte
             LocalDateTime lastUpdate = report.getUpdatedAt().toLocalDateTime();
 
-            // Calcular cuánto tiempo ha pasado desde la última actualización
             Duration elapsed = Duration.between(lastUpdate, now);
             if (elapsed.isNegative() || elapsed.isZero()) return;
 
-            // Evaluar condiciones del vehículo
             boolean ignitionOn = Boolean.TRUE.equals(data.getIgnitionInfo());
             double speed = data.getSpeed() != null ? data.getSpeed() : 0.0;
-            System.out.println("Estado del vehiculo: " + data.getImei() + " - Encendido: " + ignitionOn + " - Velocidad: " + speed);
-
 
             long seconds = elapsed.getSeconds();
-            System.out.println("➡️ elapsed (s): " + elapsed.getSeconds());
+            System.out.println("➡️ elapsed (s): " + seconds);
 
             if (seconds <= 0) return;
 
@@ -115,6 +110,9 @@ public class FuelReportHandler {
             } else {
                 report.setOperatingSeconds(report.getOperatingSeconds() + seconds);
             }
+
+            // ✅ ACTUALIZAR `updatedAt` para evitar doble conteo
+            report.setUpdatedAt(now.atZone(ZoneId.of("America/Lima")));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -144,4 +142,5 @@ public class FuelReportHandler {
         return newReport;
     }
 }
+
 
