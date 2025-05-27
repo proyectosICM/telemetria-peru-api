@@ -39,7 +39,7 @@ public class FuelReportHandler {
             long epochSeconds = Long.parseLong(data.getTimestamp());
             Instant instant = Instant.ofEpochSecond(epochSeconds);
 
-            LocalDateTime now = instant.atZone(ZoneId.of("America/Lima")).toLocalDateTime();
+            LocalDateTime now = Instant.ofEpochSecond(epochSeconds).atZone(ZoneId.of("America/Lima")).toLocalDateTime();
             // System.out.println("Timestamp: " + data.getTimestamp());
 
             System.out.println("Ahora: " + now + " | Hora lógica: " + now.getHour());
