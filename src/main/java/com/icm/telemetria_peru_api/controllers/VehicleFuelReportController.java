@@ -51,9 +51,9 @@ public class VehicleFuelReportController {
         return ResponseEntity.ok(vehicleFuelReportService.findByVehicleModelId(vehicleId, pageable));
     }
 
-    @GetMapping("/summary")
+    @GetMapping("/summary/{vehicleId}")
     public FuelReportSummaryDTORecord getFuelReportSummary(
-            @RequestParam(required = false) Long vehicleId,
+            @PathVariable Long vehicleId,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month,
             @RequestParam(required = false) Integer day
