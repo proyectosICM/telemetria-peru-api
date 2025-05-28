@@ -21,9 +21,9 @@ public interface VehicleFuelReportRepositpory extends JpaRepository<VehicleFuelR
     @Query(value = """
     SELECT 
         AVG(initial_fuel - final_fuel) AS averageFuelConsumption,
-        SUM(idle_time) AS totalIdleTime,
-        SUM(parked_time) AS totalParkedTime,
-        SUM(operating_time) AS totalOperatingTime
+        SUM(idleSeconds) AS totalIdleTime,
+        SUM(parkedSeconds) AS totalParkedTime,
+        SUM(operatingSeconds) AS totalOperatingTime
     FROM vehicle_fuel_report
     WHERE (:vehicleId IS NULL OR vehicle_model_id = :vehicleId)
       AND (:year IS NULL OR YEAR(created_at) = :year)
