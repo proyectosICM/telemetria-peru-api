@@ -17,7 +17,7 @@ public class FuelReportHandler {
 
         public void saveFuelReport(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         try {
-            System.out.println("Data de : " + data.getImei());
+            //System.out.println("Data de : " + data.getImei());
             Optional<VehicleFuelReportModel> optionalLast = vehicleFuelReportRepositpory
                     .findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
@@ -39,14 +39,14 @@ public class FuelReportHandler {
             LocalDateTime now = Instant.ofEpochSecond(epochSeconds).atZone(ZoneId.of("America/Lima")).toLocalDateTime();
             // System.out.println("Timestamp: " + data.getTimestamp());
 
-            System.out.println("Ahora: " + now + " | Hora lógica: " + now.getHour());
-            System.out.println("Creado: " + report.getCreatedAt().toLocalDateTime() + " | Hora lógica: " + report.getCreatedAt().toLocalDateTime().getHour());
-            System.out.println("eepoch: " + epochSeconds);
+            //System.out.println("Ahora: " + now + " | Hora lógica: " + now.getHour());
+            //System.out.println("Creado: " + report.getCreatedAt().toLocalDateTime() + " | Hora lógica: " + report.getCreatedAt().toLocalDateTime().getHour());
+            //System.out.println("eepoch: " + epochSeconds);
             // Si el reporte fue creado hace más de 1 hora, cerramos el reportes
             // Si cambió de hora, cerrar el reporte actual
 
             if (now.getHour() != report.getCreatedAt().toLocalDateTime().getHour()) {
-                System.out.println("⏰ Cambio de hora lógica, cerrando reporte: " + data.getImei());
+                //System.out.println("⏰ Cambio de hora lógica, cerrando reporte: " + data.getImei());
                 closeReport(data, report);
                 vehicleFuelReportRepositpory.save(report);
 
@@ -85,7 +85,7 @@ public class FuelReportHandler {
 
     public void accumulateStatusTime(VehiclePayloadMqttDTO data, VehicleFuelReportModel report) {
         try {
-            System.out.println("Acumulando tiempo: " + data.getImei());
+            //System.out.println("Acumulando tiempo: " + data.getImei());
 
             long currentEpoch = Long.parseLong(data.getTimestamp());
             ZonedDateTime now = Instant.ofEpochSecond(currentEpoch).atZone(ZoneId.of("America/Lima"));
@@ -97,7 +97,7 @@ public class FuelReportHandler {
             long seconds = nowInSeconds - lastInSeconds;
             if (seconds <= 0) return;
 
-            System.out.println("➡️ Diferencia en segundos: " + seconds);
+            //System.out.println("➡️ Diferencia en segundos: " + seconds);
 
             boolean ignitionOn = Boolean.TRUE.equals(data.getIgnitionInfo());
             double speed = data.getSpeed() != null ? data.getSpeed() : 0.0;
@@ -115,7 +115,7 @@ public class FuelReportHandler {
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("❌ Error acumulando tiempo de estado");
+            //System.out.println("❌ Error acumulando tiempo de estado");
         }
     }
 
