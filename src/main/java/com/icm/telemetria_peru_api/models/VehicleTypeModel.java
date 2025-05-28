@@ -35,6 +35,9 @@ public class VehicleTypeModel {
     private BatteryRange batteryRange;
 
     @Embedded
+    private GasRange gasRange;
+
+    @Embedded
     private TirePressureRange tirePressureRange;
 
     @Column(nullable = false, updatable = false)
