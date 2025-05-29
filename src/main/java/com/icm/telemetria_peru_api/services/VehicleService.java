@@ -90,9 +90,11 @@ public class VehicleService {
         VehicleModel existing = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new EntityNotFoundException("Record with id " + vehicleId + " not found"));
 
+        existing.setImei(vehicleModel.getImei());
         existing.setLicensePlate(vehicleModel.getLicensePlate());
         existing.setVehicletypeModel(vehicleModel.getVehicletypeModel());
         existing.setCompanyModel(vehicleModel.getCompanyModel());
+        existing.setMaxSpeed(vehicleModel.getMaxSpeed());
 
         return vehicleRepository.save(existing);
     }
