@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Component
 @RequiredArgsConstructor
@@ -71,8 +74,16 @@ public class GasRecordHandler {
     }
 
     public void closeGasRecord(GasRecordModel lastRecord, VehiclePayloadMqttDTO data){
-        Long currentTimestampInt = Long.parseLong(data.getTimestamp());
-        lastRecord.setEndTime(currentTimestampInt);
+        // Obtener timestamp actual en zona horaria de Perú
+        LocalDateTime nowInPeru = LocalDateTime.now(ZoneId.of("America/Lima"));
+
+        // Calcular la diferencia entre ahora y el createdAt del registro
+        Duration duration = Duration.between(lastRecord.getCreatedAt(), nowInPeru);
+        long secondsElapsed = duration.getSeconds();
+
+        // Establecer fin y tiempo acumulado
+        lastRecord.setEndTime(Long.parseLong(data.getTimestamp()));
+        lastRecord.setAccumulatedTime(secondsElapsed);
 
         gasRecordRepository.save(lastRecord);
     }
