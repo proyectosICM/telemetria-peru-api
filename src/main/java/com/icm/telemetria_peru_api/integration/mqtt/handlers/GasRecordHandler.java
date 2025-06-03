@@ -18,41 +18,39 @@ public class GasRecordHandler {
     private final VehicleRepository vehicleRepository;
 
     public void saveGasRecordModel(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
-        // Buscar el último registro de gas para este vehículo
         GasRecordModel lastRecord = gasRecordRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
 
         VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
-
         if (!dataVehicle.getFuelType().equals(FuelType.GAS)) {
             return;
         }
 
-        // Si no hay un registro previo, crea uno nuevo
+        // Formatear la nueva presión
+        double newPressure = BigDecimal.valueOf(data.getFuelInfo() / 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+
+        // Si no hay registro previo, crea uno nuevo
         if (lastRecord == null) {
-            createNewGasRecord(vehicleModel, data);
+            createNewGasRecord(vehicleModel, data, newPressure);
             return;
         }
 
-        // Si la presión cambia, crea un nuevo registro
-        if (!lastRecord.getLastPressureDetected().equals(data.getGasInfo()) && data.getIgnitionInfo()) {
-            System.out.println("Gas pressure changed");
+        // Si la presión es distinta y el vehículo está encendido, crear un nuevo registro
+        if (!lastRecord.getLastPressureDetected().equals(newPressure) && data.getIgnitionInfo()) {
             closeGasRecord(lastRecord, data);
-            createNewGasRecord(vehicleModel, data);
+            createNewGasRecord(vehicleModel, data, newPressure);
         } else {
-            // Si la presión no cambia, acumula el tiempo
             accumulateGasRecord(lastRecord, data);
         }
     }
 
-    public void createNewGasRecord(VehicleModel vehicleModel, VehiclePayloadMqttDTO data){
+
+    public void createNewGasRecord(VehicleModel vehicleModel, VehiclePayloadMqttDTO data, double formattedPressure){
         GasRecordModel gasRecordModel = new GasRecordModel();
         Long timestampInt = Long.parseLong(data.getTimestamp());
         gasRecordModel.setVehicleModel(vehicleModel);
         gasRecordModel.setStartTime(timestampInt);
-        double originalPressure = data.getFuelInfo(); // Por ejemplo 1235.0
-        double formattedPressure = BigDecimal.valueOf(originalPressure / 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
         gasRecordModel.setLastPressureDetected(formattedPressure);
         gasRecordModel.setAccumulatedTime(0L);
 
