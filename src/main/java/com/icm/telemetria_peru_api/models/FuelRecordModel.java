@@ -9,6 +9,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+/** FuelRecordModel represents a record of fuel consumption for a vehicle.
+ * It contains information about the fuel value, the associated vehicle,
+ * and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

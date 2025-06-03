@@ -6,9 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.ZonedDateTime;
 
+/** * SpeedExcessLoggerModel represents a log entry for speed excess incidents.
+ * It contains information about the incident description, the associated vehicle,
+ * and timestamps for creation and update.
+ */
 @Entity
 @Data
 @AllArgsConstructor

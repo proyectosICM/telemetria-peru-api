@@ -12,6 +12,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+/** * UserModel represents a user in the system.
+ * It contains information about the user's username, password, email,
+ * role, company, and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

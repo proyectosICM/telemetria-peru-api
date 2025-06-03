@@ -9,6 +9,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+/** PositioningModel represents the positioning of a vehicle's axle.
+ * It contains information about the location code, description, side of the vehicle,
+ * axle type, position on the axle, and the associated vehicle type.
+ */
 @Entity
 @Data
 @AllArgsConstructor

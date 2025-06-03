@@ -8,7 +8,8 @@ import com.icm.telemetria_peru_api.repositories.GasRecordRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Component
 @RequiredArgsConstructor
@@ -19,7 +20,6 @@ public class GasRecordHandler {
     public void saveGasRecordModel(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         // Buscar el último registro de gas para este vehículo
         GasRecordModel lastRecord = gasRecordRepository.findTopByVehicleModelIdOrderByCreatedAtDesc(vehicleModel.getId());
-
 
         VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
 
@@ -49,7 +49,11 @@ public class GasRecordHandler {
         Long timestampInt = Long.parseLong(data.getTimestamp());
         gasRecordModel.setVehicleModel(vehicleModel);
         gasRecordModel.setStartTime(timestampInt);
-        gasRecordModel.setLastPressureDetected(data.getFuelInfo());
+        double originalPressure = data.getFuelInfo(); // Por ejemplo 1235.0
+        double formattedPressure = BigDecimal.valueOf(originalPressure / 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        gasRecordModel.setLastPressureDetected(formattedPressure);
         gasRecordModel.setAccumulatedTime(0L);
 
         gasRecordRepository.save(gasRecordModel);

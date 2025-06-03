@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/** ImagesCLModel represents an image associated with a checklist record.
+ * It contains the URL of the image and a reference to the associated checklist record.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -8,9 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.ZonedDateTime;
 
+/**
+ * RoleModel represents a user role in the system.
+ * It contains information about the role's name and timestamps for creation and update.
+ */
 @Entity
 @Data
 @AllArgsConstructor

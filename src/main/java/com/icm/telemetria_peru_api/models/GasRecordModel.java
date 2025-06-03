@@ -9,6 +9,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+/** GasRecordModel represents a record of gas usage for a vehicle.
+ * It contains information about the start and end time of the gas usage,
+ * accumulated time, last pressure detected, associated vehicle, and timestamps for creation and update.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

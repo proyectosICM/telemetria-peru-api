@@ -11,6 +11,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+/** FuelEfficiencyModel represents the fuel efficiency data for a vehicle.
+ * It contains information about the fuel efficiency status, associated vehicle,
+ * timestamps for start and end times, accumulated hours, initial and final fuel levels,
+ * distance traveled, coordinates, speeds recorded, fuel efficiency calculations,
+ * and visibility status.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.controllers;
 import com.icm.telemetria_peru_api.dto.AlarmRecordDTO;
 import com.icm.telemetria_peru_api.models.AlarmRecordModel;
 import com.icm.telemetria_peru_api.services.AlarmRecordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,7 +55,7 @@ public class AlarmRecordController {
     }
 
     @PostMapping
-    public ResponseEntity<AlarmRecordModel> save(@RequestBody AlarmRecordModel alarmRecordModel) {
+    public ResponseEntity<AlarmRecordModel> save(@Valid @RequestBody AlarmRecordModel alarmRecordModel) {
         try {
             AlarmRecordModel data = alarmRecordService.save(alarmRecordModel);
             return new ResponseEntity<>(data, HttpStatus.OK);

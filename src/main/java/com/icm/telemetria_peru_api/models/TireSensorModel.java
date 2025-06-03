@@ -10,9 +10,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.ZonedDateTime;
 
+/** TireSensorModel represents a tire sensor in the system.
+ * It contains information about the sensor's identification code,
+ * temperature, pressure, battery level, status, associated vehicle,
+ * company, and positioning data, along with timestamps for creation and update.
+ */
 @Entity
 @Data
 @AllArgsConstructor
