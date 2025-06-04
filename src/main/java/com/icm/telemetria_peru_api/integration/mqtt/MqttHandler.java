@@ -53,11 +53,12 @@ public class MqttHandler {
                 data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
                 if (vehicleOptional.isPresent()) {
+                    System.out.println("AQui 1");
                     VehicleModel vehicle = vehicleOptional.get();
                     publishDataWithErrorHandling(data, jsonNode);
                     processHandlersWithErrorHandling(data, vehicle);
 
-                    System.out.println("AQui");
+                    System.out.println("AQui 2");
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                     vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle);
 
