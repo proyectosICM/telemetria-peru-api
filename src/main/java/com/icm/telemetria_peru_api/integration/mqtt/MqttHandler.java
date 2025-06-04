@@ -55,8 +55,8 @@ public class MqttHandler {
                 if (vehicleOptional.isPresent()) {
                     System.out.println("AQui 1");
                     VehicleModel vehicle = vehicleOptional.get();
-                    vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle);
-                    publishDataWithErrorHandling(data, jsonNode);
+
+                    publishDataWithErrorHandling(snapshotDTO, data, jsonNode);
                     processHandlersWithErrorHandling(data, vehicle);
 
                     System.out.println("AQui 2");
@@ -115,7 +115,7 @@ public class MqttHandler {
         return new VehicleSnapshotDTO(null, vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, latitude + "," + longitude, gasInfo, latitude, longitude);
     }
 
-    private void processHandlersWithErrorHandling(VehiclePayloadMqttDTO data, VehicleModel vehicle) {
+    private void processHandlersWithErrorHandling(VehicleSnapshotDTO snapshotDTO ,VehiclePayloadMqttDTO data, VehicleModel vehicle) {
         executeSafely(() -> fuelReportHandler.saveFuelReport(data, vehicle), "fuelReportHandler.saveFuelReport" );
         executeSafely(() -> fuelRecordHandler.analyzeFuelTimestamp(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
         executeSafely(() -> gasChangeHandler.saveGasChangeRecord(data, vehicle), "gasChangeHandler.analyzeFuelTimestamp");
@@ -125,7 +125,7 @@ public class MqttHandler {
         executeSafely(() -> fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicle, data), "fuelEfficiencyHandler.processFuelEfficiencyInfo");
         executeSafely(() -> speedExcessHandler.logSpeedExcess(vehicle, data), "speedExcessHandler.logSpeedExcess");
 
-        //executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(data,vehicle), "VehicleSnapshotHandler.saveVehicleSnapshot");
+        executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle), "VehicleSnapshotHandler.saveVehicleSnapshot");
         // speedExcessHandler
     }
 
