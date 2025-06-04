@@ -60,6 +60,8 @@ public class VehicleSnapshotService {
 
         if (existingSnapshot != null) {
             // Si existe, actualizar campos (ajusta según tus campos reales)
+            existingSnapshot.setSnapshotIgnitionStatus(newSnapshotData.getSnapshotIgnitionStatus());
+            existingSnapshot.setSnapshotAlarmStatus(newSnapshotData.getSnapshotAlarmStatus());
             existingSnapshot.setSnapshotSpeed(newSnapshotData.getSnapshotSpeed());
             existingSnapshot.setSnapshotLatitude(newSnapshotData.getSnapshotLatitude());
             existingSnapshot.setSnapshotLongitude(newSnapshotData.getSnapshotLongitude());
