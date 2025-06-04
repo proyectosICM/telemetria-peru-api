@@ -51,4 +51,25 @@ public class VehicleSnapshotService {
     public void saveSnapshot(VehicleSnapshotModel snapshot) {
         vehicleSnapshotRepository.save(snapshot);
     }
+
+    public VehicleSnapshotModel updateOrCreateSnapshotByVehicleId(Long vehicleId, VehicleSnapshotModel newSnapshotData) {
+        // Buscar el snapshot más reciente del vehículo
+        VehicleSnapshotModel existingSnapshot = vehicleSnapshotRepository
+                .findTopByVehicleModelIdOrderByIdDesc(vehicleId) // necesitas este método en tu repositorio
+                .orElse(null);
+
+        if (existingSnapshot != null) {
+            // Si existe, actualizar campos (ajusta según tus campos reales)
+            existingSnapshot.setSnapshotSpeed(newSnapshotData.getSnapshotSpeed());
+            existingSnapshot.setSnapshotLatitude(newSnapshotData.getSnapshotLatitude());
+            existingSnapshot.setSnapshotLongitude(newSnapshotData.getSnapshotLongitude());
+            //existingSnapshot.setTimestamp(newSnapshotData.getTimestamp());
+            // ...otros campos que quieras actualizar
+
+            return vehicleSnapshotRepository.save(existingSnapshot);
+        } else {
+            // Si no existe, crear nuevo snapshot
+            return vehicleSnapshotRepository.save(newSnapshotData);
+        }
+    }
 }

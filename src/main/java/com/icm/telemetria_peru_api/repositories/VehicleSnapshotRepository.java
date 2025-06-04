@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VehicleSnapshotRepository extends JpaRepository<VehicleSnapshotModel, Long> {
@@ -14,4 +15,6 @@ public interface VehicleSnapshotRepository extends JpaRepository<VehicleSnapshot
     Page<VehicleSnapshotModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
     List<VehicleSnapshotModel> findByCompanyModelId(Long companyId);
     Page<VehicleSnapshotModel> findByCompanyModelId(Long companyId, Pageable pageable);
+    Optional<VehicleSnapshotModel> findTopByVehicleModelIdOrderByIdDesc(Long vehicleId);
+
 }
