@@ -60,7 +60,7 @@ public class MqttHandler {
 
                     System.out.println("AQui 2");
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
-                    vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle);
+                    //vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle);
 
                 }
             }
