@@ -1,9 +1,11 @@
 package com.icm.telemetria_peru_api.integration.mqtt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.icm.telemetria_peru_api.models.FuelRecordModel;
+import com.icm.telemetria_peru_api.models.VehicleSnapshotModel;
 import com.icm.telemetria_peru_api.repositories.FuelRecordRepository;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -65,6 +67,24 @@ public class MqttMessagePublisher {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error sending message ImpactIncident: " + e.getMessage());
+        }
+    }
+
+    public void snapshot(Long vehicleId, VehicleSnapshotModel vehicleSnapshotModel) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String payload = objectMapper.writeValueAsString(vehicleSnapshotModel);
+
+            MqttMessage mqttMessage = new MqttMessage(payload.getBytes());
+            mqttMessage.setQos(1);
+            mqttMessage.setRetained(true);
+
+            String topic = "mapSnapshot/" + vehicleId;
+            mqttClient.publish(topic, mqttMessage);
+
+        } catch (MqttException | JsonProcessingException e) {
+            e.printStackTrace();
+            System.out.println("Error sending snapshot message: " + e.getMessage());
         }
     }
 

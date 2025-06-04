@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.integration.mqtt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icm.telemetria_peru_api.dto.VehiclePayloadMqttDTO;
+import com.icm.telemetria_peru_api.dto.VehicleSnapshotDTO;
 import com.icm.telemetria_peru_api.integration.mqtt.handlers.*;
 import com.icm.telemetria_peru_api.models.CompanyModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
@@ -26,6 +27,7 @@ public class MqttHandler {
     private final VehicleRepository vehicleRepository;
     private final SpeedExcessHandler speedExcessHandler;
     private final FuelReportHandler fuelReportHandler;
+    private final VehicleSnapshotHandler vehicleSnapshotHandler;
 
     private final MqttMessagePublisher mqttMessagePublisher;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -42,6 +44,7 @@ public class MqttHandler {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
             VehiclePayloadMqttDTO data = validateJson(jsonNode);
+            VehicleSnapshotDTO snapshotDTO =  createVehicleSnapshot(jsonNode);
             //System.out.println("Processing JSON payload");
 
             if (data.getVehicleId() == null && data.getImei() != null) {
@@ -53,7 +56,10 @@ public class MqttHandler {
                     VehicleModel vehicle = vehicleOptional.get();
                     publishDataWithErrorHandling(data, jsonNode);
                     processHandlersWithErrorHandling(data, vehicle);
+
+
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
+                    vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle);
 
                 }
             }
@@ -90,6 +96,23 @@ public class MqttHandler {
         return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, coordinates, gasInfo);
     }
 
+    private VehicleSnapshotDTO createVehicleSnapshot(JsonNode jsonNode) {
+        Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
+        Long companyId = jsonNode.has("companyId") ? jsonNode.get("companyId").asLong() : null;
+        String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
+        String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
+        Double speed = jsonNode.has("speed") ? jsonNode.get("speed").asDouble() : 0;
+        String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
+        Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
+        Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
+        Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
+        String latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asText() : null;
+        String longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asText() : null;
+        Double gasInfo = jsonNode.has("gasInfo") ? jsonNode.get("gasInfo").asDouble() : null;
+
+        return new VehicleSnapshotDTO(null, vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, latitude + "," + longitude, gasInfo, latitude, longitude);
+    }
+
     private void processHandlersWithErrorHandling(VehiclePayloadMqttDTO data, VehicleModel vehicle) {
         executeSafely(() -> fuelReportHandler.saveFuelReport(data, vehicle), "fuelReportHandler.saveFuelReport" );
         executeSafely(() -> fuelRecordHandler.analyzeFuelTimestamp(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
@@ -99,6 +122,8 @@ public class MqttHandler {
         executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
         executeSafely(() -> fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicle, data), "fuelEfficiencyHandler.processFuelEfficiencyInfo");
         executeSafely(() -> speedExcessHandler.logSpeedExcess(vehicle, data), "speedExcessHandler.logSpeedExcess");
+
+        //executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(data,vehicle), "VehicleSnapshotHandler.saveVehicleSnapshot");
         // speedExcessHandler
     }
 
