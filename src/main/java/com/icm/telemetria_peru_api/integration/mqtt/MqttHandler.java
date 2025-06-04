@@ -103,7 +103,6 @@ public class MqttHandler {
         Long companyId = jsonNode.has("companyId") ? jsonNode.get("companyId").asLong() : null;
         String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
         String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
-        Double speed = jsonNode.has("speed") ? jsonNode.get("speed").asDouble() : 0;
         String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
         Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
         Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
@@ -111,9 +110,9 @@ public class MqttHandler {
         String latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asText() : null;
         String longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asText() : null;
         Double gasInfo = jsonNode.has("gasInfo") ? jsonNode.get("gasInfo").asDouble() : null;
-        Integer snapshotSpeed = jsonNode.has("snapshotSpeed") ? jsonNode.get("snapshotSpeed").asInt() : null;
+        Integer snapshotSpeed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : null;
 
-        return new VehicleSnapshotDTO(null, vehicleId, companyId, licensePlate, imei, speed, timestamp,
+        return new VehicleSnapshotDTO(null, vehicleId, companyId, licensePlate, imei, timestamp,
                 fuelInfo, alarmInfo, ignitionInfo, latitude + "," + longitude, gasInfo,
                 snapshotSpeed, latitude, longitude);
     }

@@ -13,7 +13,6 @@ public class VehicleSnapshotDTO {
     private Long companyId;
     private String licensePlate;
     private String imei;
-    private Double speed;
     private String timestamp;
     private Double fuelInfo;
     private Integer alarmInfo;
