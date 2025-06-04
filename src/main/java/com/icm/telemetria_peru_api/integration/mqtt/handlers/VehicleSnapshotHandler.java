@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class VehicleSnapshotHandler {
-    private final MqttMessagePublisher mqttMessagePublisher;
+    //private final MqttMessagePublisher mqttMessagePublisher;
     private final VehicleSnapshotRepository vehicleSnapshotRepository;
     public void saveVehicleSnapshot(VehicleSnapshotDTO data, VehicleModel vehicle) {
         VehicleSnapshotModel snapshot = new VehicleSnapshotModel();
@@ -25,6 +25,6 @@ public class VehicleSnapshotHandler {
 
         vehicleSnapshotRepository.save(snapshot);
         System.out.println("Vehicle snapshot saved: " + snapshot.getId());
-        mqttMessagePublisher.snapshot(vehicle.getId(), snapshot);
+        //mqttMessagePublisher.snapshot(vehicle.getId(), snapshot);
     }
 }
