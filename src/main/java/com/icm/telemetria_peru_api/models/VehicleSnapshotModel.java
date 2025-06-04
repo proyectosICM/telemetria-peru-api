@@ -29,7 +29,7 @@ public class VehicleSnapshotModel {
 
     private Boolean snapshotIgnitionStatus;
 
-    private String snapshotFuelLevel;
+    private Double snapshotFuelLevel;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)

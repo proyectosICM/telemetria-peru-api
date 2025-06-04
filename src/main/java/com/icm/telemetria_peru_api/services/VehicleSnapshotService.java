@@ -65,6 +65,7 @@ public class VehicleSnapshotService {
             existingSnapshot.setSnapshotSpeed(newSnapshotData.getSnapshotSpeed());
             existingSnapshot.setSnapshotLatitude(newSnapshotData.getSnapshotLatitude());
             existingSnapshot.setSnapshotLongitude(newSnapshotData.getSnapshotLongitude());
+            existingSnapshot.setSnapshotFuelLevel(newSnapshotData.getSnapshotFuelLevel());
             //existingSnapshot.setTimestamp(newSnapshotData.getTimestamp());
             // ...otros campos que quieras actualizar
 
