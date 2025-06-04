@@ -17,11 +17,10 @@ public class VehicleSnapshotHandler {
     private final VehicleSnapshotRepository vehicleSnapshotRepository;
     public void saveVehicleSnapshot(VehicleSnapshotDTO data, VehicleModel vehicle) {
         VehicleSnapshotModel snapshot = new VehicleSnapshotModel();
-        snapshot.getVehicleModel().setId(vehicle.getId());
+        snapshot.setVehicleModel(vehicle);
         snapshot.setCompanyModel(vehicle.getCompanyModel());
         snapshot.setSnapshotLatitude(data.getSnapshotLatitude());
         snapshot.setSnapshotLongitude(data.getSnapshotLongitude());
-        snapshot.setVehicleModel(vehicle);
 
         vehicleSnapshotRepository.save(snapshot);
         System.out.println("Vehicle snapshot saved: " + snapshot.getId());
