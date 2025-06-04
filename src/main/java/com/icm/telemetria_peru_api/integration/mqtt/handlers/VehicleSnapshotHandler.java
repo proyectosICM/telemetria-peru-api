@@ -6,6 +6,7 @@ import com.icm.telemetria_peru_api.dto.VehicleSnapshotDTO;
 import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.models.VehicleSnapshotModel;
+import com.icm.telemetria_peru_api.repositories.VehicleSnapshotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class VehicleSnapshotHandler {
     private final MqttMessagePublisher mqttMessagePublisher;
+    private final VehicleSnapshotRepository vehicleSnapshotRepository;
     public void saveVehicleSnapshot(VehicleSnapshotDTO data, VehicleModel vehicle) {
         VehicleSnapshotModel snapshot = new VehicleSnapshotModel();
         snapshot.getVehicleModel().setId(vehicle.getId());
@@ -21,6 +23,7 @@ public class VehicleSnapshotHandler {
         snapshot.setSnapshotLongitude(data.getSnapshotLongitude());
         snapshot.setVehicleModel(vehicle);
 
+        vehicleSnapshotRepository.save(snapshot);
         mqttMessagePublisher.snapshot(vehicle.getId(), snapshot);
     }
 }
