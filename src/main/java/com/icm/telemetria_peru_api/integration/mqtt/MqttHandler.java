@@ -53,13 +53,11 @@ public class MqttHandler {
                 data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
                 if (vehicleOptional.isPresent()) {
-                    System.out.println("AQui 1");
                     VehicleModel vehicle = vehicleOptional.get();
 
                     publishDataWithErrorHandling(data, jsonNode);
                     processHandlersWithErrorHandling(snapshotDTO, data, vehicle);
 
-                    System.out.println("AQui 2");
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
                     //vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle);
 
@@ -105,7 +103,7 @@ public class MqttHandler {
         String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
         String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
         Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
-        Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
+        Boolean alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asBoolean() : null;
         Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
         String latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asText() : null;
         String longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asText() : null;

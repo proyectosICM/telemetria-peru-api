@@ -21,9 +21,12 @@ public class VehicleSnapshotHandler {
         VehicleSnapshotModel snapshot = new VehicleSnapshotModel();
         snapshot.setVehicleModel(vehicle);
         snapshot.setCompanyModel(vehicle.getCompanyModel());
+        snapshot.setSnapshotIgnitionStatus(data.getIgnitionInfo());
+        snapshot.setSnapshotAlarmStatus(data.getAlarmInfo());
         snapshot.setSnapshotLatitude(data.getSnapshotLatitude());
         snapshot.setSnapshotLongitude(data.getSnapshotLongitude());
         snapshot.setSnapshotSpeed(data.getSnapshotSpeed());
+
 
         VehicleSnapshotModel savedSnapshot = vehicleSnapshotService.updateOrCreateSnapshotByVehicleId(vehicle.getId(), snapshot);
         //vehicleSnapshotRepository.save(snapshot);

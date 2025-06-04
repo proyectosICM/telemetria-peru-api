@@ -15,7 +15,7 @@ public class VehicleSnapshotDTO {
     private String imei;
     private String timestamp;
     private Double fuelInfo;
-    private Integer alarmInfo;
+    private Boolean alarmInfo;
     private Boolean ignitionInfo;
     private String coordinates;
     private Double gasInfo;
