@@ -24,6 +24,7 @@ public class VehicleSnapshotHandler {
         snapshot.setVehicleModel(vehicle);
 
         vehicleSnapshotRepository.save(snapshot);
+        System.out.println("Vehicle snapshot saved: " + snapshot.getId());
         mqttMessagePublisher.snapshot(vehicle.getId(), snapshot);
     }
 }
