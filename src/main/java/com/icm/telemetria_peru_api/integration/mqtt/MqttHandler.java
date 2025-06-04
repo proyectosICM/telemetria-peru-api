@@ -56,8 +56,8 @@ public class MqttHandler {
                     System.out.println("AQui 1");
                     VehicleModel vehicle = vehicleOptional.get();
 
-                    publishDataWithErrorHandling(snapshotDTO, data, jsonNode);
-                    processHandlersWithErrorHandling(data, vehicle);
+                    publishDataWithErrorHandling(data, jsonNode);
+                    processHandlersWithErrorHandling(snapshotDTO, data, vehicle);
 
                     System.out.println("AQui 2");
                     //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
