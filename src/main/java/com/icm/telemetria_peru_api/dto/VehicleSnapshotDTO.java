@@ -20,6 +20,7 @@ public class VehicleSnapshotDTO {
     private Boolean ignitionInfo;
     private String coordinates;
     private Double gasInfo;
+    private Integer snapshotSpeed;
     private String snapshotLatitude;
     private String snapshotLongitude;
 }

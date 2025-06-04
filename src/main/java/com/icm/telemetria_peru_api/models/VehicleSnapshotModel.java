@@ -23,7 +23,7 @@ public class VehicleSnapshotModel {
 
     private String snapshotLongitude;
 
-    private String snapshotSpeed;
+    private Integer snapshotSpeed;
 
     private Boolean snapshotAlarmStatus;
 

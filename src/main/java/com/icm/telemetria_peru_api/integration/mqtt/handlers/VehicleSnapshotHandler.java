@@ -21,6 +21,7 @@ public class VehicleSnapshotHandler {
         snapshot.setCompanyModel(vehicle.getCompanyModel());
         snapshot.setSnapshotLatitude(data.getSnapshotLatitude());
         snapshot.setSnapshotLongitude(data.getSnapshotLongitude());
+        //snapshot.setSnapshotSpeed(data.getSnapshotSpeed());
 
         vehicleSnapshotRepository.save(snapshot);
         System.out.println("Vehicle snapshot saved: " + snapshot.getId());

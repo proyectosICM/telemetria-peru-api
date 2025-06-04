@@ -111,8 +111,11 @@ public class MqttHandler {
         String latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asText() : null;
         String longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asText() : null;
         Double gasInfo = jsonNode.has("gasInfo") ? jsonNode.get("gasInfo").asDouble() : null;
+        Integer snapshotSpeed = jsonNode.has("snapshotSpeed") ? jsonNode.get("snapshotSpeed").asInt() : null;
 
-        return new VehicleSnapshotDTO(null, vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, latitude + "," + longitude, gasInfo, latitude, longitude);
+        return new VehicleSnapshotDTO(null, vehicleId, companyId, licensePlate, imei, speed, timestamp,
+                fuelInfo, alarmInfo, ignitionInfo, latitude + "," + longitude, gasInfo,
+                snapshotSpeed, latitude, longitude);
     }
 
     private void processHandlersWithErrorHandling(VehicleSnapshotDTO snapshotDTO ,VehiclePayloadMqttDTO data, VehicleModel vehicle) {
