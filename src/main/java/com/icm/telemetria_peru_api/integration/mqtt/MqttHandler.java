@@ -55,6 +55,7 @@ public class MqttHandler {
                 if (vehicleOptional.isPresent()) {
                     System.out.println("AQui 1");
                     VehicleModel vehicle = vehicleOptional.get();
+                    vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle);
                     publishDataWithErrorHandling(data, jsonNode);
                     processHandlersWithErrorHandling(data, vehicle);
 
