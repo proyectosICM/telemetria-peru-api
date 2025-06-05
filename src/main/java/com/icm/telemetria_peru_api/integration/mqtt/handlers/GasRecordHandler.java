@@ -13,6 +13,7 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -48,7 +49,6 @@ public class GasRecordHandler {
         }
     }
 
-
     public void createNewGasRecord(VehicleModel vehicleModel, VehiclePayloadMqttDTO data, double formattedPressure){
         GasRecordModel gasRecordModel = new GasRecordModel();
         Long timestampInt = Long.parseLong(data.getTimestamp());
@@ -74,11 +74,12 @@ public class GasRecordHandler {
     }
 
     public void closeGasRecord(GasRecordModel lastRecord, VehiclePayloadMqttDTO data){
-        // Obtener timestamp actual en zona horaria de Perú
-        LocalDateTime nowInPeru = LocalDateTime.now(ZoneId.of("America/Lima"));
+        // Obtener ZonedDateTime correctamente con zona horaria
+        ZonedDateTime nowInPeru = ZonedDateTime.now(ZoneId.of("America/Lima"));
+        ZonedDateTime createdAtInPeru = lastRecord.getCreatedAt().withZoneSameInstant(ZoneId.of("America/Lima"));
 
-        // Calcular la diferencia entre ahora y el createdAt del registro
-        Duration duration = Duration.between(lastRecord.getCreatedAt(), nowInPeru);
+        // Calcular la diferencia
+        Duration duration = Duration.between(createdAtInPeru, nowInPeru);
         long secondsElapsed = duration.getSeconds();
 
         // Establecer fin y tiempo acumulado
