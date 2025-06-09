@@ -5,6 +5,8 @@ import com.icm.telemetria_peru_api.dto.VehicleOptionsDTO;
 import com.icm.telemetria_peru_api.enums.FuelType;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.services.VehicleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +22,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/vehicles")
+@Tag(name = "Vehicle Controller", description = "Vehicle-related operations")
 @RequiredArgsConstructor
 public class VehicleController {
     private final VehicleService vehicleService;
 
-
+    @Operation(summary = "Obtener tipos de combustible", description = "Devuelve todos los tipos de combustible disponibles en formato lista.")
     @GetMapping("/fuel-types")
     public List<String> getTaskPriorities() {
         return Arrays.asList(FuelType.values())
