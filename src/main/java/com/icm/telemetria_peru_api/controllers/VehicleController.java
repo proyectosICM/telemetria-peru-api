@@ -36,6 +36,7 @@ public class VehicleController {
                 .toList();
     }
 
+    @Operation(summary = "Get all vehicles in the system")
     @GetMapping
     public List<VehicleDTO> findAll() {
         return vehicleService.findAll();
@@ -87,6 +88,8 @@ public class VehicleController {
         return new ResponseEntity<>(dataModel, HttpStatus.OK);
     }
 
+    @Operation(summary = "Update vehicle data",
+            description = "Updates the main data of a vehicle given its ID. Returns 404 if the vehicle does not exist.")
     @PutMapping("/{vehicleId}")
     public ResponseEntity<VehicleModel> update(@PathVariable @NotNull Long vehicleId, @RequestBody @Valid VehicleModel vehicleModel){
         VehicleModel dataModel = vehicleService.updateMainData(vehicleId, vehicleModel);
