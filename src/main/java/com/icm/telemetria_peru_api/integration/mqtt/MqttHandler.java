@@ -124,9 +124,7 @@ public class MqttHandler {
         executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
         executeSafely(() -> fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicle, data), "fuelEfficiencyHandler.processFuelEfficiencyInfo");
         executeSafely(() -> speedExcessHandler.logSpeedExcess(vehicle, data), "speedExcessHandler.logSpeedExcess");
-
         executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle), "VehicleSnapshotHandler.saveVehicleSnapshot");
-        // speedExcessHandler
     }
 
     private void publishDataWithErrorHandling(VehiclePayloadMqttDTO data, JsonNode jsonNode) {
@@ -147,7 +145,6 @@ public class MqttHandler {
         if (vehiclePayloadMqttDTO.getVehicleId() != null) {
             mqttMessagePublisher.telData(vehiclePayloadMqttDTO.getVehicleId(), jsonNode);
             mqttMessagePublisher.mapData(vehiclePayloadMqttDTO.getVehicleId(), vehiclePayloadMqttDTO.getCompanyId(), vehiclePayloadMqttDTO.getLicensePlate(), jsonNode);
-            //SpeedExcessLogger(vehicleId, speed);
         }
     }
 

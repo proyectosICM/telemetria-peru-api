@@ -30,7 +30,7 @@ public class SpeedExcessHandler {
             if (vehicle.isPresent()) {
                 if (vehicle.get().getMaxSpeed() < jsonNode.getSpeed()) {
                     SpeedExcessLoggerModel speedExcessLoggerModel = new SpeedExcessLoggerModel();
-                    speedExcessLoggerModel.setDescription("Maximum speed exceeded at " + jsonNode.getSpeed() + " km/h");
+                    speedExcessLoggerModel.setDescription("Velocidad máxima excedida en " + jsonNode.getSpeed() + " km/h");
                     speedExcessLoggerModel.setVehicleModel(vehicle.get());
                     speedExcessLoggerService.save(speedExcessLoggerModel);
                 }
