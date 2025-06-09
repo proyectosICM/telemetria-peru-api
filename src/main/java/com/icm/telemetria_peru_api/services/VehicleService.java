@@ -31,18 +31,18 @@ public class VehicleService {
     private final VehicleMapper vehicleMapper;
     private final VehicleOptionsMapper vehicleOptionsMapper;
 
-    public VehicleDTO findById(Long vehicleId) {
-        VehicleModel vehicleModel = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
-        return vehicleMapper.mapToDTO(vehicleModel);
-
-    }
-
     public List<VehicleDTO> findAll() {
         List<VehicleModel> vehicleModel = vehicleRepository.findAll();
         return vehicleModel.stream()
                 .map(vehicleMapper::mapToDTO)
                 .toList();
+    }
+
+    public VehicleDTO findById(Long vehicleId) {
+        VehicleModel vehicleModel = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+        return vehicleMapper.mapToDTO(vehicleModel);
+
     }
 
     public List<VehicleDTO> findByCompanyModelId(Long companyId) {

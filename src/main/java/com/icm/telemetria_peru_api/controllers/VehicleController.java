@@ -27,7 +27,7 @@ import java.util.List;
 public class VehicleController {
     private final VehicleService vehicleService;
 
-    @Operation(summary = "Obtener tipos de combustible", description = "Devuelve todos los tipos de combustible disponibles en formato lista.")
+    @Operation(summary = "Get fuel types", description = "Returns all available fuel types in list format.")
     @GetMapping("/fuel-types")
     public List<String> getTaskPriorities() {
         return Arrays.asList(FuelType.values())
@@ -41,6 +41,7 @@ public class VehicleController {
         return vehicleService.findAll();
     }
 
+    @Operation(summary = "Get vehicle by ID")
     @GetMapping("/{vehicleId}")
     public ResponseEntity<VehicleDTO> findById(@PathVariable @NotNull Long vehicleId) {
         VehicleDTO vehicleModel = vehicleService.findById(vehicleId);
