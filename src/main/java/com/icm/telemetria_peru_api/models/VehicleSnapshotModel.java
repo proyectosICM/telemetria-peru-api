@@ -43,7 +43,7 @@ public class VehicleSnapshotModel {
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private CompanyModel companyModel;
 
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     @CreationTimestamp
     private ZonedDateTime createdAt;
 
