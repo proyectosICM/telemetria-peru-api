@@ -98,6 +98,7 @@ public class VehicleController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @Operation(summary = "Update")
     @PutMapping("/options-update/{vehicleId}")
     public ResponseEntity<VehicleModel> vehicleOptionsUpdate(@PathVariable @NotNull Long vehicleId,
                                                              @RequestParam @NotNull String type,
