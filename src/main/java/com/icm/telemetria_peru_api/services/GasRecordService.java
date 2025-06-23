@@ -27,6 +27,10 @@ public class GasRecordService {
         return gasRecordRepository.findByVehicleModelId(vehicleId, pageable);
     }
 
+    public List<GasRecordModel> findByVehicleIdOrdered(Long vehicleId) {
+        return gasRecordRepository.findByVehicleModelIdOrderByCreatedAtDesc(vehicleId);
+    }
+
     public GasRecordModel save(GasRecordModel gasRecordModel) {
         return gasRecordRepository.save(gasRecordModel);
     }

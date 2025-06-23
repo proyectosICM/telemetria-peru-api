@@ -72,6 +72,11 @@ public class GasRecordController {
         }
     }
 
+    @GetMapping("/vehicle/{vehicleId}/ordered")
+    public List<GasRecordModel> getGasRecordsOrderedByVehicle(@PathVariable Long vehicleId) {
+        return gasRecordService.findByVehicleIdOrdered(vehicleId);
+    }
+
     @PostMapping
     public ResponseEntity<GasRecordModel> save(@RequestBody GasRecordModel gasRecordModel) {
         try {
