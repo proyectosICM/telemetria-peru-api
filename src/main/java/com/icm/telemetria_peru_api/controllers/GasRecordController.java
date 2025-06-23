@@ -72,9 +72,14 @@ public class GasRecordController {
         }
     }
 
-    @GetMapping("/vehicle/{vehicleId}/ordered")
+    @GetMapping("/by-vehicle-all-ordered/{vehicleId}")
     public List<GasRecordModel> getGasRecordsOrderedByVehicle(@PathVariable Long vehicleId) {
         return gasRecordService.findByVehicleIdOrdered(vehicleId);
+    }
+
+    @GetMapping("/by-vehicle-today/{vehicleId}")
+    public List<GasRecordModel> getTodayGasRecordsByVehicle(@PathVariable Long vehicleId) {
+        return gasRecordService.findTodayByVehicleId(vehicleId);
     }
 
     @PostMapping
