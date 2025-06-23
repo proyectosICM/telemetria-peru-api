@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Repository
@@ -16,8 +17,8 @@ public interface GasRecordRepository extends JpaRepository<GasRecordModel, Long>
     List<GasRecordModel> findByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
     List<GasRecordModel> findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtDesc(
             Long vehicleId,
-            LocalDateTime startOfDay,
-            LocalDateTime endOfDay
+            ZonedDateTime startOfDay,
+            ZonedDateTime endOfDay
     );
     GasRecordModel findTopByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
 }
