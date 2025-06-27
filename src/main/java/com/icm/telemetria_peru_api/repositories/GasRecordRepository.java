@@ -21,4 +21,6 @@ public interface GasRecordRepository extends JpaRepository<GasRecordModel, Long>
             ZonedDateTime endOfDay
     );
     GasRecordModel findTopByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
+
+
 }

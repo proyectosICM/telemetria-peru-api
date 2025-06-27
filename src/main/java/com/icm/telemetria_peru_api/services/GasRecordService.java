@@ -42,6 +42,39 @@ public class GasRecordService {
         );
     }
 
+    public List<GasRecordModel> findByVehicleIdAndDate(Long vehicleId, String viewType, int year, Integer month, Integer day) {
+        ZonedDateTime start;
+        ZonedDateTime end;
+
+        ZoneId zone = ZoneId.systemDefault();
+
+        switch (viewType.toLowerCase()) {
+            case "day":
+                if (month == null || day == null)
+                    throw new IllegalArgumentException("Mes y día son requeridos para vista diaria.");
+                start = ZonedDateTime.of(year, month, day, 0, 0, 0, 0, zone);
+                end = start.plusDays(1).minusNanos(1);
+                break;
+
+            case "month":
+                if (month == null)
+                    throw new IllegalArgumentException("Mes es requerido para vista mensual.");
+                start = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, zone);
+                end = start.plusMonths(1).minusNanos(1);
+                break;
+
+            case "year":
+                start = ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, zone);
+                end = start.plusYears(1).minusNanos(1);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Tipo de vista no válido: " + viewType);
+        }
+
+        return gasRecordRepository.findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtDesc(vehicleId, start, end);
+    }
+
     public GasRecordModel save(GasRecordModel gasRecordModel) {
         return gasRecordRepository.save(gasRecordModel);
     }

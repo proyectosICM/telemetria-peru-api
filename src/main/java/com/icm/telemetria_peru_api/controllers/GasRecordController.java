@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.GasQueryParams;
 import com.icm.telemetria_peru_api.models.GasRecordModel;
 import com.icm.telemetria_peru_api.services.GasRecordService;
 import lombok.RequiredArgsConstructor;
@@ -80,6 +81,26 @@ public class GasRecordController {
     @GetMapping("/by-vehicle-today/{vehicleId}")
     public List<GasRecordModel> getTodayGasRecordsByVehicle(@PathVariable Long vehicleId) {
         return gasRecordService.findTodayByVehicleId(vehicleId);
+    }
+
+    @PostMapping("/by-date")
+    public ResponseEntity<List<GasRecordModel>> getRecordsByDate(@RequestBody GasQueryParams params) {
+        if (params.getVehicleId() == null || params.getViewType() == null || params.getYear() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            List<GasRecordModel> records = gasRecordService.findByVehicleIdAndDate(
+                    params.getVehicleId(),
+                    params.getViewType(),
+                    params.getYear(),
+                    params.getMonth(),
+                    params.getDay()
+            );
+            return ResponseEntity.ok(records);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(List.of()); // O mensaje más explícito
+        }
     }
 
     @PostMapping
