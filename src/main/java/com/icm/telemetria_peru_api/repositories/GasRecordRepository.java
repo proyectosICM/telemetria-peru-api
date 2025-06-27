@@ -15,7 +15,7 @@ public interface GasRecordRepository extends JpaRepository<GasRecordModel, Long>
     List<GasRecordModel> findByVehicleModelId(Long vehicleId);
     Page<GasRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
     List<GasRecordModel> findByVehicleModelIdOrderByCreatedAtDesc(Long vehicleId);
-    List<GasRecordModel> findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtDesc(
+    List<GasRecordModel> findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtAsc(
             Long vehicleId,
             ZonedDateTime startOfDay,
             ZonedDateTime endOfDay

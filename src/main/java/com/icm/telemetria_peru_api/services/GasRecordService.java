@@ -37,7 +37,7 @@ public class GasRecordService {
     public List<GasRecordModel> findTodayByVehicleId(Long vehicleId) {
         ZonedDateTime startOfDay = ZonedDateTime.now(ZoneId.systemDefault()).toLocalDate().atStartOfDay(ZoneId.systemDefault());
         ZonedDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
-        return gasRecordRepository.findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtDesc(
+        return gasRecordRepository.findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtAsc(
                 vehicleId, startOfDay, endOfDay
         );
     }
@@ -72,7 +72,7 @@ public class GasRecordService {
                 throw new IllegalArgumentException("Tipo de vista no válido: " + viewType);
         }
 
-        return gasRecordRepository.findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtDesc(vehicleId, start, end);
+        return gasRecordRepository.findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtAsc(vehicleId, start, end);
     }
 
     public GasRecordModel save(GasRecordModel gasRecordModel) {
