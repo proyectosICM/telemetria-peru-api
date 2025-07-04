@@ -22,7 +22,7 @@ public class TirePositioningController {
     @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<TirePositioningModel>> findByVehicleId(@PathVariable Long vehicleId) {
         try {
-            List<TirePositioningModel> data = tirePositioningService.findByVehicleId(vehicleId);
+            List<TirePositioningModel> data = tirePositioningService.findByVehicleModelId(vehicleId);
             if (data.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
             }
@@ -38,7 +38,7 @@ public class TirePositioningController {
                                                                            @RequestParam(defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<TirePositioningModel> data = tirePositioningService.findByVehicleId(vehicleId, pageable);
+            Page<TirePositioningModel> data = tirePositioningService.findByVehicleModelId(vehicleId, pageable);
             if (data.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
