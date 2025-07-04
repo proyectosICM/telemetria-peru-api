@@ -36,9 +36,10 @@ public class EngineStarterService {
 
 
 
+Un personaje con la habilidad Particion, este es suficientemente versatil como para de una habilidad tan simple sacarle maximo provecho,
 
 
-
+OK Lo primero que se me ocurre para poder usar esta habilidad con mucha destrezas es el llevar muchos objetos encima, primero llevaria una gabardina CON varios bolsillos donde llevar objetos, deberia llevar una mascara que me pueda sacar y poner rapidamente, en la mascara podria anclar miedo, confianza y seguridad, rotando entre ellas segun sea conveniente, en los bolsillos deberia llevar objetos, unas especies de pelotitas que reboten, estas las usaria para disparar emociones de melancolia en combates multiples, la idea es ir intercalando, mientras uso la     mascara que anclando confianza me prepro para lanzar balaz de incertidumbre o soledad o tristeza absoluta, llevaria pistolas para fisparar balas con sentimientos tales como desconfianza en tus aliados, apra que asi, si alguien sobrevive a un disparo buscaria disparar a un aliado suyo. Finalmente el anclaje mas poderoso vendria siendo la irrealidad, aqlgo que senti muchas veces, lo anclaria en un cuchillo y lo usaria para golpear y causar aturdimientos mentales, ademas podria atar a la gabardina
 
 
     public Page<EngineStarterDTO> findAll(Pageable pageable){
