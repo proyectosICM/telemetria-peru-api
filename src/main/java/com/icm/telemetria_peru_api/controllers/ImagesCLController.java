@@ -88,7 +88,7 @@ public class ImagesCLController {
     }
 
     @GetMapping("/by-checklist-paged/{id}")
-    public ResponseEntity<Page<ImagesCLModel>> findByChecklistRecord(@PathVariable Long id,
+    public ResponseEntity<Page<ImagesCLModel>> findByChecklistRecordPaged(@PathVariable Long id,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size){
         try {

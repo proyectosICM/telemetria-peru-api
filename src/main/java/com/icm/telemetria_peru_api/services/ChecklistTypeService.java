@@ -11,34 +11,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class ChecklistTypeService {
-    @Autowired
-    private final ChecklistTypeRepository checklistTypeRepository;
 
-    public List<ChecklistTypeModel> findAll() {return checklistTypeRepository.findAll();}
-
-    public Page<ChecklistTypeModel> findAll(Pageable pageable){
-        return checklistTypeRepository.findAll(pageable);
-    }
-
-    public ChecklistTypeModel findById(Long id) {
-        return checklistTypeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Record with id " + id + " not found"));
-    }
-
-    public ChecklistTypeModel save(ChecklistTypeModel checklistType){
-        return checklistTypeRepository.save(checklistType);
-    }
-
-    public ChecklistTypeModel update(ChecklistTypeModel checklistType, Long id){
-        ChecklistTypeModel existing = findById(id);
-        existing.setName(checklistType.getName());
-        return checklistTypeRepository.save(existing);
-    }
-
-    public void deleteById(Long id) {
-        checklistTypeRepository.deleteById(id);
-    }
+public interface ChecklistTypeService {
+    List<ChecklistTypeModel> findAll();
+    Page<ChecklistTypeModel> findAll(Pageable pageable);
+    ChecklistTypeModel findById(Long id);
+    ChecklistTypeModel save(ChecklistTypeModel checklistType);
+    ChecklistTypeModel update(ChecklistTypeModel checklistType, Long id);
+    void deleteById(Long id);
 }

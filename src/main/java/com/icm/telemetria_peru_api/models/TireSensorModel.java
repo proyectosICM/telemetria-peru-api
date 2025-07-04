@@ -56,7 +56,7 @@ import java.time.ZonedDateTime;
 
     @ManyToOne
     @JoinColumn(name = "positioning", nullable = true)
-    private PositioningModel positioningModel;
+    private TirePositioningModel tirePositioningModel;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

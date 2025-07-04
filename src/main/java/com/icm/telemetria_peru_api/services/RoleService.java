@@ -8,32 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-@RequiredArgsConstructor
-public class RoleService {
-    private final RoleRepository roleRepository;
-    public Optional<RoleModel> getById(Long id) {
-        return roleRepository.findById(id);
-    }
 
-    public List<RoleModel> getAll() {
-        return roleRepository.findAll();
-    }
-
-    public RoleModel createRole(RoleModel role) {
-        return roleRepository.save(role);
-    }
-
-    public RoleModel updateRole(RoleModel role, Long id) {
-        return roleRepository.findById(id)
-                .map(existingRole -> {
-                    existingRole.setName(role.getName());
-                    return roleRepository.save(existingRole);
-                })
-                .orElse(null);
-    }
-
-    public void deleteRole(Long id) {
-        roleRepository.deleteById(id);
-    }
+public interface RoleService {
+    Optional<RoleModel> getById(Long id);
+    List<RoleModel> getAll();
+    RoleModel createRole(RoleModel role);
+    RoleModel updateRole(RoleModel role, Long id);
+    void deleteRole(Long id);
 }

@@ -19,63 +19,9 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
-public class AlternatorService {
-    private final AlternatorRepository alternatorRepository;
-    private final AlternatorMapper alternatorMapper;
-    private final DateUtils dateUtils;
-
-    public List<AlternatorDTO> findByVehicleModelId(Long vehicleId) {
-        List<AlternatorModel> alternatorModels =  alternatorRepository.findByVehicleModelId(vehicleId);
-        return alternatorModels.stream()
-                .map(alternatorMapper::mapToDTO)
-                .toList();
-    }
-
-    public Page<AlternatorDTO> findByVehicleModelId(Long vehicleId, Pageable pageable) {
-        Page<AlternatorModel> alternatorModelPage =  alternatorRepository.findByVehicleModelId(vehicleId, pageable);
-        List<AlternatorDTO> alternatorDTOs = alternatorModelPage.stream()
-                .map(alternatorMapper::mapToDTO)
-                .toList();
-        return new PageImpl<>(alternatorDTOs, pageable, alternatorModelPage.getTotalElements());
-    }
-
-    public List<Map<String, Object>> getDataMonth(Long vehicleId, Integer year, Integer month) {
-        List<Map<String, Object>> timestamps = dateUtils.getMonthTimestamps(year, month);
-        long startTimestampSeconds = (long) timestamps.get(0).get("startTimestamp");
-        long endTimestampSeconds = (long) timestamps.get(0).get("endTimestamp");
-
-        // Convertir los timestamps de segundos a ZonedDateTime en la zona horaria adecuada
-        ZonedDateTime startTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(startTimestampSeconds), ZoneId.of("America/Lima"));
-        ZonedDateTime endTimestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(endTimestampSeconds), ZoneId.of("America/Lima"));
-
-        // Llamar a findByVehicleModelIdAndCreatedAtBetween para obtener los datos en el rango de tiempo
-        List<AlternatorModel> records = alternatorRepository.findByVehicleModelIdAndCreatedAtBetween(vehicleId, startTimestamp, endTimestamp);
-
-        // Agrupar los registros por día y calcular el promedio de voltaje
-        Map<LocalDate, Double> groupedByDay = records.stream()
-                .collect(Collectors.groupingBy(
-                        record -> record.getCreatedAt()
-                                .withZoneSameInstant(ZoneId.of("America/Lima")) // Ajustar la zona horaria correctamente
-                                .toLocalDate(), // Convertir a LocalDate para agrupar por día
-                        TreeMap::new, // Mantener ordenado por fechas (orden natural)
-                        Collectors.averagingDouble(record -> record.getVoltage() != null ? record.getVoltage() : 0.0)
-                ));
-
-        // Transformar el resultado en la estructura deseada
-        List<Map<String, Object>> results = new ArrayList<>();
-        for (Map.Entry<LocalDate, Double> entry : groupedByDay.entrySet()) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("day", entry.getKey().atStartOfDay(ZoneId.of("America/Lima")).toEpochSecond()); // Timestamp del día
-            result.put("averageVoltage", entry.getValue()); // Promedio de voltaje
-            results.add(result);
-        }
-
-        return results;
-    }
-
-    public AlternatorModel save(AlternatorModel alternatorModel){
-        return alternatorRepository.save(alternatorModel);
-    }
+public interface AlternatorService {
+    List<AlternatorDTO> findByVehicleModelId(Long vehicleId);
+    Page<AlternatorDTO> findByVehicleModelId(Long vehicleId, Pageable pageable);
+    List<Map<String, Object>> getDataMonth(Long vehicleId, Integer year, Integer month);
+    AlternatorModel save(AlternatorModel alternatorModel);
 }

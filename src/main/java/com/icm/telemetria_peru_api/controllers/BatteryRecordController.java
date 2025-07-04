@@ -86,7 +86,7 @@ public class BatteryRecordController {
     }
 
     @GetMapping ("/by-vehicle-paged/{vehicleId}")
-    public ResponseEntity<Page<BatteryRecordDTO>> findByBatteryModelVehicleModelId(@PathVariable Long vehicleId,
+    public ResponseEntity<Page<BatteryRecordDTO>> findByBatteryModelVehicleModelIdPage(@PathVariable Long vehicleId,
                                                                       @RequestParam(defaultValue = "0") int page,
                                                                       @RequestParam(defaultValue = "3") int size){
         try {
