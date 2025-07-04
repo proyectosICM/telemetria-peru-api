@@ -95,7 +95,7 @@ public class TireSensorServiceImpl implements TireSensorService {
         existing.setStatus(tireSensorModel.getStatus());
         existing.setVehicleModel(tireSensorModel.getVehicleModel());
         existing.setCompanyModel(tireSensorModel.getCompanyModel());
-        existing.setPositioningModel(tireSensorModel.getPositioningModel());
+        existing.setTirePositioningModel(tireSensorModel.getTirePositioningModel());
 
         // Guardar el registro actualizado en la base de datos
         return tireSensorRepository.save(existing);
