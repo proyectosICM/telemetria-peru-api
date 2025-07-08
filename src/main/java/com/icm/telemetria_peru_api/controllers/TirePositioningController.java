@@ -60,4 +60,25 @@ public class TirePositioningController {
             return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping
+    public ResponseEntity<TirePositioningModel> save(@RequestBody TirePositioningModel tirePositioningModel) {
+        try {
+            TirePositioningModel savedModel = tirePositioningService.save(tirePositioningModel);
+            return new ResponseEntity<>(savedModel, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TirePositioningModel> update(@PathVariable Long id, @RequestBody TirePositioningModel tirePositioningModel) {
+        try {
+            tirePositioningModel.setId(id);
+            TirePositioningModel updatedModel = tirePositioningService.update(tirePositioningModel);
+            return new ResponseEntity<>(updatedModel, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

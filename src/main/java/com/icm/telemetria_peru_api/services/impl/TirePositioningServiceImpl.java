@@ -37,4 +37,17 @@ public class TirePositioningServiceImpl implements TirePositioningService {
     public Optional<TirePositioningModel> findById(Long id) {
         return tirePositioningRepository.findById(id);
     }
+
+    @Override
+    public TirePositioningModel save(TirePositioningModel tirePositioningModel) {
+        return tirePositioningRepository.save(tirePositioningModel);
+    }
+
+    @Override
+    public TirePositioningModel update(TirePositioningModel tirePositioningModel) throws Exception {
+        if (tirePositioningModel.getId() == null || !tirePositioningRepository.existsById(tirePositioningModel.getId())) {
+            throw new Exception("Tire Positioning not found for update");
+        }
+        return tirePositioningRepository.save(tirePositioningModel);
+    }
 }
