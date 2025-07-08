@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tires_positioning")
+@Table(name = "positioning")
 public class PositioningModel {
     @Id
     @Column(unique = true, nullable = false)
