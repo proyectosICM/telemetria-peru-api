@@ -19,6 +19,19 @@ import java.util.List;
 public class TirePositioningController {
     private final TirePositioningService tirePositioningService;
 
+    @GetMapping
+    public ResponseEntity<List<TirePositioningModel>> findAll() {
+        try {
+            List<TirePositioningModel> data = tirePositioningService.findAll();
+            if (data.isEmpty()) {
+                return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<List<TirePositioningModel>> findByVehicleId(@PathVariable Long vehicleId) {
         try {

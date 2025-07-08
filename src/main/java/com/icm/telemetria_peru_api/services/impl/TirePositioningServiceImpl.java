@@ -17,6 +17,12 @@ public class TirePositioningServiceImpl implements TirePositioningService {
 
     private final TirePositioningRepository tirePositioningRepository;
 
+
+    @Override
+    public List<TirePositioningModel> findAll() {
+        return tirePositioningRepository.findAll();
+    }
+
     @Override
     public List<TirePositioningModel> findByVehicleModelId(Long vehicleId) {
         return tirePositioningRepository.findByVehicleModelId(vehicleId);

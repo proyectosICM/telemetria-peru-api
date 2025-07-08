@@ -12,6 +12,7 @@ import java.util.Optional;
 
 
 public interface TirePositioningService {
+    List<TirePositioningModel> findAll();
     List<TirePositioningModel> findByVehicleModelId(Long vehicleId);
     Page<TirePositioningModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
     Optional<TirePositioningModel> findById(Long id);
