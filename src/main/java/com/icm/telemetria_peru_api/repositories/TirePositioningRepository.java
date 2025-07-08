@@ -10,6 +10,5 @@ import java.util.List;
 
 @Repository
 public interface TirePositioningRepository extends JpaRepository<TirePositioningModel, Long> {
-    List<TirePositioningModel> findByVehicleModelId(Long vehicleId);
-    Page<TirePositioningModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
+    List<TirePositioningModel> findByVehicleTypeModelId(Long vehicleTypeId);
 }

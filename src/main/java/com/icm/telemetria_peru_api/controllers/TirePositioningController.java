@@ -33,29 +33,13 @@ public class TirePositioningController {
     }
 
     @GetMapping("/by-vehicle/{vehicleId}")
-    public ResponseEntity<List<TirePositioningModel>> findByVehicleId(@PathVariable Long vehicleId) {
+    public ResponseEntity<List<TirePositioningModel>> findByVehicleTypeModelId(@PathVariable Long vehicleId) {
         try {
-            List<TirePositioningModel> data = tirePositioningService.findByVehicleModelId(vehicleId);
+            List<TirePositioningModel> data = tirePositioningService.findByVehicleTypeModelId(vehicleId);
             if (data.isEmpty()) {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/by-vehicle-paged/{vehicleId}")
-    public ResponseEntity<List<TirePositioningModel>> findByVehicleIdPaged(@PathVariable Long vehicleId,
-                                                                           @RequestParam(defaultValue = "0") int page,
-                                                                           @RequestParam(defaultValue = "10") int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-            Page<TirePositioningModel> data = tirePositioningService.findByVehicleModelId(vehicleId, pageable);
-            if (data.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(data.getContent(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(List.of(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

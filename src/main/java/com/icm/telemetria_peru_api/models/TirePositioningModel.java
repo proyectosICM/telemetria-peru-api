@@ -44,8 +44,8 @@ public class TirePositioningModel {
     private String positionOnAxle;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
-    private VehicleModel vehicleModel;
+    @JoinColumn(name = "type", nullable = false)
+    private VehicleTypeModel vehicleTypeModel;
 
 
     @Column(nullable = false, updatable = false)

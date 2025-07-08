@@ -13,8 +13,7 @@ import java.util.Optional;
 
 public interface TirePositioningService {
     List<TirePositioningModel> findAll();
-    List<TirePositioningModel> findByVehicleModelId(Long vehicleId);
-    Page<TirePositioningModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
+    List<TirePositioningModel> findByVehicleTypeModelId(Long vehicleTypeId);
     Optional<TirePositioningModel> findById(Long id);
     TirePositioningModel save(TirePositioningModel tirePositioningModel);
     TirePositioningModel update(TirePositioningModel tirePositioningModel) throws Exception;

@@ -43,7 +43,7 @@ public class TireSensorController {
         }
     }
 
-    @GetMapping("/findByIdentificationCode")
+    @GetMapping("/by-identification-code")
     public ResponseEntity<?> findByIdentificationCode(String code) {
         try {
             Optional<TireSensorModel> data = tireSensorService.findByIdentificationCode(code);
@@ -53,7 +53,7 @@ public class TireSensorController {
         }
     }
 
-    @GetMapping("/findByCompanyModelId/{companyId}")
+    @GetMapping("/by-company/{companyId}")
     public ResponseEntity<?> findByCompanyModelId(@PathVariable Long companyId) {
         try {
             List<TireSensorModel> data = tireSensorService.findByCompanyModelId(companyId);
@@ -63,7 +63,7 @@ public class TireSensorController {
         }
     }
 
-    @GetMapping("/findByCompanyModelId-page/{companyId}")
+    @GetMapping("/by-company-paged/{companyId}")
     public ResponseEntity<?> findByCompanyModelIdPage(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "10") int size,
                                                       @PathVariable Long companyId) {
@@ -76,7 +76,7 @@ public class TireSensorController {
         }
     }
 
-    @GetMapping("/findByVehicleModelId/{vehicleId}")
+    @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<?> findByVehicleModelId(@PathVariable Long vehicleId) {
         try {
             List<TireSensorModel> data = tireSensorService.findByCompanyModelId(vehicleId);
@@ -86,7 +86,7 @@ public class TireSensorController {
         }
     }
 
-    @GetMapping("/findByVehicleModelId-page/{vehicleId}")
+    @GetMapping("/by-vehicle-paged/{vehicleId}")
     public ResponseEntity<?> findByVehicleModelIdPage(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "10") int size,
                                                       @PathVariable Long vehicleId) {
@@ -99,7 +99,7 @@ public class TireSensorController {
         }
     }
 
-    @GetMapping("/findByStatus/{status}")
+    @GetMapping("/by-status/{status}")
     public ResponseEntity<?> findByStatus(@RequestParam Boolean status) {
         try {
             List<TireSensorModel> data = tireSensorService.findByStatus(status);
@@ -109,7 +109,7 @@ public class TireSensorController {
         }
     }
 
-    @GetMapping("/findByStatus-page/{status}")
+    @GetMapping("/by-status-paged/{status}")
     public ResponseEntity<?> findByStatusPage(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size,
                                           @PathVariable Boolean status) {
