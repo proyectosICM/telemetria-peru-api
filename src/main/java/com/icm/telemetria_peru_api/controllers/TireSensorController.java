@@ -79,7 +79,7 @@ public class TireSensorController {
     @GetMapping("/by-vehicle/{vehicleId}")
     public ResponseEntity<?> findByVehicleModelId(@PathVariable Long vehicleId) {
         try {
-            List<TireSensorModel> data = tireSensorService.findByCompanyModelId(vehicleId);
+            List<TireSensorModel> data = tireSensorService.findByVehicleModelId(vehicleId);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -92,7 +92,7 @@ public class TireSensorController {
                                                       @PathVariable Long vehicleId) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<TireSensorModel> data = tireSensorService.findByCompanyModelId(vehicleId, pageable);
+            Page<TireSensorModel> data = tireSensorService.findByVehicleModelId(vehicleId, pageable);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
