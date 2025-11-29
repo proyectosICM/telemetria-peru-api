@@ -103,19 +103,39 @@ public class VehicleServiceImpl implements VehicleService {
         VehicleVideoDTO dto = new VehicleVideoDTO();
         dto.setVehicleId(v.getId());
         dto.setLicensePlate(v.getLicensePlate());
-        dto.setDvrPhone(v.getDvrPhone());
         dto.setVideoChannels(v.getVideoChannels());
 
-        // Si no hay dvrPhone o no hay canales, devolvemos lista vacía de URLs
-        if (v.getDvrPhone() == null || v.getDvrPhone().isBlank() || v.getVideoChannels() == null || v.getVideoChannels().isEmpty()) {
+        // --- Normalizar el dvrPhone ---
+        String rawPhone = v.getDvrPhone();
+        String normalizedPhone = null;
+
+        if (rawPhone != null && !rawPhone.isBlank()) {
+            // nos quedamos solo con dígitos, por si el usuario mete espacios o guiones
+            String digits = rawPhone.replaceAll("\\D", "");
+            if (!digits.isEmpty()) {
+                // si NO empieza con "0000", se los agregamos
+                if (!digits.startsWith("0000")) {
+                    digits = "0000" + digits;
+                }
+                normalizedPhone = digits;
+            }
+        }
+
+        dto.setDvrPhone(normalizedPhone);
+
+        // Si no hay phone normalizado o no hay canales, devolvemos lista vacía
+        if (normalizedPhone == null ||
+                v.getVideoChannels() == null ||
+                v.getVideoChannels().isEmpty()) {
+
             dto.setHlsUrls(java.util.Collections.emptyList());
             return dto;
         }
 
-        // Construir URLs tipo: HLS_BASE_URL/PHONE_CHANNEL.m3u8
+        // Construir URLs tipo: HLS_BASE_URL/0000PHONE_CHANNEL.m3u8
         java.util.List<String> urls = v.getVideoChannels().stream()
-                .sorted() // opcional, para que en el front se vea ordenado
-                .map(ch -> String.format("%s/%s_%d.m3u8", hlsBaseUrl, v.getDvrPhone(), ch))
+                .sorted() // opcional, solo para que salgan ordenados
+                .map(ch -> String.format("%s/%s_%d.m3u8", hlsBaseUrl, normalizedPhone, ch))
                 .toList();
 
         dto.setHlsUrls(urls);
