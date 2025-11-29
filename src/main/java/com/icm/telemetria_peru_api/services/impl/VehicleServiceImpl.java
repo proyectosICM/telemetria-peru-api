@@ -106,21 +106,7 @@ public class VehicleServiceImpl implements VehicleService {
         dto.setVideoChannels(v.getVideoChannels());
 
         // --- Normalizar el dvrPhone ---
-        String rawPhone = v.getDvrPhone();
-        String normalizedPhone = null;
-
-        if (rawPhone != null && !rawPhone.isBlank()) {
-            // nos quedamos solo con dígitos, por si el usuario mete espacios o guiones
-            String digits = rawPhone.replaceAll("\\D", "");
-            if (!digits.isEmpty()) {
-                // si NO empieza con "0000", se los agregamos
-                if (!digits.startsWith("0000")) {
-                    digits = "0000" + digits;
-                }
-                normalizedPhone = digits;
-            }
-        }
-
+        final String normalizedPhone = normalizeDvrPhone(v.getDvrPhone());
         dto.setDvrPhone(normalizedPhone);
 
         // Si no hay phone normalizado o no hay canales, devolvemos lista vacía
@@ -136,10 +122,29 @@ public class VehicleServiceImpl implements VehicleService {
         java.util.List<String> urls = v.getVideoChannels().stream()
                 .sorted() // opcional, solo para que salgan ordenados
                 .map(ch -> String.format("%s/%s_%d.m3u8", hlsBaseUrl, normalizedPhone, ch))
-                .toList();
+                .toList(); // o collect(Collectors.toList()) si tu versión de Java no soporta toList()
 
         dto.setHlsUrls(urls);
         return dto;
+    }
+
+    private String normalizeDvrPhone(String rawPhone) {
+        if (rawPhone == null || rawPhone.isBlank()) {
+            return null;
+        }
+
+        // nos quedamos solo con dígitos, por si el usuario mete espacios o guiones
+        String digits = rawPhone.replaceAll("\\D", "");
+        if (digits.isEmpty()) {
+            return null;
+        }
+
+        // si NO empieza con "0000", se los agregamos
+        if (!digits.startsWith("0000")) {
+            digits = "0000" + digits;
+        }
+
+        return digits;
     }
 
     @Override
