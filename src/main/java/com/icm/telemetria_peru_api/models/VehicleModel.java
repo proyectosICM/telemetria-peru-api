@@ -38,6 +38,16 @@ public class VehicleModel {
 
     private String imei;
 
+    private String dvrPhone;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "vehicle_video_channels",
+            joinColumns = @JoinColumn(name = "vehicle_id")
+    )
+    @Column(name = "channel")
+    private java.util.Set<Integer> videoChannels = new java.util.HashSet<>();
+
     @Column(name = "status", nullable = false)
     private Boolean status = true;
 

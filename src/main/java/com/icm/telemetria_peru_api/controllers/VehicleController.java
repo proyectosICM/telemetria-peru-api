@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.controllers;
 
 import com.icm.telemetria_peru_api.dto.VehicleDTO;
 import com.icm.telemetria_peru_api.dto.VehicleOptionsDTO;
+import com.icm.telemetria_peru_api.dto.VehicleVideoDTO;
 import com.icm.telemetria_peru_api.enums.FuelType;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.services.VehicleService;
@@ -80,6 +81,12 @@ public class VehicleController {
     public ResponseEntity<VehicleOptionsDTO> findByIdOptions(@PathVariable @NotNull Long vehicleId) {
         VehicleOptionsDTO vehicleModel = vehicleService.findByIdOptions(vehicleId);
         return new ResponseEntity<>(vehicleModel, HttpStatus.OK);
+    }
+
+    @GetMapping("/{vehicleId}/video-config")
+    public ResponseEntity<VehicleVideoDTO> getVehicleVideoConfig(@PathVariable Long vehicleId) {
+        VehicleVideoDTO dto = vehicleService.getVideoConfig(vehicleId);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping

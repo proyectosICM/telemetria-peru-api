@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.services.impl;
 
 import com.icm.telemetria_peru_api.dto.VehicleDTO;
 import com.icm.telemetria_peru_api.dto.VehicleOptionsDTO;
+import com.icm.telemetria_peru_api.dto.VehicleVideoDTO;
 import com.icm.telemetria_peru_api.mappers.VehicleMapper;
 import com.icm.telemetria_peru_api.mappers.VehicleOptionsMapper;
 import com.icm.telemetria_peru_api.models.DriverModel;
@@ -12,6 +13,7 @@ import com.icm.telemetria_peru_api.services.VehicleService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,9 @@ public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleMapper vehicleMapper;
     private final VehicleOptionsMapper vehicleOptionsMapper;
+
+    @Value("${HLS_BASE_URL}")
+    private String hlsBaseUrl;
 
     @Override
     public List<VehicleDTO> findAll() {
@@ -91,19 +96,69 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    public VehicleVideoDTO getVideoConfig(Long vehicleId) {
+        VehicleModel v = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+
+        VehicleVideoDTO dto = new VehicleVideoDTO();
+        dto.setVehicleId(v.getId());
+        dto.setLicensePlate(v.getLicensePlate());
+        dto.setDvrPhone(v.getDvrPhone());
+        dto.setVideoChannels(v.getVideoChannels());
+
+        // Si no hay dvrPhone o no hay canales, devolvemos lista vacía de URLs
+        if (v.getDvrPhone() == null || v.getDvrPhone().isBlank() || v.getVideoChannels() == null || v.getVideoChannels().isEmpty()) {
+            dto.setHlsUrls(java.util.Collections.emptyList());
+            return dto;
+        }
+
+        // Construir URLs tipo: HLS_BASE_URL/PHONE_CHANNEL.m3u8
+        java.util.List<String> urls = v.getVideoChannels().stream()
+                .sorted() // opcional, para que en el front se vea ordenado
+                .map(ch -> String.format("%s/%s_%d.m3u8", hlsBaseUrl, v.getDvrPhone(), ch))
+                .toList();
+
+        dto.setHlsUrls(urls);
+        return dto;
+    }
+
+    @Override
     public VehicleModel save(@Valid VehicleModel vehicleModel) {
+
+        if (vehicleModel.getDvrPhone() == null || vehicleModel.getDvrPhone().isBlank()) {
+            if (vehicleModel.getVideoChannels() != null) {
+                vehicleModel.getVideoChannels().clear();
+            }
+        }
+
         return vehicleRepository.save(vehicleModel);
     }
 
+    @Override
     public VehicleModel updateMainData(Long vehicleId, @Valid VehicleModel vehicleModel) {
         VehicleModel existing = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new EntityNotFoundException("Record with id " + vehicleId + " not found"));
 
+        // Datos "clásicos"
         existing.setImei(vehicleModel.getImei());
         existing.setLicensePlate(vehicleModel.getLicensePlate());
         existing.setVehicletypeModel(vehicleModel.getVehicletypeModel());
         existing.setCompanyModel(vehicleModel.getCompanyModel());
         existing.setMaxSpeed(vehicleModel.getMaxSpeed());
+
+        // --- DVR / Video ---
+        String rawPhone = vehicleModel.getDvrPhone();
+        existing.setDvrPhone(rawPhone != null ? rawPhone.trim() : null);
+
+        existing.getVideoChannels().clear();
+        if (vehicleModel.getVideoChannels() != null) {
+            existing.getVideoChannels().addAll(vehicleModel.getVideoChannels());
+        }
+
+        // si no hay dvrPhone, no tiene sentido dejar canales configurados
+        if (existing.getDvrPhone() == null || existing.getDvrPhone().isBlank()) {
+            existing.getVideoChannels().clear();
+        }
 
         return vehicleRepository.save(existing);
     }

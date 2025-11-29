@@ -2,6 +2,7 @@ package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.dto.VehicleDTO;
 import com.icm.telemetria_peru_api.dto.VehicleOptionsDTO;
+import com.icm.telemetria_peru_api.dto.VehicleVideoDTO;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ public interface VehicleService {
     List<VehicleDTO> findByStatus(Boolean status);
     Page<VehicleDTO> findByStatus(Boolean status, Pageable pageable);
     VehicleOptionsDTO findByIdOptions(Long vehicleId);
+    VehicleVideoDTO getVideoConfig(Long vehicleId);
     VehicleModel save(@Valid VehicleModel vehicleModel);
     VehicleModel updateMainData(Long vehicleId, @Valid VehicleModel vehicleModel);
     VehicleModel vehicleOptionsUpdate(Long vehicleId, @Valid String type, @Valid Boolean status);
