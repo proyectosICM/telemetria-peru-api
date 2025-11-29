@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,4 +24,7 @@ public class VehicleDTO {
     private Integer maxSpeed;
 
     private String fuelType;
+
+    private String dvrPhone;
+    private Set<Integer> videoChannels;
 }

@@ -14,6 +14,7 @@ public class VehicleMapper {
         String companyName = vehicleModel.getCompanyModel().getName();
 
         return new VehicleDTO(vehicleModel.getId(), vehicleModel.getLicensePlate(), vehicleModel.getStatus(), vehicleModel.getImei(),
-                vehicleTypeId, vehicleTypeName, companyId, companyName, vehicleModel.getMaxSpeed(), vehicleModel.getFuelType().toString());
+                vehicleTypeId, vehicleTypeName, companyId, companyName, vehicleModel.getMaxSpeed(), vehicleModel.getFuelType().toString(), vehicleModel.getDvrPhone(),
+                vehicleModel.getVideoChannels());
     }
 }
