@@ -115,12 +115,12 @@ public class FuelRecordController {
         }
     }
 
-    @GetMapping("/fuel-records/by-vehicle/{vehicleId}/count")
+    @GetMapping("/by-vehicle/{vehicleId}/count")
     public long count(@PathVariable Long vehicleId) {
         return fuelRecordService.countByVehicleId(vehicleId);
     }
 
-    @GetMapping("/fuel-records/by-vehicle/{vehicleId}/day")
+    @GetMapping("/by-vehicle/{vehicleId}/day")
     public List<FuelRecordModel> byDay(
             @PathVariable Long vehicleId,
             @RequestParam String date,          // "YYYY-MM-DD"
