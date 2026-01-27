@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -111,5 +113,25 @@ public class FuelRecordController {
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/fuel-records/by-vehicle/{vehicleId}/count")
+    public long count(@PathVariable Long vehicleId) {
+        return fuelRecordService.countByVehicleId(vehicleId);
+    }
+
+    @GetMapping("/fuel-records/by-vehicle/{vehicleId}/day")
+    public List<FuelRecordModel> byDay(
+            @PathVariable Long vehicleId,
+            @RequestParam String date,          // "YYYY-MM-DD"
+            @RequestParam(defaultValue = "America/Lima") String tz
+    ) {
+        ZoneId zoneId = ZoneId.of(tz);
+        LocalDate localDate = LocalDate.parse(date);
+
+        ZonedDateTime start = localDate.atStartOfDay(zoneId);
+        ZonedDateTime end = localDate.plusDays(1).atStartOfDay(zoneId);
+
+        return fuelRecordService.findByVehicleIdAndRange(vehicleId, start, end);
     }
 }

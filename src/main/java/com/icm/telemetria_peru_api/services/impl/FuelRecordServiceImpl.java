@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -80,5 +81,15 @@ public class FuelRecordServiceImpl implements FuelRecordService {
     @Override
     public void deleteById(Long id){
         fuelRecordRepository.deleteById(id);
+    }
+
+    @Override
+    public List<FuelRecordModel> findByVehicleIdAndRange(Long vehicleId, ZonedDateTime start, ZonedDateTime end) {
+        return fuelRecordRepository.findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtAsc(vehicleId, start, end);
+    }
+
+    @Override
+    public long countByVehicleId(Long vehicleId) {
+        return fuelRecordRepository.countByVehicleModelId(vehicleId);
     }
 }

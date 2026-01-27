@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -67,4 +68,13 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
     List<FuelRecordModel> findByVehicleModelId(Long  vehicleId);
 
     Page<FuelRecordModel> findByVehicleModelId(Long vehicleId, Pageable pageable);
+
+
+    List<FuelRecordModel> findByVehicleModelIdAndCreatedAtBetweenOrderByCreatedAtAsc(
+            Long vehicleId,
+            ZonedDateTime start,
+            ZonedDateTime end
+    );
+
+    long countByVehicleModelId(Long vehicleId);
 }

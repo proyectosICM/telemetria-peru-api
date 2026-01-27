@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,6 @@ public interface FuelRecordService {
     Page<FuelRecordModel> findByVehicleId(Long vehicleId, Pageable pageable);
     FuelRecordModel save(FuelRecordModel fuelRecordModel);
     void deleteById(Long id);
+    List<FuelRecordModel> findByVehicleIdAndRange(Long vehicleId, ZonedDateTime start, ZonedDateTime end);
+    long countByVehicleId(Long vehicleId);
 }
