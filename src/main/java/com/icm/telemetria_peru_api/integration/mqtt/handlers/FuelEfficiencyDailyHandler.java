@@ -23,6 +23,7 @@ public class FuelEfficiencyDailyHandler {
     private static final ZoneId ZONE = ZoneId.of("America/Lima");
 
     // Umbral típico para alternador cargando (mV). Ajusta a tu realidad.
+    // OJO: en muchos Teltonika, 66 viene en mV (ej: 26176 = 26.176V)
     private static final long ENGINE_VOLTAGE_MV = 27000;
 
     @Transactional
@@ -47,9 +48,13 @@ public class FuelEfficiencyDailyHandler {
 
         ZonedDateTime lastTime = current.getLastEventTime();
 
-        // Si llega desordenado o repetido, ignora (evita acumulados negativos / duplicados)
-        if (!eventTime.isAfter(lastTime)) {
-            // Igual puedes actualizar status si quieres, pero yo recomiendo ignorar.
+        // Si llega repetido EXACTO, no hay delta real
+        if (eventTime.isEqual(lastTime)) {
+            return;
+        }
+
+        // Si llega desordenado (menor), ignora
+        if (eventTime.isBefore(lastTime)) {
             return;
         }
 
@@ -69,16 +74,26 @@ public class FuelEfficiencyDailyHandler {
     }
 
     private ZonedDateTime parseEventTime(VehiclePayloadMqttDTO p) {
-        // Asumo timestamp en ms como String/Long
+        if (p == null || p.getTimestamp() == null) {
+            // fallback: si no viene timestamp, usa ahora (no ideal, pero evita NPE)
+            return ZonedDateTime.now(ZONE);
+        }
+
         long ts = Long.parseLong(String.valueOf(p.getTimestamp()));
+
+        // Si parece timestamp en segundos (10 dígitos aprox), conviértelo a ms
+        if (ts < 1_000_000_000_000L) { // < 10^12
+            ts = ts * 1000L;
+        }
+
         return Instant.ofEpochMilli(ts).atZone(ZONE);
     }
 
     /**
-     * Reglas según lo que pediste:
-     * - ESTACIONADO: motor apagado + contacto cerrado => ignition=false
-     * - RALENTI: contacto abierto pero sin movimiento ni alza de voltaje (motor no operando)
-     * - OPERACION: contacto abierto + motor operando (voltaje alto) + movimiento
+     * Reglas:
+     * - ESTACIONADO: contacto/ignición OFF
+     * - RALENTI: ignición ON pero sin movimiento (y/o motor no operando según voltaje)
+     * - OPERACION: ignición ON + movimiento + voltaje alto (o voltaje no disponible)
      */
     private FuelEfficiencyStatus determinateStatus(VehiclePayloadMqttDTO p) {
         Boolean ignition = p.getIgnitionInfo(); // true = contacto/ignición activa
@@ -102,37 +117,34 @@ public class FuelEfficiencyDailyHandler {
 
     private boolean isMoving(VehiclePayloadMqttDTO p) {
         // Prioridad: movement/instantMovement si llegan; si no, velocidad
-        Integer movement = p.getMovement();           // 0/1 (si existe)
-        Integer instant = p.getInstantMovement();     // 0/1 (si existe)
+        Integer movement = p.getMovement();           // 0/1
+        Integer instant = p.getInstantMovement();     // 0/1
 
         if (movement != null && movement == 1) return true;
         if (instant != null && instant == 1) return true;
 
         // Velocidad GPS
-        Double speed = p.getSpeed(); // km/h (si existe)
+        Double speed = p.getSpeed(); // km/h
         if (speed != null && speed > 0.0) return true;
 
-        // Velocidad por IO 37 (si existe)
+        // Velocidad por IO 37
         Integer vehicleSpeedIo = p.getVehicleSpeedIo();
         return vehicleSpeedIo != null && vehicleSpeedIo > 0;
     }
 
     private Long getExternalVoltageMv(VehiclePayloadMqttDTO p) {
-        // Ajusta tipo según tu DTO (Long/Integer)
         if (p.getExternalVoltage() == null) return null;
         return Long.valueOf(p.getExternalVoltage());
     }
 
     /**
-     * Divide el rango lastTime->eventTime por día (LocalDate) y acumula segundos.
-     * Esto evita que un tramo caiga todo en un solo día cuando cruza medianoche.
+     * Divide el rango from->to por día (LocalDate) y acumula segundos.
+     * Evita que un tramo caiga todo en un solo día cuando cruza medianoche.
      */
     private void accumulateSplitByDay(Long vehicleId, ZonedDateTime from, ZonedDateTime to, FuelEfficiencyStatus status) {
-
         ZonedDateTime cursor = from;
 
         while (cursor.toLocalDate().isBefore(to.toLocalDate())) {
-            // fin del día actual: 23:59:59.999..., lo tomamos como start del siguiente día
             ZonedDateTime endOfDay = cursor.toLocalDate()
                     .plusDays(1)
                     .atStartOfDay(ZONE);
@@ -143,7 +155,6 @@ public class FuelEfficiencyDailyHandler {
             cursor = endOfDay;
         }
 
-        // Último tramo (mismo día)
         long secondsLast = Duration.between(cursor, to).getSeconds();
         if (secondsLast > 0) {
             addToDaily(vehicleId, cursor.toLocalDate(), status, secondsLast);
@@ -151,7 +162,6 @@ public class FuelEfficiencyDailyHandler {
     }
 
     private void addToDaily(Long vehicleId, LocalDate day, FuelEfficiencyStatus status, long seconds) {
-
         long parked = 0, idle = 0, op = 0;
 
         switch (status) {
