@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -133,5 +134,19 @@ public class FuelRecordController {
         ZonedDateTime end = localDate.plusDays(1).atStartOfDay(zoneId);
 
         return fuelRecordService.findByVehicleIdAndRange(vehicleId, start, end);
+    }
+
+    @GetMapping("/by-vehicle/{vehicleId}/range")
+    public List<FuelRecordModel> byRange(
+            @PathVariable Long vehicleId,
+            @RequestParam String start, // ISO: 2026-01-01T00:00:00
+            @RequestParam String end,   // ISO: 2026-01-08T00:00:00
+            @RequestParam(defaultValue = "America/Lima") String tz
+    ) {
+        ZoneId zoneId = ZoneId.of(tz);
+        ZonedDateTime zStart = ZonedDateTime.of(LocalDateTime.parse(start), zoneId);
+        ZonedDateTime zEnd = ZonedDateTime.of(LocalDateTime.parse(end), zoneId);
+
+        return fuelRecordService.findByVehicleIdAndRange(vehicleId, zStart, zEnd);
     }
 }
