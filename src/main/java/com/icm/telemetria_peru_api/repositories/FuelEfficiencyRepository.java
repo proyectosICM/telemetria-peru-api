@@ -1,11 +1,7 @@
 package com.icm.telemetria_peru_api.repositories;
 
-import com.icm.telemetria_peru_api.enums.FuelEfficiencyStatus;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.repositories.projections.FuelEfficiencySumView;
-import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,11 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
 public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyModel, Long> {
+
     // ========= Base (útil para upsert) =========
     Optional<FuelEfficiencyModel> findByVehicleModel_IdAndDay(Long vehicleId, LocalDate day);
 
@@ -26,16 +22,13 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
 
     List<FuelEfficiencyModel> findAllByVehicleModel_IdAndDay(Long vehicleId, LocalDate day);
 
-    // Si tu VehicleModel tiene companyId directo:
-    List<FuelEfficiencyModel> findAllByVehicleModel_CompanyIdAndDay(Long companyId, LocalDate day);
-
-    // Si en cambio es vehicleModel.companyModel.id, usa esto:
-    // List<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDay(Long companyId, LocalDate day);
+    // Empresa (VehicleModel -> companyModel -> id)
+    List<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDay(Long companyId, LocalDate day);
 
     // ========= Listar por rango (semana/mes/año -> tú le pasas start/end) =========
     List<FuelEfficiencyModel> findAllByVehicleModel_IdAndDayBetween(Long vehicleId, LocalDate start, LocalDate end);
 
-    List<FuelEfficiencyModel> findAllByVehicleModel_CompanyIdAndDayBetween(Long companyId, LocalDate start, LocalDate end);
+    List<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDayBetween(Long companyId, LocalDate start, LocalDate end);
 
     // ========= SUM por rango (un solo vehículo) =========
     @Query("""
@@ -60,7 +53,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
             coalesce(sum(f.idleSeconds), 0) as idleSeconds,
             coalesce(sum(f.operationSeconds), 0) as operationSeconds
         from FuelEfficiencyModel f
-        where f.vehicleModel.companyId = :companyId
+        where f.vehicleModel.companyModel.id = :companyId
           and f.day between :start and :end
     """)
     FuelEfficiencySumView sumByCompanyAndRange(
@@ -69,7 +62,7 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
             @Param("end") LocalDate end
     );
 
-    // ========= (Opcional) SUM agrupado por día para gráficas =========
+    // ========= (Opcional) lista diaria por vehículo para gráficas =========
     @Query("""
         select f
         from FuelEfficiencyModel f
