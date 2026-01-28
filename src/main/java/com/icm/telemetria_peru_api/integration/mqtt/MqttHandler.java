@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +33,9 @@ public class MqttHandler {
 
     private final MqttMessagePublisher mqttMessagePublisher;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // IMPORTANTE: un pool pequeño para no reventar DB
+    private final ExecutorService feExecutor = Executors.newFixedThreadPool(2);
 
     /**
      * Processes the JSON message received via MQTT, extracting relevant information
