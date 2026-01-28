@@ -21,7 +21,7 @@ public class MqttHandler {
     private final IgnitionHandler ignitionHandler;
     private final AlarmHandler alarmHandler;
     private final FuelRecordHandler fuelRecordHandler;
-    private final FuelEfficiencyHandler fuelEfficiencyHandler;
+    private final FuelEfficiencyDailyHandler fuelEfficiencyDailyHandler;
     private final GasChangeHandler gasChangeHandler;
     private final GasRecordHandler gasRecordHandler;
     private final VehicleRepository vehicleRepository;
@@ -78,22 +78,35 @@ public class MqttHandler {
      * @return A VehiclePayloadMqttDTO object populated with the extracted data.
      */
     private VehiclePayloadMqttDTO validateJson(JsonNode jsonNode) {
-        Long vehicleId = jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null;
-        Long companyId = jsonNode.has("companyId") ? jsonNode.get("companyId").asLong() : null;
-        String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
-        String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
-        Double speed = jsonNode.has("speed") ? jsonNode.get("speed").asDouble() : 0;
-        String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
-        Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
-        Integer alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0;
-        Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
+        VehiclePayloadMqttDTO dto = new VehiclePayloadMqttDTO();
+
+        dto.setVehicleId(jsonNode.has("vehicleId") ? jsonNode.get("vehicleId").asLong() : null);
+        dto.setCompanyId(jsonNode.has("companyId") ? jsonNode.get("companyId").asLong() : null);
+        dto.setLicensePlate(jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null);
+        dto.setImei(jsonNode.has("imei") ? jsonNode.get("imei").asText() : null);
+
+        dto.setSpeed(jsonNode.has("speed") ? jsonNode.get("speed").asDouble() : 0.0);
+        dto.setTimestamp(jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null);
+
+        dto.setFuelInfo(jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0.0);
+        dto.setAlarmInfo(jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0);
+
+        // OJO: si tu script manda 0/1 en vez de boolean, esto igual funciona si es boolean real.
+        dto.setIgnitionInfo(jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null);
+
         Double latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asDouble() : null;
         Double longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asDouble() : null;
-        Double gasInfo = jsonNode.has("gasInfo") ? jsonNode.get("gasInfo").asDouble() : null;
+        dto.setCoordinates((latitude != null && longitude != null) ? latitude + "," + longitude : null);
 
-        String coordinates = (latitude != null && longitude != null) ? latitude + "," + longitude : null;
+        dto.setGasInfo(jsonNode.has("gasInfo") ? jsonNode.get("gasInfo").asDouble() : null);
 
-        return new VehiclePayloadMqttDTO(vehicleId, companyId, licensePlate, imei, speed, timestamp, fuelInfo, alarmInfo, ignitionInfo, coordinates, gasInfo);
+        // ===== NUEVOS CAMPOS =====
+        dto.setMovement(jsonNode.has("movement") ? jsonNode.get("movement").asInt() : null);
+        dto.setInstantMovement(jsonNode.has("instantMovement") ? jsonNode.get("instantMovement").asInt() : null);
+        dto.setVehicleSpeedIo(jsonNode.has("vehicleSpeedIo") ? jsonNode.get("vehicleSpeedIo").asInt() : null);
+        dto.setExternalVoltage(jsonNode.has("externalVoltage") ? jsonNode.get("externalVoltage").asInt() : null);
+
+        return dto;
     }
 
     private VehicleSnapshotDTO createVehicleSnapshot(JsonNode jsonNode) {
@@ -122,7 +135,7 @@ public class MqttHandler {
         executeSafely(() -> gasRecordHandler.saveGasRecordModel(data, vehicle), "gasRecordHandler.analyzeFuelTimestamp");
         executeSafely(() -> alarmHandler.saveAlarmRecord(vehicle, data.getAlarmInfo()), "alarmHandler.saveAlarmRecord");
         executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
-        executeSafely(() -> fuelEfficiencyHandler.processFuelEfficiencyInfo(vehicle, data), "fuelEfficiencyHandler.processFuelEfficiencyInfo");
+        executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle, data), "fuelEfficiencyDailyHandler.process");
         executeSafely(() -> speedExcessHandler.logSpeedExcess(vehicle, data), "speedExcessHandler.logSpeedExcess");
         executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle), "VehicleSnapshotHandler.saveVehicleSnapshot");
     }
