@@ -70,4 +70,6 @@ public class FuelEfficiencyModel {
 
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
+
+    /* Cambiar */
 }
