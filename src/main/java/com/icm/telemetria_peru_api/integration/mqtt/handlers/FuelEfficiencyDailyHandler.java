@@ -19,12 +19,13 @@ public class FuelEfficiencyDailyHandler {
     private final FuelEfficiencyService fuelEfficiencyService;
     private final VehicleStateCurrentRepository vehicleStateCurrentRepository;
 
-    // Negocio: America/Lima
     private static final ZoneId ZONE = ZoneId.of("America/Lima");
 
-    // Umbral típico para alternador cargando (mV). Ajusta a tu realidad.
-    // OJO: en muchos Teltonika, 66 viene en mV (ej: 26176 = 26.176V)
+    // Teltonika IO 66 suele venir en mV (26176 => 26.176V)
     private static final long ENGINE_VOLTAGE_MV = 27000;
+
+    // Si el tracker manda timestamps repetidos, usamos "now" para acumular (tolerancia)
+    private static final boolean ALLOW_FALLBACK_NOW_WHEN_TS_REPEATED = true;
 
     @Transactional
     public void process(VehicleModel vehicle, VehiclePayloadMqttDTO p) {
@@ -36,67 +37,105 @@ public class FuelEfficiencyDailyHandler {
                 .findByVehicleModel_Id(vehicle.getId())
                 .orElse(null);
 
-        // Primer evento: solo inicializa estado (no hay delta previo)
         if (current == null) {
             VehicleStateCurrentModel init = new VehicleStateCurrentModel();
             init.setVehicleModel(vehicle);
             init.setStatus(newStatus);
             init.setLastEventTime(eventTime);
             vehicleStateCurrentRepository.save(init);
+
+            // DEBUG
+            System.out.println("[FE] INIT vehicle=" + vehicle.getId()
+                    + " ts=" + p.getTimestamp()
+                    + " eventTime=" + eventTime
+                    + " status=" + newStatus);
+
             return;
         }
 
         ZonedDateTime lastTime = current.getLastEventTime();
+        ZonedDateTime effectiveEventTime = eventTime;
 
-        // Si llega repetido EXACTO, no hay delta real
-        if (eventTime.isEqual(lastTime)) {
-            return;
+        // Si llega repetido o desordenado, es muy probable que el tracker repita timestamp.
+        // Para no quedarnos sin acumular, podemos usar now() como "tiempo de llegada".
+        if (!eventTime.isAfter(lastTime)) {
+            if (!ALLOW_FALLBACK_NOW_WHEN_TS_REPEATED) {
+                System.out.println("[FE] IGNORE vehicle=" + vehicle.getId()
+                        + " ts=" + p.getTimestamp()
+                        + " eventTime=" + eventTime
+                        + " lastTime=" + lastTime
+                        + " reason=eventTime<=lastTime");
+                return;
+            }
+
+            ZonedDateTime now = ZonedDateTime.now(ZONE);
+            if (!now.isAfter(lastTime)) {
+                System.out.println("[FE] IGNORE vehicle=" + vehicle.getId()
+                        + " ts=" + p.getTimestamp()
+                        + " eventTime=" + eventTime
+                        + " lastTime=" + lastTime
+                        + " now=" + now
+                        + " reason=now<=lastTime");
+                return;
+            }
+
+            effectiveEventTime = now;
+
+            System.out.println("[FE] FALLBACK_NOW vehicle=" + vehicle.getId()
+                    + " ts=" + p.getTimestamp()
+                    + " eventTime=" + eventTime
+                    + " lastTime=" + lastTime
+                    + " effectiveEventTime=" + effectiveEventTime);
         }
 
-        // Si llega desordenado (menor), ignora
-        if (eventTime.isBefore(lastTime)) {
-            return;
-        }
-
-        long deltaSeconds = Duration.between(lastTime, eventTime).getSeconds();
+        long deltaSeconds = Duration.between(lastTime, effectiveEventTime).getSeconds();
         if (deltaSeconds <= 0) {
+            System.out.println("[FE] IGNORE vehicle=" + vehicle.getId()
+                    + " ts=" + p.getTimestamp()
+                    + " lastTime=" + lastTime
+                    + " effectiveEventTime=" + effectiveEventTime
+                    + " deltaSeconds=" + deltaSeconds
+                    + " reason=deltaSeconds<=0");
             return;
         }
 
-        // Acumula el delta en el estado ANTERIOR (lo que estuvo vigente entre lastTime y eventTime)
         FuelEfficiencyStatus prevStatus = current.getStatus();
-        accumulateSplitByDay(vehicle.getId(), lastTime, eventTime, prevStatus);
 
-        // Actualiza estado actual
+        // DEBUG
+        System.out.println("[FE] ACC vehicle=" + vehicle.getId()
+                + " prevStatus=" + prevStatus
+                + " newStatus=" + newStatus
+                + " lastTime=" + lastTime
+                + " effectiveEventTime=" + effectiveEventTime
+                + " deltaSeconds=" + deltaSeconds
+                + " day(from)=" + lastTime.toLocalDate()
+                + " day(to)=" + effectiveEventTime.toLocalDate());
+
+        accumulateSplitByDay(vehicle.getId(), lastTime, effectiveEventTime, prevStatus);
+
+        // Actualiza estado actual (guardamos el tiempo “efectivo” para mantener continuidad)
         current.setStatus(newStatus);
-        current.setLastEventTime(eventTime);
+        current.setLastEventTime(effectiveEventTime);
         vehicleStateCurrentRepository.save(current);
     }
 
     private ZonedDateTime parseEventTime(VehiclePayloadMqttDTO p) {
         if (p == null || p.getTimestamp() == null) {
-            // fallback: si no viene timestamp, usa ahora (no ideal, pero evita NPE)
             return ZonedDateTime.now(ZONE);
         }
 
         long ts = Long.parseLong(String.valueOf(p.getTimestamp()));
 
-        // Si parece timestamp en segundos (10 dígitos aprox), conviértelo a ms
-        if (ts < 1_000_000_000_000L) { // < 10^12
+        // seconds -> ms
+        if (ts < 1_000_000_000_000L) {
             ts = ts * 1000L;
         }
 
         return Instant.ofEpochMilli(ts).atZone(ZONE);
     }
 
-    /**
-     * Reglas:
-     * - ESTACIONADO: contacto/ignición OFF
-     * - RALENTI: ignición ON pero sin movimiento (y/o motor no operando según voltaje)
-     * - OPERACION: ignición ON + movimiento + voltaje alto (o voltaje no disponible)
-     */
     private FuelEfficiencyStatus determinateStatus(VehiclePayloadMqttDTO p) {
-        Boolean ignition = p.getIgnitionInfo(); // true = contacto/ignición activa
+        Boolean ignition = p.getIgnitionInfo();
         if (ignition == null || !ignition) {
             return FuelEfficiencyStatus.ESTACIONADO;
         }
@@ -106,28 +145,23 @@ public class FuelEfficiencyDailyHandler {
 
         boolean voltageHigh = (extV == null) || (extV >= ENGINE_VOLTAGE_MV);
 
-        // Operación: movimiento + voltaje alto (o voltaje no disponible)
         if (moving && voltageHigh) {
             return FuelEfficiencyStatus.OPERACION;
         }
 
-        // Con ignición activa pero sin operar -> Ralenti
         return FuelEfficiencyStatus.RALENTI;
     }
 
     private boolean isMoving(VehiclePayloadMqttDTO p) {
-        // Prioridad: movement/instantMovement si llegan; si no, velocidad
-        Integer movement = p.getMovement();           // 0/1
-        Integer instant = p.getInstantMovement();     // 0/1
+        Integer movement = p.getMovement();
+        Integer instant = p.getInstantMovement();
 
         if (movement != null && movement == 1) return true;
         if (instant != null && instant == 1) return true;
 
-        // Velocidad GPS
-        Double speed = p.getSpeed(); // km/h
+        Double speed = p.getSpeed();
         if (speed != null && speed > 0.0) return true;
 
-        // Velocidad por IO 37
         Integer vehicleSpeedIo = p.getVehicleSpeedIo();
         return vehicleSpeedIo != null && vehicleSpeedIo > 0;
     }
@@ -137,21 +171,13 @@ public class FuelEfficiencyDailyHandler {
         return Long.valueOf(p.getExternalVoltage());
     }
 
-    /**
-     * Divide el rango from->to por día (LocalDate) y acumula segundos.
-     * Evita que un tramo caiga todo en un solo día cuando cruza medianoche.
-     */
     private void accumulateSplitByDay(Long vehicleId, ZonedDateTime from, ZonedDateTime to, FuelEfficiencyStatus status) {
         ZonedDateTime cursor = from;
 
         while (cursor.toLocalDate().isBefore(to.toLocalDate())) {
-            ZonedDateTime endOfDay = cursor.toLocalDate()
-                    .plusDays(1)
-                    .atStartOfDay(ZONE);
-
+            ZonedDateTime endOfDay = cursor.toLocalDate().plusDays(1).atStartOfDay(ZONE);
             long seconds = Duration.between(cursor, endOfDay).getSeconds();
             addToDaily(vehicleId, cursor.toLocalDate(), status, seconds);
-
             cursor = endOfDay;
         }
 
