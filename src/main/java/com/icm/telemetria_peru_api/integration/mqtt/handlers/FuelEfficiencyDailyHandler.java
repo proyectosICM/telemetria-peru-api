@@ -6,10 +6,13 @@ import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.models.VehicleStateCurrentModel;
 import com.icm.telemetria_peru_api.repositories.VehicleStateCurrentRepository;
 import com.icm.telemetria_peru_api.services.FuelEfficiencyService;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
 
@@ -21,34 +24,35 @@ public class FuelEfficiencyDailyHandler {
     private final FuelEfficiencyService fuelEfficiencyService;
     private final VehicleStateCurrentRepository vehicleStateCurrentRepository;
 
+    @PersistenceContext
+    private EntityManager em;
+
     private static final ZoneId ZONE = ZoneId.of("America/Lima");
-
-    // Teltonika IO 66 suele venir en mV (26176 => 26.176V)
     private static final long ENGINE_VOLTAGE_MV = 27000;
+    private static final long DUPLICATE_TOLERANCE_SECONDS = 0;
 
-    // Evita duplicados: si el tracker manda el mismo segundo muchas veces, no acumules nada.
-    private static final long DUPLICATE_TOLERANCE_SECONDS = 0; // 0 = exacto; puedes subir a 1 si tu tracker repite mucho
-
-    @Transactional
-    public void process(VehicleModel vehicle, VehiclePayloadMqttDTO p) {
-        if (vehicle == null || p == null) return;
+    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 5)
+    public void process(Long vehicleId, VehiclePayloadMqttDTO p) {
+        if (vehicleId == null || p == null) return;
 
         ZonedDateTime eventTime = parseEventTime(p);
         FuelEfficiencyStatus newStatus = determinateStatus(p);
 
         VehicleStateCurrentModel current = vehicleStateCurrentRepository
-                .findByVehicleModel_Id(vehicle.getId())
+                .findByVehicleModel_Id(vehicleId)
                 .orElse(null);
 
-        // Primer evento: inicializa estado (sin acumular)
         if (current == null) {
             VehicleStateCurrentModel init = new VehicleStateCurrentModel();
-            init.setVehicleModel(vehicle);
+
+            // ✅ asigna relación correctamente (proxy, sin SELECT)
+            VehicleModel vehicleRef = em.getReference(VehicleModel.class, vehicleId);
+            init.setVehicleModel(vehicleRef);
+
             init.setStatus(newStatus);
             init.setLastEventTime(eventTime);
-            vehicleStateCurrentRepository.save(init);
 
-            log.debug("[FE] init vehicle={} eventTime={} status={}", vehicle.getId(), eventTime, newStatus);
+            vehicleStateCurrentRepository.save(init);
             return;
         }
 
@@ -60,59 +64,37 @@ public class FuelEfficiencyDailyHandler {
             return;
         }
 
-        // Si llega desordenado (menor), ignora
-        if (eventTime.isBefore(lastTime)) {
-            log.debug("[FE] ignore out-of-order vehicle={} last={} event={}", vehicle.getId(), lastTime, eventTime);
-            return;
-        }
+        if (eventTime.isBefore(lastTime)) return;
 
         long deltaSeconds = Duration.between(lastTime, eventTime).getSeconds();
-
-        // Duplicado / mismo segundo
-        if (deltaSeconds <= DUPLICATE_TOLERANCE_SECONDS) {
-            // (opcional) si quieres, solo actualiza status sin tocar tiempo:
-            // current.setStatus(newStatus); vehicleStateCurrentRepository.save(current);
-            return;
-        }
+        if (deltaSeconds <= DUPLICATE_TOLERANCE_SECONDS) return;
 
         FuelEfficiencyStatus prevStatus = current.getStatus();
+        accumulateSplitByDay(vehicleId, lastTime, eventTime, prevStatus);
 
-        // Acumula el delta en el estado anterior
-        accumulateSplitByDay(vehicle.getId(), lastTime, eventTime, prevStatus);
-
-        // Actualiza estado + lastEventTime
         current.setStatus(newStatus);
         current.setLastEventTime(eventTime);
         vehicleStateCurrentRepository.save(current);
-
-        log.debug("[FE] acc vehicle={} prev={} new={} delta={}s from={} to={}",
-                vehicle.getId(), prevStatus, newStatus, deltaSeconds, lastTime, eventTime);
     }
 
     private ZonedDateTime parseEventTime(VehiclePayloadMqttDTO p) {
-        // fallback MUY conservador (no inventa acumulación)
-        if (p.getTimestamp() == null) {
-            return ZonedDateTime.now(ZONE);
-        }
+        if (p.getTimestamp() == null) return ZonedDateTime.now(ZONE);
 
         long ts;
         try {
             ts = Long.parseLong(String.valueOf(p.getTimestamp()));
         } catch (Exception e) {
-            // Si viene raro, usa now() pero ojo que puede alterar continuidad.
             return ZonedDateTime.now(ZONE);
         }
 
-        // Si viene en segundos, pásalo a ms
-        if (ts < 1_000_000_000_000L) {
-            ts *= 1000L;
-        }
+        // seconds -> ms
+        if (ts < 1_000_000_000_000L) ts *= 1000L;
 
         return Instant.ofEpochMilli(ts).atZone(ZONE);
     }
 
     private FuelEfficiencyStatus determinateStatus(VehiclePayloadMqttDTO p) {
-        Boolean ignition = p.getIgnitionInfo(); // ya convertido correctamente (ver fix abajo)
+        Boolean ignition = p.getIgnitionInfo();
         if (ignition == null || !ignition) return FuelEfficiencyStatus.ESTACIONADO;
 
         boolean moving = isMoving(p);
@@ -120,7 +102,6 @@ public class FuelEfficiencyDailyHandler {
         boolean voltageHigh = (extV == null) || (extV >= ENGINE_VOLTAGE_MV);
 
         if (moving && voltageHigh) return FuelEfficiencyStatus.OPERACION;
-
         return FuelEfficiencyStatus.RALENTI;
     }
 
@@ -130,11 +111,11 @@ public class FuelEfficiencyDailyHandler {
         if (movement != null && movement == 1) return true;
         if (instant != null && instant == 1) return true;
 
-        Integer vehicleSpeedIo = p.getVehicleSpeedIo();
-        if (vehicleSpeedIo != null && vehicleSpeedIo > 0) return true;
+        Integer io37 = p.getVehicleSpeedIo();
+        if (io37 != null && io37 > 0) return true;
 
-        Double speed = p.getSpeed();
-        return speed != null && speed > 0.0;
+        Double gps = p.getSpeed();
+        return gps != null && gps > 0.0;
     }
 
     private Long getExternalVoltageMv(VehiclePayloadMqttDTO p) {

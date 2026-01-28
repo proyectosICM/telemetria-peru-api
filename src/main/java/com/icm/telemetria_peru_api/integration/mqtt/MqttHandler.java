@@ -50,13 +50,14 @@ public class MqttHandler {
             JsonNode jsonNode = objectMapper.readTree(payload);
             VehiclePayloadMqttDTO data = validateJson(jsonNode);
             VehicleSnapshotDTO snapshotDTO =  createVehicleSnapshot(jsonNode);
-            //System.out.println("Processing JSON payload");
 
             if (data.getVehicleId() == null && data.getImei() != null) {
                 Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(data.getImei());
+
                 data.setCompanyId(vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null));
                 data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
                 data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
+
                 if (vehicleOptional.isPresent()) {
                     VehicleModel vehicle = vehicleOptional.get();
 
@@ -140,7 +141,10 @@ public class MqttHandler {
         executeSafely(() -> gasRecordHandler.saveGasRecordModel(data, vehicle), "gasRecordHandler.analyzeFuelTimestamp");
         executeSafely(() -> alarmHandler.saveAlarmRecord(vehicle, data.getAlarmInfo()), "alarmHandler.saveAlarmRecord");
         executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
-        executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle, data), "fuelEfficiencyDailyHandler.process");
+        //executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle, data), "fuelEfficiencyDailyHandler.process");
+        feExecutor.submit(() -> executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle.getId(), data),
+                "fuelEfficiencyDailyHandler.process"));
+
         executeSafely(() -> speedExcessHandler.logSpeedExcess(vehicle, data), "speedExcessHandler.logSpeedExcess");
         executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle), "VehicleSnapshotHandler.saveVehicleSnapshot");
     }
