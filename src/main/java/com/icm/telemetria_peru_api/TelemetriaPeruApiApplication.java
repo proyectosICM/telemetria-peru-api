@@ -12,5 +12,4 @@ public class TelemetriaPeruApiApplication {
 		SpringApplication.run(
 				TelemetriaPeruApiApplication.class, args);
 	}
-
 }

@@ -1,6 +1,8 @@
 package com.icm.telemetria_peru_api.repositories;
 
 import com.icm.telemetria_peru_api.models.FuelTheftAlertModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +19,20 @@ public interface FuelTheftAlertRepository extends JpaRepository<FuelTheftAlertMo
           and a.detectedAt >= :since
     """)
     boolean existsOpenSince(@Param("vehicleId") Long vehicleId, @Param("since") ZonedDateTime since);
+
+    @Query("""
+        select a
+        from FuelTheftAlertModel a
+        where (:vehicleId is null or a.vehicleModel.id = :vehicleId)
+          and (:status is null or a.status = :status)
+          and (:start is null or a.detectedAt >= :start)
+          and (:end is null or a.detectedAt < :end)
+    """)
+    Page<FuelTheftAlertModel> search(
+            @Param("vehicleId") Long vehicleId,
+            @Param("status") String status,
+            @Param("start") ZonedDateTime start,
+            @Param("end") ZonedDateTime end,
+            Pageable pageable
+    );
 }
