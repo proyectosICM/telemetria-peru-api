@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -28,41 +29,21 @@ public class FuelEfficiencyModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private FuelEfficiencyStatus fuelEfficiencyStatus;
-
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
     private VehicleModel vehicleModel;
 
-    @Column(nullable = false)
-    @CreationTimestamp
-    private ZonedDateTime startTime;
+    @Column(name = "day", nullable = false)
+    private LocalDate day;
 
-    private ZonedDateTime endTime;
+    @Column(name = "parked_seconds", nullable = false)
+    private Long parkedSeconds = 0L;
 
-    private Double accumulatedHours;
+    @Column(name = "idle_seconds", nullable = false)
+    private Long idleSeconds = 0L;
 
-    @Column(nullable = false)
-    private Double initialFuel;
-
-    private Double finalFuel;
-
-    private Double distance;
-
-    private String coordinates;
-
-    private Boolean isVisible = true;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "speeds", joinColumns = @JoinColumn(name = "fuel_efficiency_id"))
-    @Column(name = "speed")
-    private List<Double> speeds;
-
-    private Double fuelEfficiency;
-
-    private Double fuelConsumptionPerHour;
+    @Column(name = "operation_seconds", nullable = false)
+    private Long operationSeconds = 0L;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -70,6 +51,4 @@ public class FuelEfficiencyModel {
 
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
-
-    /* Cambiar */
 }

@@ -1,122 +1,192 @@
 package com.icm.telemetria_peru_api.controllers;
 
-import com.icm.telemetria_peru_api.dto.FuelEfficiencyDTO;
-import com.icm.telemetria_peru_api.dto.FuelEfficiencySummaryDTO;
-import com.icm.telemetria_peru_api.integration.mqtt.MqttMessagePublisher;
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
+import com.icm.telemetria_peru_api.repositories.projections.FuelEfficiencySumView;
 import com.icm.telemetria_peru_api.services.FuelEfficiencyService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("api/fuel-efficiency")
 @RequiredArgsConstructor
+@RequestMapping("/api/fuel-efficiency")
 public class FuelEfficiencyController {
-    private final FuelEfficiencyService fuelEfficiencyService;
-    private final MqttMessagePublisher mqttMessagePublisher;
 
+    private final FuelEfficiencyService fuelEfficiencyService;
+
+    // ====== DTOs ======
+
+    @Data
+    public static class UpsertDailyRequest {
+        @NotNull
+        private Long vehicleId;
+
+        @NotNull
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate day;
+
+        @Min(0)
+        private Long parkedSeconds;
+
+        @Min(0)
+        private Long idleSeconds;
+
+        @Min(0)
+        private Long operationSeconds;
+    }
+
+    @Data
+    public static class AddSecondsRequest {
+        @NotNull
+        private Long vehicleId;
+
+        @NotNull
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate day;
+
+        // deltas pueden ser 0; si no quieres permitir negativos, deja @Min(0)
+        @Min(0)
+        private Long parkedSecondsDelta;
+
+        @Min(0)
+        private Long idleSecondsDelta;
+
+        @Min(0)
+        private Long operationSecondsDelta;
+    }
+
+    @Data
+    public static class SumResponse {
+        private Long parkedSeconds;
+        private Long idleSeconds;
+        private Long operationSeconds;
+
+        public static SumResponse from(FuelEfficiencySumView v) {
+            SumResponse r = new SumResponse();
+            r.setParkedSeconds(v.getParkedSeconds());
+            r.setIdleSeconds(v.getIdleSeconds());
+            r.setOperationSeconds(v.getOperationSeconds());
+            return r;
+        }
+    }
+
+    // ====== Endpoints ======
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<FuelEfficiencyModel>> findById(@PathVariable Long id){
-        Optional<FuelEfficiencyModel> data = fuelEfficiencyService.findById(id);
-        return new ResponseEntity<>(data, HttpStatus.OK);
+    public ResponseEntity<FuelEfficiencyModel> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(fuelEfficiencyService.getById(id));
     }
 
-    @GetMapping("/download-excel/{vehicleModelId}")
-    public ResponseEntity<byte[]> exportFuelEfficiencyToExcel(@PathVariable Long vehicleModelId) {
-        try {
-            // Obtener los datos necesarios para el Excel
-            List<FuelEfficiencyModel> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId);
-
-            // Generar el archivo Excel
-            byte[] excelFile = fuelEfficiencyService.generateExcel(data);
-
-            // Configurar los encabezados de respuesta HTTP
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDisposition(ContentDisposition.builder("attachment")
-                    .filename("fuel_efficiency.xlsx")
-                    .build());
-
-            return new ResponseEntity<>(excelFile, headers, HttpStatus.OK);
-
-        } catch (Exception e) {
-            // Manejo de errores: devolver una respuesta adecuada
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    @GetMapping("/by-vehicle/{vehicleModelId}")
-    public ResponseEntity<List<FuelEfficiencyModel>> findByVehicleModelId(
-            @PathVariable Long vehicleModelId) {
-        List<FuelEfficiencyModel> data = fuelEfficiencyService.findByVehicleModelId(vehicleModelId);
-        return new ResponseEntity<>(data, HttpStatus.OK);
-    }
-
-    @GetMapping("/by-vehicle-paged/{vehicleId}")
-    public ResponseEntity<Page<FuelEfficiencyDTO>> findByVehicleModelId(
+    // GET /api/fuel-efficiency/vehicle/{vehicleId}/day/2026-01-28
+    @GetMapping("/vehicle/{vehicleId}/day/{day}")
+    public ResponseEntity<FuelEfficiencyModel> getByVehicleAndDay(
             @PathVariable Long vehicleId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<FuelEfficiencyDTO> data = fuelEfficiencyService.findByVehicleModelId(vehicleId, pageable);
-        return new ResponseEntity<>(data, HttpStatus.OK);
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day
+    ) {
+        return ResponseEntity.ok(fuelEfficiencyService.getByVehicleAndDay(vehicleId, day));
     }
 
-    /** STAST */
-
-    @GetMapping("/daily-averages/{vehicleId}")
-    public List<Map<String, Object>> getDailyAveragesForMonth(@PathVariable Long vehicleId,
-                                                              @RequestParam Integer month,
-                                                              @RequestParam(defaultValue = "") Integer year) {
-        if (year == null || year == 0) {
-            year = Calendar.getInstance().get(Calendar.YEAR);
-        }
-        return fuelEfficiencyService.getDailyAveragesForMonth(vehicleId, month, year);
+    // GET /api/fuel-efficiency/day/2026-01-28
+    @GetMapping("/day/{day}")
+    public ResponseEntity<List<FuelEfficiencyModel>> listByDay(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day
+    ) {
+        return ResponseEntity.ok(fuelEfficiencyService.listByDay(day));
     }
 
-    @GetMapping("/monthly-averages/{vehicleId}")
-    public List<Map<String, Object>> getMonthlyAveragesForYear(@PathVariable Long vehicleId,
-                                                                      @RequestParam String status,
-                                                                      @RequestParam(defaultValue = "") Integer year) {
-        if (year == null || year == 0) {
-            year = Calendar.getInstance().get(Calendar.YEAR);
-        }
-        return fuelEfficiencyService.getMonthlyAveragesForYear(vehicleId, status, year);
+    // GET /api/fuel-efficiency/company/{companyId}/day/2026-01-28
+    @GetMapping("/company/{companyId}/day/{day}")
+    public ResponseEntity<List<FuelEfficiencyModel>> listByCompanyAndDay(
+            @PathVariable Long companyId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day
+    ) {
+        return ResponseEntity.ok(fuelEfficiencyService.listByCompanyAndDay(companyId, day));
     }
 
-    @GetMapping("/summary/{vehicleId}")
-    public ResponseEntity<List<FuelEfficiencySummaryDTO>> getFuelEfficiencyByVehicle(
+    // GET /api/fuel-efficiency/vehicle/{vehicleId}/range?start=2026-01-01&end=2026-01-31
+    @GetMapping("/vehicle/{vehicleId}/range")
+    public ResponseEntity<List<FuelEfficiencyModel>> listByVehicleRange(
             @PathVariable Long vehicleId,
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer day) {
-
-        List<FuelEfficiencySummaryDTO> summary = fuelEfficiencyService.getAggregatedFuelEfficiencyByVehicleIdAndTimeFilter(vehicleId, year, month, day);
-        return ResponseEntity.ok(summary);
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+    ) {
+        return ResponseEntity.ok(fuelEfficiencyService.listByVehicleAndRange(vehicleId, start, end));
     }
 
-    /** STAST */
-    @PostMapping
-    public ResponseEntity<FuelEfficiencyModel> save(@RequestBody FuelEfficiencyModel fuelEfficiencyModel){
-        FuelEfficiencyModel saveData = fuelEfficiencyService.save(fuelEfficiencyModel);
-        return new ResponseEntity<>(saveData, HttpStatus.CREATED);
+    // GET /api/fuel-efficiency/company/{companyId}/range?start=2026-01-01&end=2026-01-31
+    @GetMapping("/company/{companyId}/range")
+    public ResponseEntity<List<FuelEfficiencyModel>> listByCompanyRange(
+            @PathVariable Long companyId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+    ) {
+        return ResponseEntity.ok(fuelEfficiencyService.listByCompanyAndRange(companyId, start, end));
     }
 
+    // ===== SUM por rango =====
+
+    // GET /api/fuel-efficiency/vehicle/{vehicleId}/sum?start=2026-01-01&end=2026-01-31
+    @GetMapping("/vehicle/{vehicleId}/sum")
+    public ResponseEntity<SumResponse> sumByVehicleRange(
+            @PathVariable Long vehicleId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+    ) {
+        FuelEfficiencySumView sum = fuelEfficiencyService.sumByVehicleAndRange(vehicleId, start, end);
+        return ResponseEntity.ok(SumResponse.from(sum));
+    }
+
+    // GET /api/fuel-efficiency/company/{companyId}/sum?start=2026-01-01&end=2026-01-31
+    @GetMapping("/company/{companyId}/sum")
+    public ResponseEntity<SumResponse> sumByCompanyRange(
+            @PathVariable Long companyId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+    ) {
+        FuelEfficiencySumView sum = fuelEfficiencyService.sumByCompanyAndRange(companyId, start, end);
+        return ResponseEntity.ok(SumResponse.from(sum));
+    }
+
+    // ===== CREATE / UPSERT =====
+
+    // POST /api/fuel-efficiency/daily/upsert
+    @PostMapping("/daily/upsert")
+    public ResponseEntity<FuelEfficiencyModel> upsertDaily(@Valid @RequestBody UpsertDailyRequest req) {
+        FuelEfficiencyModel saved = fuelEfficiencyService.upsertDaily(
+                req.getVehicleId(),
+                req.getDay(),
+                req.getParkedSeconds(),
+                req.getIdleSeconds(),
+                req.getOperationSeconds()
+        );
+        return ResponseEntity.ok(saved);
+    }
+
+    // POST /api/fuel-efficiency/daily/add-seconds
+    @PostMapping("/daily/add-seconds")
+    public ResponseEntity<FuelEfficiencyModel> addSeconds(@Valid @RequestBody AddSecondsRequest req) {
+        FuelEfficiencyModel saved = fuelEfficiencyService.addSeconds(
+                req.getVehicleId(),
+                req.getDay(),
+                req.getParkedSecondsDelta(),
+                req.getIdleSecondsDelta(),
+                req.getOperationSecondsDelta()
+        );
+        return ResponseEntity.ok(saved);
+    }
+
+    // ===== DELETE =====
     @DeleteMapping("/{id}")
-    public ResponseEntity<FuelEfficiencyModel> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         fuelEfficiencyService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 }
