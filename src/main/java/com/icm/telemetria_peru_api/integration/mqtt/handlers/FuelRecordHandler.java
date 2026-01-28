@@ -28,9 +28,13 @@ public class FuelRecordHandler {
      */
     public void analyzeFuelTimestamp(VehiclePayloadMqttDTO data, VehicleModel vehicleModel) {
         try {
+            if (data.getFuelInfo() == null || data.getTimestamp() == null || data.getImei() == null) {
+                return;
+            }
+
             VehicleModel dataVehicle = vehicleRepository.findByImei(data.getImei()).orElse(null);
 
-            if (data.getFuelInfo() == null && data.getTimestamp() == null) {
+            if (data.getFuelInfo() == null || data.getTimestamp() == null) {
                 return;
             }
 
@@ -38,18 +42,15 @@ public class FuelRecordHandler {
                 return;
             }
 
-            long unixTimestamp = Long.parseLong(data.getTimestamp());
-
-            LocalTime time = Instant.ofEpochSecond(unixTimestamp).atZone(ZoneId.systemDefault()).toLocalTime();
-
-            int minute = time.getMinute();
-            if (minute % 10 >= 0 && minute  % 10 <= 2) {
+            //long unixTimestamp = Long.parseLong(data.getTimestamp());
+            //LocalTime time = Instant.ofEpochSecond(unixTimestamp).atZone(ZoneId.systemDefault()).toLocalTime();
+            //int minute = time.getMinute();
                 //System.out.println("Initial hour detected: " + time);
                 FuelRecordModel fuelRecordModel = new FuelRecordModel();
                 fuelRecordModel.setValueData(data.getFuelInfo());
                 fuelRecordModel.setVehicleModel(vehicleModel);
                 fuelRecordRepository.save(fuelRecordModel);
-            }
+
         } catch (Exception e) {
             System.out.println("Error analyzing the timestamp: " + e.getMessage());
         }
