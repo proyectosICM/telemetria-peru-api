@@ -77,4 +77,15 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
     );
 
     long countByVehicleModelId(Long vehicleId);
+
+    // Últimos 10 registros del vehículo (por createdAt)
+    List<FuelRecordModel> findTop10ByVehicleModel_IdOrderByCreatedAtDesc(Long vehicleId);
+
+    // Vehículos con lecturas recientes (evita recorrer todos)
+    @Query("""
+        select distinct fr.vehicleModel.id
+        from FuelRecordModel fr
+        where fr.createdAt >= :since
+    """)
+    List<Long> findActiveVehicleIdsSince(@Param("since") ZonedDateTime since);
 }
