@@ -12,7 +12,6 @@ public interface FuelTheftAlertService {
 
     Page<FuelTheftAlertModel> search(
             Long vehicleId,
-            String status,
             ZonedDateTime start,
             ZonedDateTime end,
             Pageable pageable

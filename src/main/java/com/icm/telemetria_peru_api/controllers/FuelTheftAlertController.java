@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/fuel-theft-alerts")
@@ -20,8 +19,6 @@ public class FuelTheftAlertController {
 
     private final FuelTheftAlertService service;
 
-    // Si quieres, este puede seguir devolviendo el model (es 1 solo registro),
-    // pero también podrías devolver DTO para ser consistente.
     @GetMapping("/{id}")
     public ResponseEntity<FuelTheftAlertDTO> getById(@PathVariable Long id) {
         FuelTheftAlertModel a = service.getById(id);
@@ -31,12 +28,11 @@ public class FuelTheftAlertController {
     @GetMapping
     public ResponseEntity<Page<FuelTheftAlertDTO>> search(
             @RequestParam(required = false) Long vehicleId,
-            @RequestParam(required = false) String status,
 
-            // period: day|week|month|year
+            // period: day|week|month|year (opcional)
             @RequestParam(required = false) String period,
 
-            // date: YYYY-MM-DD
+            // date: YYYY-MM-DD (opcional; si no viene, usa hoy)
             @RequestParam(required = false) String date,
 
             @RequestParam(defaultValue = "America/Lima") String tz,
@@ -50,11 +46,11 @@ public class FuelTheftAlertController {
         Pageable pageable = PageRequest.of(
                 page,
                 size,
-                Sort.by(Sort.Direction.DESC, "detectedAt")
+                Sort.by(Sort.Direction.DESC, "detectedAt") // más reciente primero
         );
 
         Page<FuelTheftAlertDTO> dtoPage = service
-                .search(vehicleId, status, range.start, range.end, pageable)
+                .search(vehicleId, range.start, range.end, pageable)
                 .map(FuelTheftAlertController::toDTO);
 
         return ResponseEntity.ok(dtoPage);
@@ -68,21 +64,21 @@ public class FuelTheftAlertController {
                 a.getVehicleModel() != null ? a.getVehicleModel().getId() : null,
                 a.getVehicleModel() != null ? a.getVehicleModel().getLicensePlate() : null,
                 a.getDetectedAt(),
-                a.getBaselineValue(),
-                a.getCurrentValue(),
-                a.getDropValue(),
-                a.getStatus(),
-                a.getEvidence()
+                a.getMessage()
         );
     }
 
     private static class Range {
         ZonedDateTime start;
         ZonedDateTime end;
-        Range(ZonedDateTime start, ZonedDateTime end) { this.start = start; this.end = end; }
+        Range(ZonedDateTime start, ZonedDateTime end) {
+            this.start = start;
+            this.end = end;
+        }
     }
 
     private Range computeRange(String period, String date, ZoneId zoneId) {
+        // Si no piden period, no filtramos por tiempo
         if (period == null || period.isBlank()) {
             return new Range(null, null);
         }
@@ -100,8 +96,7 @@ public class FuelTheftAlertController {
                 yield new Range(start, end);
             }
             case "week" -> {
-                // Si quieres ISO fijo (lunes-domingo), usa WeekFields.ISO.
-                WeekFields wf = WeekFields.ISO;
+                WeekFields wf = WeekFields.ISO; // lunes-domingo
                 LocalDate weekStart = baseDate.with(wf.dayOfWeek(), 1);
                 LocalDate weekEndExclusive = weekStart.plusDays(7);
 

@@ -26,11 +26,10 @@ public class FuelTheftAlertServiceImpl implements FuelTheftAlertService {
     @Override
     public Page<FuelTheftAlertModel> search(
             Long vehicleId,
-            String status,
             ZonedDateTime start,
             ZonedDateTime end,
             Pageable pageable
     ) {
-        return repository.search(vehicleId, status, start, end, pageable);
+        return repository.search(vehicleId, start, end, pageable);
     }
 }

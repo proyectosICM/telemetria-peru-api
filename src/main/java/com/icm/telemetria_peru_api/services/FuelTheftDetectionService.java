@@ -30,15 +30,14 @@ public class FuelTheftDetectionService {
     private static final ZoneId ZONE = ZoneId.of("America/Lima");
 
     // ===== Ajusta a tu negocio =====
-    // Si fuelInfo es "litros", pon por ej 10-30 litros.
-    // Si es "%", pon por ej 5-15%.
-    private static final double DROP_THRESHOLD = 10.0;
+    private static final double DROP_THRESHOLD = 10.0;   // caída mínima para alertar
+    private static final double STABILITY_TOL = 1.0;     // tolerancia para “se mantiene abajo”
+    private static final int COOLDOWN_MINUTES = 30;      // evita spam (por mismo mensaje)
+    private static final int MIN_POINTS = 8;             // mínimo puntos válidos
 
-    // tolerancia de “variación” para decir que se mantiene abajo
-    private static final double STABILITY_TOL = 1.0;
-
-    // evita spam: no crear otra alerta OPEN en últimos X minutos
-    private static final int COOLDOWN_MINUTES = 30;
+    // ===== Reglas anti-cero =====
+    private static final int MAX_ZEROS_IN_WINDOW = 3;    // si hay >= 3 ceros en la ventana, ignora
+    private static final int MAX_TRAILING_ZEROS = 2;     // si termina con >=2 ceros, ignora (glitch típico)
 
     @Transactional
     public void analyzeVehicle(Long vehicleId) {
@@ -47,19 +46,37 @@ public class FuelTheftDetectionService {
         List<FuelRecordModel> rows =
                 fuelRecordRepository.findTop10ByVehicleModel_IdOrderByCreatedAtDesc(vehicleId);
 
-        if (rows.size() < 8) return;
+        if (rows.size() < MIN_POINTS) return;
 
         // vienen DESC, pasa a ASC
         Collections.reverse(rows);
 
-        // valores
+        // extraer valores
         List<Double> values = new ArrayList<>();
         for (FuelRecordModel r : rows) {
             if (r.getValueData() != null) values.add(r.getValueData());
         }
-        if (values.size() < 8) return;
+        if (values.size() < MIN_POINTS) return;
 
-        // filtro glitch 0: si 0 está entre dos valores >0, ignóralo
+        // ===== Anti-cero global =====
+        long zerosCount = values.stream().filter(v -> v != null && v == 0.0).count();
+        if (zerosCount >= MAX_ZEROS_IN_WINDOW) {
+            // demasiados ceros en la ventana: sensores/mensaje raro
+            return;
+        }
+
+        // ===== Ignorar si termina en ceros (0,0,0...) =====
+        int trailingZeros = 0;
+        for (int i = values.size() - 1; i >= 0; i--) {
+            Double v = values.get(i);
+            if (v != null && v == 0.0) trailingZeros++;
+            else break;
+        }
+        if (trailingZeros >= MAX_TRAILING_ZEROS) {
+            return;
+        }
+
+        // ===== filtro glitch 0: si 0 está entre dos valores >0, ignóralo =====
         List<Double> clean = new ArrayList<>();
         for (int i = 0; i < values.size(); i++) {
             double v = values.get(i);
@@ -70,7 +87,7 @@ public class FuelTheftDetectionService {
             }
             clean.add(v);
         }
-        if (clean.size() < 8) return;
+        if (clean.size() < MIN_POINTS) return;
 
         // baseline: primeros 5 (mediana)
         double baseline = median(clean.subList(0, Math.min(5, clean.size())));
@@ -79,10 +96,14 @@ public class FuelTheftDetectionService {
         int n = clean.size();
         double recent = median(clean.subList(n - 3, n));
 
+        // ===== regla anti-cero adicional =====
+        // si baseline o recent están muy cerca de 0, no tiene sentido alertar
+        if (baseline <= 0.0 || recent <= 0.0) return;
+
         double drop = baseline - recent;
         if (drop < DROP_THRESHOLD) return;
 
-        // persistencia: últimos 3 no “rebotan”
+        // persistencia: últimos 3 no “rebotan” (se mantienen cerca del recent)
         boolean stable = true;
         for (int i = n - 3; i < n; i++) {
             if (clean.get(i) > recent + STABILITY_TOL) {
@@ -92,24 +113,24 @@ public class FuelTheftDetectionService {
         }
         if (!stable) return;
 
-        // cooldown anti-spam
+        // ===== Mensaje (lo que quieres ver en tu tabla) =====
+        String message = "Caída brusca de combustible";
+
+        // cooldown anti-spam por mensaje
         ZonedDateTime since = ZonedDateTime.now(ZONE).minusMinutes(COOLDOWN_MINUTES);
-        if (alertRepository.existsOpenSince(vehicleId, since)) return;
+        if (alertRepository.existsMessageSince(vehicleId, message, since)) return;
 
         VehicleModel vehicleRef = em.getReference(VehicleModel.class, vehicleId);
 
         FuelTheftAlertModel alert = new FuelTheftAlertModel();
         alert.setVehicleModel(vehicleRef);
         alert.setDetectedAt(ZonedDateTime.now(ZONE));
-        alert.setBaselineValue(baseline);
-        alert.setCurrentValue(recent);
-        alert.setDropValue(drop);
-        alert.setStatus("OPEN");
-        alert.setEvidence("last10=" + clean);
+        alert.setMessage(message);
 
         alertRepository.save(alert);
 
-        log.warn("[FUEL_THEFT] vehicle={} baseline={} recent={} drop={}", vehicleId, baseline, recent, drop);
+        log.warn("[FUEL_THEFT] vehicle={} baseline={} recent={} drop={} msg={}",
+                vehicleId, baseline, recent, drop, message);
     }
 
     private static double median(List<Double> list) {

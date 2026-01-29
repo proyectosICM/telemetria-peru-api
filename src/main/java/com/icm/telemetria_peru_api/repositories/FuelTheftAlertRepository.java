@@ -11,26 +11,51 @@ import java.time.ZonedDateTime;
 
 public interface FuelTheftAlertRepository extends JpaRepository<FuelTheftAlertModel, Long> {
 
+    /**
+     * Evita duplicados: ¿ya existe alguna alerta para el vehículo desde "since"?
+     * (sin status, porque ya no existe)
+     */
     @Query("""
         select (count(a) > 0)
         from FuelTheftAlertModel a
         where a.vehicleModel.id = :vehicleId
-          and a.status = 'OPEN'
           and a.detectedAt >= :since
     """)
-    boolean existsOpenSince(@Param("vehicleId") Long vehicleId, @Param("since") ZonedDateTime since);
+    boolean existsSince(
+            @Param("vehicleId") Long vehicleId,
+            @Param("since") ZonedDateTime since
+    );
 
+    /**
+     * Variante mejor: evita duplicados por tipo/mensaje desde "since"
+     * (útil si quieres permitir 2 mensajes distintos el mismo día)
+     */
+    @Query("""
+        select (count(a) > 0)
+        from FuelTheftAlertModel a
+        where a.vehicleModel.id = :vehicleId
+          and a.message = :message
+          and a.detectedAt >= :since
+    """)
+    boolean existsMessageSince(
+            @Param("vehicleId") Long vehicleId,
+            @Param("message") String message,
+            @Param("since") ZonedDateTime since
+    );
+
+    /**
+     * Search paginado general (lo que usarás para la tabla).
+     * Quité status y dejé solo filtros que existen: vehicleId y rango de fechas.
+     */
     @Query("""
         select a
         from FuelTheftAlertModel a
         where (:vehicleId is null or a.vehicleModel.id = :vehicleId)
-          and (:status is null or a.status = :status)
           and (:start is null or a.detectedAt >= :start)
           and (:end is null or a.detectedAt < :end)
     """)
     Page<FuelTheftAlertModel> search(
             @Param("vehicleId") Long vehicleId,
-            @Param("status") String status,
             @Param("start") ZonedDateTime start,
             @Param("end") ZonedDateTime end,
             Pageable pageable
