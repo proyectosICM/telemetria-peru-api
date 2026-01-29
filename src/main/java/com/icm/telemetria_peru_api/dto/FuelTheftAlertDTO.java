@@ -7,9 +7,5 @@ public record FuelTheftAlertDTO(
         Long vehicleId,
         String licensePlate,
         ZonedDateTime detectedAt,
-        Double baselineValue,
-        Double currentValue,
-        Double dropValue,
-        String status,
-        String evidence
+        String message
 ) {}
