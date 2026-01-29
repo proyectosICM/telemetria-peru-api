@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class FuelTheftScheduledJob {
-
+/*
     private final FuelRecordRepository fuelRecordRepository;
     private final FuelTheftDetectionService detectionService;
 
@@ -43,5 +43,5 @@ public class FuelTheftScheduledJob {
                 log.error("[FUEL_THEFT_JOB] error vehicleId={} msg={}", vehicleId, e.getMessage(), e);
             }
         }
-    }
+    }*/
 }
