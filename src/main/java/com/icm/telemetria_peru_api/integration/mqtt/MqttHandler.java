@@ -7,14 +7,12 @@ import com.icm.telemetria_peru_api.dto.VehicleSnapshotDTO;
 import com.icm.telemetria_peru_api.integration.mqtt.handlers.*;
 import com.icm.telemetria_peru_api.models.CompanyModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
-import com.icm.telemetria_peru_api.repositories.*;
+import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @Component
 @RequiredArgsConstructor
@@ -32,57 +30,67 @@ public class MqttHandler {
     private final VehicleSnapshotHandler vehicleSnapshotHandler;
 
     private final MqttMessagePublisher mqttMessagePublisher;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // IMPORTANTE: un pool pequeño para no reventar DB
-    private final ExecutorService feExecutor = Executors.newFixedThreadPool(2);
-
     /**
-     * Processes the JSON message received via MQTT, extracting relevant information
-     * about vehicles and events. Depending on the content, it triggers related functions
-     * such as ignition logging, alarms, speed excess, or fuel consumption, and publishes
-     * processed messages to other systems.
-     *
-     * @param payload the JSON message received via MQTT
+     * Pool pequeño para no reventar DB.
+     * Cola limitada para no acumular infinito si DB se pone lenta.
+     * Si la cola se llena, DiscardPolicy descarta silenciosamente (puedes cambiar a CallerRunsPolicy).
      */
+    private final ExecutorService feExecutor =
+            new ThreadPoolExecutor(
+                    2, 2,
+                    0L, TimeUnit.MILLISECONDS,
+                    new ArrayBlockingQueue<>(200),
+                    new ThreadPoolExecutor.DiscardPolicy()
+            );
+
     public void processJsonPayload(String payload) {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
+
             VehiclePayloadMqttDTO data = validateJson(jsonNode);
-            VehicleSnapshotDTO snapshotDTO =  createVehicleSnapshot(jsonNode);
+            VehicleSnapshotDTO snapshotDTO = createVehicleSnapshot(jsonNode);
 
-            if (data.getVehicleId() == null && data.getImei() != null) {
-                Optional<VehicleModel> vehicleOptional = vehicleRepository.findByImei(data.getImei());
+            Optional<VehicleModel> vehicleOpt = Optional.empty();
 
-                data.setCompanyId(vehicleOptional.map(VehicleModel::getCompanyModel).map(CompanyModel::getId).orElse(null));
-                data.setVehicleId(vehicleOptional.map(VehicleModel::getId).orElse(null));
-                data.setLicensePlate(vehicleOptional.map(VehicleModel::getLicensePlate).orElse(null));
-
-                if (vehicleOptional.isPresent()) {
-                    VehicleModel vehicle = vehicleOptional.get();
-
-                    publishDataWithErrorHandling(data, jsonNode);
-                    processHandlersWithErrorHandling(snapshotDTO, data, vehicle);
-
-                    //speedExcessHandler.logSpeedExcess(vehicleOptional.get().getId(), data.getSpeed());
-                    //vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle);
-
-                }
+            // 1) Si viene vehicleId, buscar por ID
+            if (data.getVehicleId() != null) {
+                vehicleOpt = vehicleRepository.findById(data.getVehicleId());
             }
-        } catch (IOException e) {
+
+            // 2) Si no viene vehicleId o no existe, buscar por IMEI
+            if (vehicleOpt.isEmpty() && data.getImei() != null && !data.getImei().isBlank()) {
+                vehicleOpt = vehicleRepository.findByImei(data.getImei());
+            }
+
+            // 3) Si no encontramos vehículo, no procesamos
+            if (vehicleOpt.isEmpty()) {
+                System.out.println("[MQTT] Vehicle not found. vehicleId=" + data.getVehicleId()
+                        + " imei=" + data.getImei());
+                return;
+            }
+
+            VehicleModel vehicle = vehicleOpt.get();
+
+            // 4) Completar campos faltantes (solo si están null)
+            if (data.getVehicleId() == null) data.setVehicleId(vehicle.getId());
+            if (data.getCompanyId() == null) {
+                data.setCompanyId(Optional.ofNullable(vehicle.getCompanyModel()).map(CompanyModel::getId).orElse(null));
+            }
+            if (data.getLicensePlate() == null) data.setLicensePlate(vehicle.getLicensePlate());
+
+            // 5) Publicar y procesar siempre
+            publishDataWithErrorHandling(data, jsonNode);
+            processHandlersWithErrorHandling(snapshotDTO, data, vehicle);
+
+        } catch (Exception e) {
+            System.err.println("[MQTT] Error processing JSON: " + e.getMessage());
             e.printStackTrace();
-            System.out.println("Error processing the JSON: " + e.getMessage());
         }
     }
 
-    /**
-     * Validates and extracts relevant fields from a given JSON node, converting them into a
-     * VehiclePayloadMqttDTO object. Fields are checked for existence before retrieval,
-     * and default values are assigned if they are missing.
-     *
-     * @param jsonNode The input JSON node containing vehicle data.
-     * @return A VehiclePayloadMqttDTO object populated with the extracted data.
-     */
     private VehiclePayloadMqttDTO validateJson(JsonNode jsonNode) {
         VehiclePayloadMqttDTO dto = new VehiclePayloadMqttDTO();
 
@@ -95,10 +103,18 @@ public class MqttHandler {
         dto.setTimestamp(jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null);
 
         dto.setFuelInfo(jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0.0);
+
+        // alarmInfo normalmente viene 0/1 -> lo guardas como int en DTO
         dto.setAlarmInfo(jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asInt() : 0);
 
-        // OJO: si tu script manda 0/1 en vez de boolean, esto igual funciona si es boolean real.
-        dto.setIgnitionInfo(jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null);
+        // ignitionInfo: si viene 0/1, asBoolean() puede fallar => soporta ambos
+        if (jsonNode.has("ignitionInfo")) {
+            JsonNode ign = jsonNode.get("ignitionInfo");
+            if (ign.isBoolean()) dto.setIgnitionInfo(ign.asBoolean());
+            else dto.setIgnitionInfo(ign.asInt() == 1);
+        } else {
+            dto.setIgnitionInfo(null);
+        }
 
         Double latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asDouble() : null;
         Double longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asDouble() : null;
@@ -121,30 +137,63 @@ public class MqttHandler {
         String licensePlate = jsonNode.has("licensePlate") ? jsonNode.get("licensePlate").asText() : null;
         String imei = jsonNode.has("imei") ? jsonNode.get("imei").asText() : null;
         String timestamp = jsonNode.has("timestamp") ? jsonNode.get("timestamp").asText() : null;
-        Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0;
-        Boolean alarmInfo = jsonNode.has("alarmInfo") ? jsonNode.get("alarmInfo").asBoolean() : null;
-        Boolean ignitionInfo = jsonNode.has("ignitionInfo") ? jsonNode.get("ignitionInfo").asBoolean() : null;
+        Double fuelInfo = jsonNode.has("fuelInfo") ? jsonNode.get("fuelInfo").asDouble() : 0.0;
+
+        // alarmInfo suele ser 0/1 => conviértelo a Boolean aquí también
+        Boolean alarmInfo = null;
+        if (jsonNode.has("alarmInfo")) {
+            JsonNode a = jsonNode.get("alarmInfo");
+            alarmInfo = a.isBoolean() ? a.asBoolean() : (a.asInt() == 1);
+        }
+
+        Boolean ignitionInfo = null;
+        if (jsonNode.has("ignitionInfo")) {
+            JsonNode ign = jsonNode.get("ignitionInfo");
+            ignitionInfo = ign.isBoolean() ? ign.asBoolean() : (ign.asInt() == 1);
+        }
+
         String latitude = jsonNode.has("latitude") ? jsonNode.get("latitude").asText() : null;
         String longitude = jsonNode.has("longitude") ? jsonNode.get("longitude").asText() : null;
         Double gasInfo = jsonNode.has("gasInfo") ? jsonNode.get("gasInfo").asDouble() : null;
         Integer snapshotSpeed = jsonNode.has("speed") ? jsonNode.get("speed").asInt() : null;
 
-        return new VehicleSnapshotDTO(null, vehicleId, companyId, licensePlate, imei, timestamp,
-                fuelInfo, alarmInfo, ignitionInfo, latitude + "," + longitude, gasInfo,
-                snapshotSpeed, latitude, longitude);
+        String coords = (latitude != null && longitude != null) ? (latitude + "," + longitude) : null;
+
+        // Ajusta el constructor al orden exacto de tu record/DTO
+        return new VehicleSnapshotDTO(
+                null,
+                vehicleId,
+                companyId,
+                licensePlate,
+                imei,
+                timestamp,
+                fuelInfo,
+                alarmInfo,
+                ignitionInfo,
+                coords,
+                gasInfo,
+                snapshotSpeed,
+                latitude,
+                longitude
+        );
     }
 
-    private void processHandlersWithErrorHandling(VehicleSnapshotDTO snapshotDTO ,VehiclePayloadMqttDTO data, VehicleModel vehicle) {
-        executeSafely(() -> fuelReportHandler.saveFuelReport(data, vehicle), "fuelReportHandler.saveFuelReport" );
+    private void processHandlersWithErrorHandling(VehicleSnapshotDTO snapshotDTO, VehiclePayloadMqttDTO data, VehicleModel vehicle) {
+        executeSafely(() -> fuelReportHandler.saveFuelReport(data, vehicle), "fuelReportHandler.saveFuelReport");
         executeSafely(() -> fuelRecordHandler.analyzeFuelTimestamp(data, vehicle), "fuelRecordHandler.analyzeFuelTimestamp");
-        executeSafely(() -> gasChangeHandler.saveGasChangeRecord(data, vehicle), "gasChangeHandler.analyzeFuelTimestamp");
-        executeSafely(() -> gasRecordHandler.saveGasRecordModel(data, vehicle), "gasRecordHandler.analyzeFuelTimestamp");
+        executeSafely(() -> gasChangeHandler.saveGasChangeRecord(data, vehicle), "gasChangeHandler.saveGasChangeRecord");
+        executeSafely(() -> gasRecordHandler.saveGasRecordModel(data, vehicle), "gasRecordHandler.saveGasRecordModel");
+
         executeSafely(() -> alarmHandler.saveAlarmRecord(vehicle, data.getAlarmInfo()), "alarmHandler.saveAlarmRecord");
         executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
-        //executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle, data), "fuelEfficiencyDailyHandler.process");
-        feExecutor.submit(() -> executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle.getId(), data), "fuelEfficiencyDailyHandler.process"));
+
+        // Fuel Efficiency: async
+        feExecutor.submit(() ->
+                executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle.getId(), data), "fuelEfficiencyDailyHandler.process")
+        );
+
         executeSafely(() -> speedExcessHandler.logSpeedExcess(vehicle, data), "speedExcessHandler.logSpeedExcess");
-        executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle), "VehicleSnapshotHandler.saveVehicleSnapshot");
+        executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO, vehicle), "vehicleSnapshotHandler.saveVehicleSnapshot");
     }
 
     private void publishDataWithErrorHandling(VehiclePayloadMqttDTO data, JsonNode jsonNode) {
@@ -155,18 +204,20 @@ public class MqttHandler {
         try {
             action.run();
         } catch (Exception e) {
-            System.err.println("Error in " + actionName + ": " + e.getMessage());
+            System.err.println("[MQTT] Error in " + actionName + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-
-    private void publisherData( VehiclePayloadMqttDTO vehiclePayloadMqttDTO, JsonNode jsonNode) {
+    private void publisherData(VehiclePayloadMqttDTO vehiclePayloadMqttDTO, JsonNode jsonNode) {
         if (vehiclePayloadMqttDTO.getVehicleId() != null) {
             mqttMessagePublisher.telData(vehiclePayloadMqttDTO.getVehicleId(), jsonNode);
-            mqttMessagePublisher.mapData(vehiclePayloadMqttDTO.getVehicleId(), vehiclePayloadMqttDTO.getCompanyId(), vehiclePayloadMqttDTO.getLicensePlate(), jsonNode);
+            mqttMessagePublisher.mapData(
+                    vehiclePayloadMqttDTO.getVehicleId(),
+                    vehiclePayloadMqttDTO.getCompanyId(),
+                    vehiclePayloadMqttDTO.getLicensePlate(),
+                    jsonNode
+            );
         }
     }
-
-
 }
