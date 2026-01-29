@@ -142,9 +142,7 @@ public class MqttHandler {
         executeSafely(() -> alarmHandler.saveAlarmRecord(vehicle, data.getAlarmInfo()), "alarmHandler.saveAlarmRecord");
         executeSafely(() -> ignitionHandler.updateIgnitionStatus(vehicle, data.getIgnitionInfo()), "ignitionHandler.updateIgnitionStatus");
         //executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle, data), "fuelEfficiencyDailyHandler.process");
-        feExecutor.submit(() -> executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle.getId(), data),
-                "fuelEfficiencyDailyHandler.process"));
-
+        //feExecutor.submit(() -> executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle.getId(), data), "fuelEfficiencyDailyHandler.process"));
         executeSafely(() -> speedExcessHandler.logSpeedExcess(vehicle, data), "speedExcessHandler.logSpeedExcess");
         executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO,vehicle), "VehicleSnapshotHandler.saveVehicleSnapshot");
     }
