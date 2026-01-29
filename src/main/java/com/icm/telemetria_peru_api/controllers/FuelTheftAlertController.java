@@ -1,9 +1,11 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.FuelTheftAlertDTO;
 import com.icm.telemetria_peru_api.models.FuelTheftAlertModel;
 import com.icm.telemetria_peru_api.services.FuelTheftAlertService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.*;
@@ -18,13 +20,16 @@ public class FuelTheftAlertController {
 
     private final FuelTheftAlertService service;
 
+    // Si quieres, este puede seguir devolviendo el model (es 1 solo registro),
+    // pero también podrías devolver DTO para ser consistente.
     @GetMapping("/{id}")
-    public FuelTheftAlertModel getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<FuelTheftAlertDTO> getById(@PathVariable Long id) {
+        FuelTheftAlertModel a = service.getById(id);
+        return ResponseEntity.ok(toDTO(a));
     }
 
     @GetMapping
-    public Page<FuelTheftAlertModel> search(
+    public ResponseEntity<Page<FuelTheftAlertDTO>> search(
             @RequestParam(required = false) Long vehicleId,
             @RequestParam(required = false) String status,
 
@@ -40,16 +45,35 @@ public class FuelTheftAlertController {
             @RequestParam(defaultValue = "20") int size
     ) {
         ZoneId zoneId = ZoneId.of(tz);
-
         Range range = computeRange(period, date, zoneId);
 
         Pageable pageable = PageRequest.of(
                 page,
                 size,
-                Sort.by(Sort.Direction.DESC, "detectedAt") // más reciente primero
+                Sort.by(Sort.Direction.DESC, "detectedAt")
         );
 
-        return service.search(vehicleId, status, range.start, range.end, pageable);
+        Page<FuelTheftAlertDTO> dtoPage = service
+                .search(vehicleId, status, range.start, range.end, pageable)
+                .map(FuelTheftAlertController::toDTO);
+
+        return ResponseEntity.ok(dtoPage);
+    }
+
+    // ===== Helpers =====
+
+    private static FuelTheftAlertDTO toDTO(FuelTheftAlertModel a) {
+        return new FuelTheftAlertDTO(
+                a.getId(),
+                a.getVehicleModel() != null ? a.getVehicleModel().getId() : null,
+                a.getVehicleModel() != null ? a.getVehicleModel().getLicensePlate() : null,
+                a.getDetectedAt(),
+                a.getBaselineValue(),
+                a.getCurrentValue(),
+                a.getDropValue(),
+                a.getStatus(),
+                a.getEvidence()
+        );
     }
 
     private static class Range {
@@ -59,7 +83,6 @@ public class FuelTheftAlertController {
     }
 
     private Range computeRange(String period, String date, ZoneId zoneId) {
-        // Si no piden period, no filtramos por tiempo
         if (period == null || period.isBlank()) {
             return new Range(null, null);
         }
@@ -77,8 +100,8 @@ public class FuelTheftAlertController {
                 yield new Range(start, end);
             }
             case "week" -> {
-                // Semana ISO (lunes-domingo). Si quieres domingo->sábado, se cambia aquí.
-                WeekFields wf = WeekFields.of(Locale.getDefault());
+                // Si quieres ISO fijo (lunes-domingo), usa WeekFields.ISO.
+                WeekFields wf = WeekFields.ISO;
                 LocalDate weekStart = baseDate.with(wf.dayOfWeek(), 1);
                 LocalDate weekEndExclusive = weekStart.plusDays(7);
 
