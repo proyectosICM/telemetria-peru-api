@@ -2,6 +2,8 @@ package com.icm.telemetria_peru_api.services;
 
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.repositories.projections.FuelEfficiencySumView;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +31,14 @@ public interface FuelEfficiencyService {
     // ===== Listar rango (para semana/mes/año) =====
     List<FuelEfficiencyModel> listByVehicleAndRange(Long vehicleId, LocalDate start, LocalDate end);
     List<FuelEfficiencyModel> listByCompanyAndRange(Long companyId, LocalDate start, LocalDate end);
+
+    Page<FuelEfficiencyModel> findAllByVehicleModel_IdAndDay(Long vehicleId, LocalDate day, Pageable pageable);
+
+    Page<FuelEfficiencyModel> findAllByVehicleModel_IdAndDayBetween(Long vehicleId, LocalDate start, LocalDate end, Pageable pageable);
+
+    Page<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDay(Long companyId, LocalDate day, Pageable pageable);
+
+    Page<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDayBetween(Long companyId, LocalDate start, LocalDate end, Pageable pageable);
 
     // ===== SUM rango =====
     FuelEfficiencySumView sumByVehicleAndRange(Long vehicleId, LocalDate start, LocalDate end);

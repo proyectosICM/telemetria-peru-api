@@ -2,6 +2,8 @@ package com.icm.telemetria_peru_api.repositories;
 
 import com.icm.telemetria_peru_api.models.FuelEfficiencyModel;
 import com.icm.telemetria_peru_api.repositories.projections.FuelEfficiencySumView;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,6 +31,14 @@ public interface FuelEfficiencyRepository extends JpaRepository<FuelEfficiencyMo
     List<FuelEfficiencyModel> findAllByVehicleModel_IdAndDayBetween(Long vehicleId, LocalDate start, LocalDate end);
 
     List<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDayBetween(Long companyId, LocalDate start, LocalDate end);
+
+    Page<FuelEfficiencyModel> findAllByVehicleModel_IdAndDay(Long vehicleId, LocalDate day, Pageable pageable);
+
+    Page<FuelEfficiencyModel> findAllByVehicleModel_IdAndDayBetween(Long vehicleId, LocalDate start, LocalDate end, Pageable pageable);
+
+    Page<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDay(Long companyId, LocalDate day, Pageable pageable);
+
+    Page<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDayBetween(Long companyId, LocalDate start, LocalDate end, Pageable pageable);
 
     // ========= SUM por rango (un solo vehículo) =========
     @Query("""

@@ -15,6 +15,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
+
+
 @Service
 @RequiredArgsConstructor
 public class FuelEfficiencyServiceImpl implements FuelEfficiencyService {
@@ -139,6 +145,57 @@ public class FuelEfficiencyServiceImpl implements FuelEfficiencyService {
         if (end.isBefore(start)) throw new IllegalArgumentException("end must be >= start");
         // ✅ FIX AQUÍ
         return fuelEfficiencyRepository.findAllByVehicleModel_CompanyModel_IdAndDayBetween(companyId, start, end);
+    }
+
+    @Override
+    public Page<FuelEfficiencyModel> findAllByVehicleModel_IdAndDay(Long vehicleId, LocalDate day, Pageable pageable) {
+        if (day == null) throw new IllegalArgumentException("day is required");
+
+        // fuerza orden por day DESC si no viene sort
+        Pageable p = pageable;
+        if (p.getSort().isUnsorted()) {
+            p = PageRequest.of(p.getPageNumber(), p.getPageSize(), Sort.by("day").descending());
+        }
+
+        return fuelEfficiencyRepository.findAllByVehicleModel_IdAndDay(vehicleId, day, p);
+    }
+
+    @Override
+    public Page<FuelEfficiencyModel> findAllByVehicleModel_IdAndDayBetween(Long vehicleId, LocalDate start, LocalDate end, Pageable pageable) {
+        if (start == null || end == null) throw new IllegalArgumentException("start/end are required");
+        if (end.isBefore(start)) throw new IllegalArgumentException("end must be >= start");
+
+        Pageable p = pageable;
+        if (p.getSort().isUnsorted()) {
+            p = PageRequest.of(p.getPageNumber(), p.getPageSize(), Sort.by("day").descending());
+        }
+
+        return fuelEfficiencyRepository.findAllByVehicleModel_IdAndDayBetween(vehicleId, start, end, p);
+    }
+
+    @Override
+    public Page<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDay(Long companyId, LocalDate day, Pageable pageable) {
+        if (day == null) throw new IllegalArgumentException("day is required");
+
+        Pageable p = pageable;
+        if (p.getSort().isUnsorted()) {
+            p = PageRequest.of(p.getPageNumber(), p.getPageSize(), Sort.by("day").descending());
+        }
+
+        return fuelEfficiencyRepository.findAllByVehicleModel_CompanyModel_IdAndDay(companyId, day, p);
+    }
+
+    @Override
+    public Page<FuelEfficiencyModel> findAllByVehicleModel_CompanyModel_IdAndDayBetween(Long companyId, LocalDate start, LocalDate end, Pageable pageable) {
+        if (start == null || end == null) throw new IllegalArgumentException("start/end are required");
+        if (end.isBefore(start)) throw new IllegalArgumentException("end must be >= start");
+
+        Pageable p = pageable;
+        if (p.getSort().isUnsorted()) {
+            p = PageRequest.of(p.getPageNumber(), p.getPageSize(), Sort.by("day").descending());
+        }
+
+        return fuelEfficiencyRepository.findAllByVehicleModel_CompanyModel_IdAndDayBetween(companyId, start, end, p);
     }
 
     @Override

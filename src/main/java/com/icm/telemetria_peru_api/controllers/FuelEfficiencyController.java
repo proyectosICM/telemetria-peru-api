@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/fuel-efficiency")
@@ -130,6 +135,71 @@ public class FuelEfficiencyController {
     ) {
         return ResponseEntity.ok(fuelEfficiencyService.listByCompanyAndRange(companyId, start, end));
     }
+
+    // ✅ GET /api/fuel-efficiency/vehicle/{vehicleId}/day/{day}/paged?page=0&size=20
+    @GetMapping("/vehicle/{vehicleId}/day/{day}/paged")
+    public ResponseEntity<Page<FuelEfficiencyModel>> listByVehicleDayPaged(
+            @PathVariable Long vehicleId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("day").descending().and(Sort.by("id").descending()));
+        return ResponseEntity.ok(fuelEfficiencyService.findAllByVehicleModel_IdAndDay(vehicleId, day, pageable));
+    }
+
+    // ✅ GET /api/fuel-efficiency/vehicle/{vehicleId}/range/paged?start=2026-01-01&end=2026-01-31&page=0&size=20
+    @GetMapping("/vehicle/{vehicleId}/range/paged")
+    public ResponseEntity<Page<FuelEfficiencyModel>> listByVehicleRangePaged(
+            @PathVariable Long vehicleId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("day").descending().and(Sort.by("id").descending()));
+        return ResponseEntity.ok(fuelEfficiencyService.findAllByVehicleModel_IdAndDayBetween(vehicleId, start, end, pageable));
+    }
+
+    // ✅ GET /api/fuel-efficiency/company/{companyId}/day/{day}/paged?page=0&size=20
+    @GetMapping("/company/{companyId}/day/{day}/paged")
+    public ResponseEntity<Page<FuelEfficiencyModel>> listByCompanyDayPaged(
+            @PathVariable Long companyId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("day").descending().and(Sort.by("id").descending())
+        );
+
+        return ResponseEntity.ok(
+                fuelEfficiencyService.findAllByVehicleModel_CompanyModel_IdAndDay(companyId, day, pageable)
+        );
+    }
+
+    // ✅ GET /api/fuel-efficiency/company/{companyId}/range/paged?start=2026-01-01&end=2026-01-31&page=0&size=20
+    @GetMapping("/company/{companyId}/range/paged")
+    public ResponseEntity<Page<FuelEfficiencyModel>> listByCompanyRangePaged(
+            @PathVariable Long companyId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("day").descending().and(Sort.by("id").descending())
+        );
+
+        return ResponseEntity.ok(
+                fuelEfficiencyService.findAllByVehicleModel_CompanyModel_IdAndDayBetween(companyId, start, end, pageable)
+        );
+    }
+
 
     // ===== SUM por rango =====
 
