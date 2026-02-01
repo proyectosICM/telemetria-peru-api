@@ -45,7 +45,7 @@ public class FuelEfficiencyDailyHandler {
         if (current == null) {
             VehicleStateCurrentModel init = new VehicleStateCurrentModel();
 
-            // ✅ asigna relación correctamente (proxy, sin SELECT)
+            // asigna relación correctamente (proxy, sin SELECT)
             VehicleModel vehicleRef = em.getReference(VehicleModel.class, vehicleId);
             init.setVehicleModel(vehicleRef);
 
