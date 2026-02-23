@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FuelTheftScheduledJob {
+public class FuelTheftScheduledJobAnt {
     private final FuelRecordRepository fuelRecordRepository;
     private final FuelTheftDetectionService detectionService;
 

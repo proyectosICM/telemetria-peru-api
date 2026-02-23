@@ -88,4 +88,14 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecordModel, Lon
         where fr.createdAt >= :since
     """)
     List<Long> findActiveVehicleIdsSince(@Param("since") ZonedDateTime since);
+
+    @Query(value = """
+   SELECT DISTINCT fr.vehicle_id
+   FROM fuel_records fr
+   WHERE fr.created_at >= :since
+   ORDER BY MAX(fr.created_at) DESC
+   LIMIT :limit
+""", nativeQuery = true)
+    List<Long> findActiveVehicleIdsSinceLimited(@Param("since") ZonedDateTime since,
+                                                @Param("limit") int limit);
 }
