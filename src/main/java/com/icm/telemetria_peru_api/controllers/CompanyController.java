@@ -68,7 +68,7 @@ public class CompanyController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('SA')")
+    //@PreAuthorize("hasRole('SA')")
     public ResponseEntity<Object> save(@RequestBody @Valid CompanyModel companyModel){
         try {
             CompanyModel dataModel = companyService.save(companyModel);
