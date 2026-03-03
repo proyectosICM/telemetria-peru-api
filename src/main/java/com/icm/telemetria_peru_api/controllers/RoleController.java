@@ -30,7 +30,7 @@ public class RoleController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('SA')")
+    @PreAuthorize("hasRole('ROLE_SA')")
     public ResponseEntity<RoleModel> createRole(@RequestBody RoleModel roleModel) {
         RoleModel createdRole = roleService.createRole(roleModel);
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
