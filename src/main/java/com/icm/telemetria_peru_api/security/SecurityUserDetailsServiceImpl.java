@@ -27,7 +27,7 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
 
         Collection<? extends GrantedAuthority> authorities = userModel.getRoleModel() != null ?
                 Collections.singletonList(new SimpleGrantedAuthority(userModel.getRoleModel().getName())) :
-                null;
+                Collections.emptyList();
 
 
         return new User(
