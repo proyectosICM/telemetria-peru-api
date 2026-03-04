@@ -26,7 +26,7 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("El usuario " + username + " no existe"));
 
         Collection<? extends GrantedAuthority> authorities = userModel.getRoleModel() != null ?
-                Collections.singletonList(new SimpleGrantedAuthority(userModel.getRoleModel().getName())) :
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + roleName)) :
                 Collections.emptyList();
 
 
