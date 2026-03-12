@@ -22,7 +22,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "fuel_efficiency")
+@Table(
+    name = "fuel_efficiency",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_fuel_efficiency_vehicle_day", columnNames = {"vehicle_id", "day"})
+    }
+)
 public class FuelEfficiencyModel {
     @Id
     @Column(unique = true, nullable = false)
