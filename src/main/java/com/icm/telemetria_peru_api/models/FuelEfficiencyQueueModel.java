@@ -72,10 +72,11 @@ public class FuelEfficiencyQueueModel {
     @Column(name = "last_error", length = 500)
     private String lastError;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private ZonedDateTime createdAt;
 
+    @Column(name = "updated_at")
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
 }
