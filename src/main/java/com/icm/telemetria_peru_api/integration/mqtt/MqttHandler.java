@@ -10,6 +10,7 @@ import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import com.icm.telemetria_peru_api.services.FuelEfficiencyQueueService;
 
 import java.util.Optional;
 import java.util.concurrent.*;
@@ -30,6 +31,7 @@ public class MqttHandler {
     private final VehicleSnapshotHandler vehicleSnapshotHandler;
 
     private final MqttMessagePublisher mqttMessagePublisher;
+    private final FuelEfficiencyQueueService fuelEfficiencyQueueService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -192,6 +194,7 @@ public class MqttHandler {
         feExecutor.submit(() ->executeSafely(() -> fuelEfficiencyDailyHandler.process(vehicle.getId(), data), "fuelEfficiencyDailyHandler.process")
        );
         */
+        executeSafely(() -> fuelEfficiencyQueueService.enqueue(vehicle.getId(), data), "fuelEfficiencyQueueService.enqueue");
         executeSafely(() -> speedExcessHandler.logSpeedExcess(vehicle, data), "speedExcessHandler.logSpeedExcess");
         executeSafely(() -> vehicleSnapshotHandler.saveVehicleSnapshot(snapshotDTO, vehicle), "vehicleSnapshotHandler.saveVehicleSnapshot");
     }
