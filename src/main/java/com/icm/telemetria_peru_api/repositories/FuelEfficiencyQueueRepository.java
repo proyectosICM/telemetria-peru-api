@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FuelEfficiencyQueueRepository extends JpaRepository<FuelEfficiencyQueueModel, Long> {
 
-    List<FuelEfficiencyQueueModel> findTop100ByProcessedFalseAndProcessingFalseOrderByCreatedAtAsc();
+    List<FuelEfficiencyQueueModel> findTop100ByProcessedFalseAndProcessingFalseOrderByEventTimeAscCreatedAtAsc();
 
     List<FuelEfficiencyQueueModel> findTop100ByProcessedFalseOrderByCreatedAtAsc();
 
@@ -15,7 +15,7 @@ public interface FuelEfficiencyQueueRepository extends JpaRepository<FuelEfficie
 
     long countByProcessedFalse();
 
-    List<FuelEfficiencyQueueModel> findByProcessedFalseAndProcessingTrueOrderByCreatedAtAsc();
+    List<FuelEfficiencyQueueModel> findByProcessedFalseAndProcessingTrueOrderByEventTimeAscCreatedAtAsc();
 
     void deleteByProcessedTrue();
 }

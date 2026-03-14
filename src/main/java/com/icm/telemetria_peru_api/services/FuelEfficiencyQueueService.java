@@ -56,7 +56,7 @@ public class FuelEfficiencyQueueService {
     @Transactional
     public List<FuelEfficiencyQueueModel> takePendingBatch(int batchSize) {
         List<FuelEfficiencyQueueModel> pending = fuelEfficiencyQueueRepository
-                .findTop100ByProcessedFalseAndProcessingFalseOrderByCreatedAtAsc();
+                .findTop100ByProcessedFalseAndProcessingFalseOrderByEventTimeAscCreatedAtAsc();
 
         if (pending.isEmpty()) return pending;
 
@@ -103,7 +103,7 @@ public class FuelEfficiencyQueueService {
     @Transactional
     public void releaseStuckProcessingItems() {
         List<FuelEfficiencyQueueModel> stuckItems = fuelEfficiencyQueueRepository
-                .findByProcessedFalseAndProcessingTrueOrderByCreatedAtAsc();
+                .findByProcessedFalseAndProcessingTrueOrderByEventTimeAscCreatedAtAsc();
 
         if (stuckItems.isEmpty()) return;
 
