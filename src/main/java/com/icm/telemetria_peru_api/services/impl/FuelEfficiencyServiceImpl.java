@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +30,7 @@ public class FuelEfficiencyServiceImpl implements FuelEfficiencyService {
 
     private final FuelEfficiencyRepository fuelEfficiencyRepository;
     private final VehicleRepository vehicleRepository;
+    private static final ZoneId ZONE = ZoneId.of("America/Lima");
 
     // ===== Helpers =====
     private static long nz(Long v) { return v == null ? 0L : v; }
@@ -89,9 +93,20 @@ public class FuelEfficiencyServiceImpl implements FuelEfficiencyService {
                             return r;
                         });
 
-        row.setParkedSeconds(row.getParkedSeconds() + nz(parkedSecondsDelta));
-        row.setIdleSeconds(row.getIdleSeconds() + nz(idleSecondsDelta));
-        row.setOperationSeconds(row.getOperationSeconds() + nz(operationSecondsDelta));
+        long currentTotal = nz(row.getParkedSeconds()) + nz(row.getIdleSeconds()) + nz(row.getOperationSeconds());
+        long remainingSeconds = Math.max(0L, maxAllowedSeconds(day) - currentTotal);
+
+        long parkedDelta = Math.min(nz(parkedSecondsDelta), remainingSeconds);
+        remainingSeconds -= parkedDelta;
+
+        long idleDelta = Math.min(nz(idleSecondsDelta), remainingSeconds);
+        remainingSeconds -= idleDelta;
+
+        long operationDelta = Math.min(nz(operationSecondsDelta), remainingSeconds);
+
+        row.setParkedSeconds(nz(row.getParkedSeconds()) + parkedDelta);
+        row.setIdleSeconds(nz(row.getIdleSeconds()) + idleDelta);
+        row.setOperationSeconds(nz(row.getOperationSeconds()) + operationDelta);
 
         // Evita negativos si por algún bug llega delta negativo
         if (row.getParkedSeconds() < 0) row.setParkedSeconds(0L);
@@ -99,6 +114,25 @@ public class FuelEfficiencyServiceImpl implements FuelEfficiencyService {
         if (row.getOperationSeconds() < 0) row.setOperationSeconds(0L);
 
         return fuelEfficiencyRepository.save(row);
+    }
+
+    private long maxAllowedSeconds(LocalDate day) {
+        ZonedDateTime now = now();
+        LocalDate today = now.withZoneSameInstant(ZONE).toLocalDate();
+
+        if (day.isBefore(today)) {
+            return Duration.ofDays(1).getSeconds();
+        }
+
+        if (day.isAfter(today)) {
+            return 0L;
+        }
+
+        return Math.max(0L, Duration.between(day.atStartOfDay(ZONE), now.withZoneSameInstant(ZONE)).getSeconds());
+    }
+
+    protected ZonedDateTime now() {
+        return ZonedDateTime.now(ZONE);
     }
 
     @Override

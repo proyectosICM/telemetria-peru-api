@@ -36,6 +36,10 @@ public class FuelEfficiencyDailyHandler {
         if (vehicleId == null || p == null) return;
 
         ZonedDateTime eventTime = parseEventTime(p);
+        ZonedDateTime now = now();
+        if (eventTime.isAfter(now)) {
+            eventTime = now;
+        }
         FuelEfficiencyStatus newStatus = determinateStatus(p);
 
         VehicleStateCurrentModel current = vehicleStateCurrentRepository
@@ -147,5 +151,9 @@ public class FuelEfficiencyDailyHandler {
         }
 
         fuelEfficiencyService.addSeconds(vehicleId, day, parked, idle, op);
+    }
+
+    protected ZonedDateTime now() {
+        return ZonedDateTime.now(ZONE);
     }
 }
