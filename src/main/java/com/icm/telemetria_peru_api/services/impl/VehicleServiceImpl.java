@@ -133,15 +133,20 @@ public class VehicleServiceImpl implements VehicleService {
             return null;
         }
 
-        // nos quedamos solo con dígitos, por si el usuario mete espacios o guiones
+        // Nos quedamos solo con dígitos, por si el usuario mete espacios o guiones.
         String digits = rawPhone.replaceAll("\\D", "");
         if (digits.isEmpty()) {
             return null;
         }
 
-        // si NO empieza con "0000", se los agregamos
-        if (!digits.startsWith("0000")) {
-            digits = "0000" + digits;
+        // JT808/JT1078 usa phone BCD de 6 bytes => 12 dígitos.
+        // Normalizamos a 12 dígitos para evitar URLs inconsistentes:
+        // - si faltan dígitos, completamos a la izquierda con ceros
+        // - si sobran (por ejemplo se guardó con "0000" extra), nos quedamos con los últimos 12
+        if (digits.length() < 12) {
+            digits = "0".repeat(12 - digits.length()) + digits;
+        } else if (digits.length() > 12) {
+            digits = digits.substring(digits.length() - 12);
         }
 
         return digits;
