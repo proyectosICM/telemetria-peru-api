@@ -1,0 +1,7 @@
+FROM ghcr.io/proyectosicm/telemetria-peru-api:latest
+
+WORKDIR /app
+
+COPY target/*.jar ./app.jar
+
+CMD ["java", "-jar", "app.jar"]

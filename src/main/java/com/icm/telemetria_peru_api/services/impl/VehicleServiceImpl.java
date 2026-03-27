@@ -10,6 +10,7 @@ import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.DriverRepository;
 import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import com.icm.telemetria_peru_api.services.VehicleService;
+import com.icm.telemetria_peru_api.utils.DvrPhoneNormalizer;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -106,7 +107,7 @@ public class VehicleServiceImpl implements VehicleService {
         dto.setVideoChannels(v.getVideoChannels());
 
         // --- Normalizar el dvrPhone ---
-        final String normalizedPhone = normalizeDvrPhone(v.getDvrPhone());
+        final String normalizedPhone = DvrPhoneNormalizer.normalize(v.getDvrPhone());
         dto.setDvrPhone(normalizedPhone);
 
         // Si no hay phone normalizado o no hay canales, devolvemos lista vacía
@@ -126,30 +127,6 @@ public class VehicleServiceImpl implements VehicleService {
 
         dto.setHlsUrls(urls);
         return dto;
-    }
-
-    private String normalizeDvrPhone(String rawPhone) {
-        if (rawPhone == null || rawPhone.isBlank()) {
-            return null;
-        }
-
-        // Nos quedamos solo con dígitos, por si el usuario mete espacios o guiones.
-        String digits = rawPhone.replaceAll("\\D", "");
-        if (digits.isEmpty()) {
-            return null;
-        }
-
-        // JT808/JT1078 usa phone BCD de 6 bytes => 12 dígitos.
-        // Normalizamos a 12 dígitos para evitar URLs inconsistentes:
-        // - si faltan dígitos, completamos a la izquierda con ceros
-        // - si sobran (por ejemplo se guardó con "0000" extra), nos quedamos con los últimos 12
-        if (digits.length() < 12) {
-            digits = "0".repeat(12 - digits.length()) + digits;
-        } else if (digits.length() > 12) {
-            digits = digits.substring(digits.length() - 12);
-        }
-
-        return digits;
     }
 
     @Override
