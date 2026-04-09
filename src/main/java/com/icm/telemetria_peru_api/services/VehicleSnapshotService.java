@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.services;
 
+import com.icm.telemetria_peru_api.dto.DvrGpsSnapshotDTO;
 import com.icm.telemetria_peru_api.models.VehicleSnapshotModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,5 +17,5 @@ public interface VehicleSnapshotService {
     Page<VehicleSnapshotModel> getSnapshotsByCompanyId(Long companyId, Pageable pageable);
     void saveSnapshot(VehicleSnapshotModel snapshot);
     VehicleSnapshotModel updateOrCreateSnapshotByVehicleId(Long vehicleId, VehicleSnapshotModel newSnapshotData);
-
+    VehicleSnapshotModel updateOrCreateDvrSnapshotByPhone(String dvrPhone, DvrGpsSnapshotDTO dvrSnapshotData);
 }

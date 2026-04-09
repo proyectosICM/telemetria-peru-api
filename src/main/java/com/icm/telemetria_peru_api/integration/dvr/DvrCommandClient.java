@@ -53,6 +53,14 @@ public class DvrCommandClient {
         }
     }
 
+    public JsonNode ensureVideoStream(String normalizedPhone, Integer channel) {
+        return sendChannelRequest("/video-streams/ensure", normalizedPhone, channel);
+    }
+
+    public JsonNode stopVideoStream(String normalizedPhone, Integer channel) {
+        return sendChannelRequest("/video-streams/stop", normalizedPhone, channel);
+    }
+
     private HttpRequest.Builder baseRequest(String path) {
         HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(camerasCommandBaseUrl + path))
                 .header(HttpHeaders.CONTENT_TYPE, "application/json");
@@ -76,12 +84,30 @@ public class DvrCommandClient {
         }
     }
 
+    private JsonNode sendChannelRequest(String path, String normalizedPhone, Integer channel) {
+        try {
+            String body = objectMapper.writeValueAsString(new VideoChannelPayload(normalizedPhone, channel));
+            HttpRequest request = baseRequest(path)
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+            return send(request);
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo serializar la solicitud de video DVR", e);
+        }
+    }
+
     private record ExecutePayload(
             String phone,
             String alertCode,
             String subalertCode,
             Integer channel,
             Integer durationSeconds
+    ) {
+    }
+
+    private record VideoChannelPayload(
+            String phone,
+            Integer channel
     ) {
     }
 }

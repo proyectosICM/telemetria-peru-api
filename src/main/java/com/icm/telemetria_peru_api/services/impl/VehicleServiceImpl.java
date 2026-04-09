@@ -3,8 +3,10 @@ package com.icm.telemetria_peru_api.services.impl;
 import com.icm.telemetria_peru_api.dto.VehicleDTO;
 import com.icm.telemetria_peru_api.dto.VehicleOptionsDTO;
 import com.icm.telemetria_peru_api.dto.VehicleVideoDTO;
+import com.icm.telemetria_peru_api.integration.dvr.DvrCommandClient;
 import com.icm.telemetria_peru_api.mappers.VehicleMapper;
 import com.icm.telemetria_peru_api.mappers.VehicleOptionsMapper;
+import com.icm.telemetria_peru_api.enums.GpsSource;
 import com.icm.telemetria_peru_api.models.DriverModel;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.repositories.DriverRepository;
@@ -31,6 +33,7 @@ public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepository vehicleRepository;
     private final MqttPahoMessageHandler mqttOutbound;
     private final DriverRepository driverRepository;
+    private final DvrCommandClient dvrCommandClient;
 
     private final VehicleMapper vehicleMapper;
     private final VehicleOptionsMapper vehicleOptionsMapper;
@@ -130,7 +133,22 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    public void ensureVideoStream(Long vehicleId, Integer channel) {
+        String normalizedPhone = getNormalizedDvrPhone(vehicleId);
+        validateChannel(channel);
+        dvrCommandClient.ensureVideoStream(normalizedPhone, channel);
+    }
+
+    @Override
+    public void stopVideoStream(Long vehicleId, Integer channel) {
+        String normalizedPhone = getNormalizedDvrPhone(vehicleId);
+        validateChannel(channel);
+        dvrCommandClient.stopVideoStream(normalizedPhone, channel);
+    }
+
+    @Override
     public VehicleModel save(@Valid VehicleModel vehicleModel) {
+        normalizeVehicleTelemetryConfig(vehicleModel);
 
         if (vehicleModel.getDvrPhone() == null || vehicleModel.getDvrPhone().isBlank()) {
             if (vehicleModel.getVideoChannels() != null) {
@@ -152,10 +170,11 @@ public class VehicleServiceImpl implements VehicleService {
         existing.setVehicletypeModel(vehicleModel.getVehicletypeModel());
         existing.setCompanyModel(vehicleModel.getCompanyModel());
         existing.setMaxSpeed(vehicleModel.getMaxSpeed());
+        existing.setFuelType(vehicleModel.getFuelType());
 
         // --- DVR / Video ---
-        String rawPhone = vehicleModel.getDvrPhone();
-        existing.setDvrPhone(rawPhone != null ? rawPhone.trim() : null);
+        existing.setDvrPhone(DvrPhoneNormalizer.normalize(vehicleModel.getDvrPhone()));
+        existing.setGpsSource(resolveGpsSource(vehicleModel));
 
         existing.getVideoChannels().clear();
         if (vehicleModel.getVideoChannels() != null) {
@@ -222,5 +241,43 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public void deleteById(Long vehicleId) {
         vehicleRepository.deleteById(vehicleId);
+    }
+
+    private String getNormalizedDvrPhone(Long vehicleId) {
+        VehicleModel vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new EntityNotFoundException("Vehicle with id " + vehicleId + " not found"));
+        String normalizedPhone = DvrPhoneNormalizer.normalize(vehicle.getDvrPhone());
+        if (normalizedPhone == null) {
+            throw new IllegalArgumentException("El vehiculo no tiene dvrPhone configurado");
+        }
+        return normalizedPhone;
+    }
+
+    private void validateChannel(Integer channel) {
+        if (channel == null || channel < 1 || channel > 8) {
+            throw new IllegalArgumentException("Canal de video invalido");
+        }
+    }
+
+    private void normalizeVehicleTelemetryConfig(VehicleModel vehicleModel) {
+        vehicleModel.setDvrPhone(DvrPhoneNormalizer.normalize(vehicleModel.getDvrPhone()));
+        vehicleModel.setGpsSource(resolveGpsSource(vehicleModel));
+    }
+
+    private GpsSource resolveGpsSource(VehicleModel vehicleModel) {
+        if (vehicleModel.getGpsSource() != null) {
+            return vehicleModel.getGpsSource();
+        }
+
+        boolean hasImei = vehicleModel.getImei() != null && !vehicleModel.getImei().isBlank();
+        boolean hasDvr = vehicleModel.getDvrPhone() != null && !vehicleModel.getDvrPhone().isBlank();
+
+        if (hasDvr && !hasImei) {
+            return GpsSource.DVR;
+        }
+        if (hasImei && !hasDvr) {
+            return GpsSource.IMEI;
+        }
+        return GpsSource.AUTO;
     }
 }

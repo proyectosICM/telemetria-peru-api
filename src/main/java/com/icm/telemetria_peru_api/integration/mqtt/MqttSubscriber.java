@@ -1,16 +1,15 @@
 package com.icm.telemetria_peru_api.integration.mqtt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.icm.telemetria_peru_api.repositories.SpeedExcessLoggerRepository;
-import com.icm.telemetria_peru_api.repositories.VehicleRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 /**
  * Component responsible for subscribing to MQTT topics and processing received messages.
@@ -20,19 +19,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MqttSubscriber {
     private final IMqttClient mqttClient;
-    private final VehicleRepository vehicleRepository;
-    private final SpeedExcessLoggerRepository speedExcessLoggerRepository;
-    private final MqttMessagePublisher mqttMessagePublisher;
     private final MqttHandler mqttHandler;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${mqtt.topics:data,status,prueba}")
+    private String mqttTopics;
 
 
     @PostConstruct
     public void init() {
-        String[] topics = {"data", "status", "prueba"};
-        subscribeToTopics(topics);
-        subscribeToTopic("prueba");
+        subscribeToTopics(mqttTopics.split("\\s*,\\s*"));
     }
 
     public void subscribeToTopic(String topic) {
@@ -53,21 +48,9 @@ public class MqttSubscriber {
     }
 
     public void subscribeToTopics(String[] topics) {
-        try {
-            for (String topic : topics) {
-                mqttClient.subscribe(topic, new IMqttMessageListener() {
-                    @Override
-                    public void messageArrived(String topic, MqttMessage message) throws Exception {
-                        String payload = new String(message.getPayload());
-                        // System.out.println("Mensaje MQTT recibido en el tema " + topic + ": " + payload);
-
-                        // Procesa el payload aquí sin intentar deserializar
-                        //System.out.println("Payload: " + payload);
-                    }
-                });
-            }
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+        Arrays.stream(topics)
+                .map(String::trim)
+                .filter(topic -> !topic.isBlank())
+                .forEach(this::subscribeToTopic);
     }
 }

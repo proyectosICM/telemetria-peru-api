@@ -19,6 +19,8 @@ public interface VehicleService {
     Page<VehicleDTO> findByStatus(Boolean status, Pageable pageable);
     VehicleOptionsDTO findByIdOptions(Long vehicleId);
     VehicleVideoDTO getVideoConfig(Long vehicleId);
+    void ensureVideoStream(Long vehicleId, Integer channel);
+    void stopVideoStream(Long vehicleId, Integer channel);
     VehicleModel save(@Valid VehicleModel vehicleModel);
     VehicleModel updateMainData(Long vehicleId, @Valid VehicleModel vehicleModel);
     VehicleModel vehicleOptionsUpdate(Long vehicleId, @Valid String type, @Valid Boolean status);

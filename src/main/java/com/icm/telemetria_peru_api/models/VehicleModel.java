@@ -1,6 +1,7 @@
 package com.icm.telemetria_peru_api.models;
 
 import com.icm.telemetria_peru_api.enums.FuelType;
+import com.icm.telemetria_peru_api.enums.GpsSource;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -39,6 +40,10 @@ public class VehicleModel {
     private String imei;
 
     private String dvrPhone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gps_source", nullable = false)
+    private GpsSource gpsSource = GpsSource.AUTO;
 
     @ElementCollection
     @CollectionTable(

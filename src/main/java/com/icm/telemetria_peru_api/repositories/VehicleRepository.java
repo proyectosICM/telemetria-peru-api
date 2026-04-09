@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface VehicleRepository extends JpaRepository<VehicleModel, Long> {
 
     Optional<VehicleModel> findByImei(String imei);
+    Optional<VehicleModel> findByDvrPhone(String dvrPhone);
 
     /** Retrieves vehicles by status, as a list and paginated. */
     List<VehicleModel> findByStatus(Boolean status);

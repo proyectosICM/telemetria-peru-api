@@ -26,5 +26,6 @@ public class VehicleDTO {
     private String fuelType;
 
     private String dvrPhone;
+    private String gpsSource;
     private Set<Integer> videoChannels;
 }

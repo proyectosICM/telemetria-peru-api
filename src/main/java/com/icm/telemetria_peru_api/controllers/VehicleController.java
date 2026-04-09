@@ -3,6 +3,7 @@ package com.icm.telemetria_peru_api.controllers;
 import com.icm.telemetria_peru_api.dto.VehicleDTO;
 import com.icm.telemetria_peru_api.dto.VehicleOptionsDTO;
 import com.icm.telemetria_peru_api.dto.VehicleVideoDTO;
+import com.icm.telemetria_peru_api.dto.DvrVideoChannelRequestDTO;
 import com.icm.telemetria_peru_api.enums.FuelType;
 import com.icm.telemetria_peru_api.models.VehicleModel;
 import com.icm.telemetria_peru_api.services.VehicleService;
@@ -87,6 +88,20 @@ public class VehicleController {
     public ResponseEntity<VehicleVideoDTO> getVehicleVideoConfig(@PathVariable Long vehicleId) {
         VehicleVideoDTO dto = vehicleService.getVideoConfig(vehicleId);
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/{vehicleId}/video-stream/ensure")
+    public ResponseEntity<Void> ensureVideoStream(@PathVariable Long vehicleId,
+                                                  @RequestBody DvrVideoChannelRequestDTO request) {
+        vehicleService.ensureVideoStream(vehicleId, request.getChannel());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{vehicleId}/video-stream/stop")
+    public ResponseEntity<Void> stopVideoStream(@PathVariable Long vehicleId,
+                                                @RequestBody DvrVideoChannelRequestDTO request) {
+        vehicleService.stopVideoStream(vehicleId, request.getChannel());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping

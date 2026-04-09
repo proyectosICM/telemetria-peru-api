@@ -1,5 +1,6 @@
 package com.icm.telemetria_peru_api.controllers;
 
+import com.icm.telemetria_peru_api.dto.DvrGpsSnapshotDTO;
 import com.icm.telemetria_peru_api.models.VehicleSnapshotModel;
 import com.icm.telemetria_peru_api.services.VehicleSnapshotService;
 import lombok.RequiredArgsConstructor;
@@ -58,5 +59,10 @@ public class VehicleSnapshotController {
     public VehicleSnapshotModel saveSnapshot(@RequestBody VehicleSnapshotModel snapshot) {
         vehicleSnapshotService.saveSnapshot(snapshot);
         return snapshot;
+    }
+
+    @PostMapping("/dvr")
+    public VehicleSnapshotModel saveDvrSnapshot(@RequestBody DvrGpsSnapshotDTO snapshot) {
+        return vehicleSnapshotService.updateOrCreateDvrSnapshotByPhone(snapshot.getDvrPhone(), snapshot);
     }
 }

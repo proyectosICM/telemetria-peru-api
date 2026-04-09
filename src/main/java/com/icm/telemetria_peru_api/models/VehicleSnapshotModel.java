@@ -35,6 +35,18 @@ public class VehicleSnapshotModel {
 
     private Double snapshotFuelLevel;
 
+    private String dvrSnapshotLatitude;
+
+    private String dvrSnapshotLongitude;
+
+    private Integer dvrSnapshotSpeed;
+
+    private Boolean dvrSnapshotAlarmStatus;
+
+    private Boolean dvrSnapshotIgnitionStatus;
+
+    private String dvrSnapshotTimestamp;
+
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = false)
     private VehicleModel vehicleModel;

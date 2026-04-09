@@ -15,6 +15,6 @@ public class VehicleMapper {
 
         return new VehicleDTO(vehicleModel.getId(), vehicleModel.getLicensePlate(), vehicleModel.getStatus(), vehicleModel.getImei(),
                 vehicleTypeId, vehicleTypeName, companyId, companyName, vehicleModel.getMaxSpeed(), vehicleModel.getFuelType().toString(), vehicleModel.getDvrPhone(),
-                vehicleModel.getVideoChannels());
+                vehicleModel.getGpsSource() != null ? vehicleModel.getGpsSource().name() : "AUTO", vehicleModel.getVideoChannels());
     }
 }
